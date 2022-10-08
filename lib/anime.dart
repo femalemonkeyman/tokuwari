@@ -1,7 +1,9 @@
+import 'package:chewie/chewie.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_io/io.dart';
+import 'package:video_player/video_player.dart';
 
 aniInfo(id) async {
   String link = "https://api.consumet.org/meta/anilist/info/$id";
@@ -17,39 +19,60 @@ episodeInfo(name) async {
 
 class AniViewer extends StatefulWidget {
   String url;
-  final player = Player(
-    id: 1,
-    registerTexture: true,
-    commandlineArguments: Platform.isLinux ? ["--demux=ffmpeg"] : [],
-  );
-  AniViewer({super.key, required this.url}) {
-    player.open(
-      Media.network(
-        url,
-      ),
-    );
-  }
+  AniViewer({super.key, required this.url});
 
   @override
   State<StatefulWidget> createState() => AniViewerState();
 }
 
 class AniViewerState extends State<AniViewer> {
+  dynamic player;
+  late ChewieController chewie;
+  bool isPhone = Platform.isAndroid || Platform.isIOS;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    player = !isPhone
+        ? Player(
+            id: 1,
+            registerTexture: true,
+            commandlineArguments: Platform.isLinux ? ["--demux=ffmpeg"] : [],
+          )
+        : VideoPlayerController.network(widget.url);
+    if (isPhone) {
+      chewie = ChewieController(
+        videoPlayerController: player,
+      );
+    } else {
+      player.open(
+        Media.network(
+          widget.url,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
       body: GestureDetector(
-        child: Video(
-          player: widget.player,
-          showFullscreenButton: true,
-        ),
+        child: !isPhone
+            ? Video(
+                player: player,
+                showFullscreenButton: true,
+              )
+            : SizedBox.expand(
+                child: Chewie(controller: chewie),
+              ),
       ),
     );
   }
 
   @override
   void dispose() {
-    widget.player.dispose();
+    player.dispose();
     super.dispose();
   }
 }
