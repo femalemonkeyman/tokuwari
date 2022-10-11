@@ -1,7 +1,8 @@
-import 'package:chewie/chewie.dart';
+import 'package:better_player/better_player.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:universal_io/io.dart';
 import 'package:video_player/video_player.dart';
 
@@ -18,8 +19,9 @@ episodeInfo(name) async {
 }
 
 class AniViewer extends StatefulWidget {
-  String url;
-  AniViewer({super.key, required this.url});
+  Map server;
+  String? headers;
+  AniViewer({super.key, required this.server, this.headers});
 
   @override
   State<StatefulWidget> createState() => AniViewerState();
@@ -27,28 +29,36 @@ class AniViewer extends StatefulWidget {
 
 class AniViewerState extends State<AniViewer> {
   dynamic player;
-  late ChewieController chewie;
   bool isPhone = Platform.isAndroid || Platform.isIOS;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    player = !isPhone
-        ? Player(
-            id: 1,
-            registerTexture: true,
-            commandlineArguments: Platform.isLinux ? ["--demux=ffmpeg"] : [],
-          )
-        : VideoPlayerController.network(widget.url);
     if (isPhone) {
-      chewie = ChewieController(
-        videoPlayerController: player,
+      BetterPlayerDataSource source = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        widget.server['url'],
+        headers: {"User-Agent": "Death"},
+        videoFormat: BetterPlayerVideoFormat.hls,
+      );
+      player = BetterPlayerController(
+        BetterPlayerConfiguration(
+            deviceOrientationsOnFullScreen: [DeviceOrientation.landscapeLeft],
+            fullScreenByDefault: true,
+            autoPlay: true,
+            allowedScreenSleep: false),
+        betterPlayerDataSource: source,
       );
     } else {
+      player = Player(
+        id: 1,
+        registerTexture: true,
+        commandlineArguments: Platform.isLinux ? ["--demux=ffmpeg"] : [],
+      );
       player.open(
         Media.network(
-          widget.url,
+          widget.server,
         ),
       );
     }
@@ -63,8 +73,8 @@ class AniViewerState extends State<AniViewer> {
                 player: player,
                 showFullscreenButton: true,
               )
-            : SizedBox.expand(
-                child: Chewie(controller: chewie),
+            : BetterPlayer(
+                controller: player,
               ),
       ),
     );
@@ -103,7 +113,10 @@ class AniEpisodes extends StatelessWidget {
                           builder: (context, info) {
                             if (info.hasData) {
                               return AniViewer(
-                                url: info.data['sources'][0]['url'],
+                                headers: info.data['headers']["Referer"],
+                                server: info.data['sources'][
+                                    info.data['sources'].indexWhere((source) =>
+                                        source['quality'] == "1080p")],
                               );
                             }
                             return const CircularProgressIndicator();
@@ -119,7 +132,7 @@ class AniEpisodes extends StatelessWidget {
                     border: Border(top: BorderSide(color: Colors.blueGrey)),
                   ),
                   child: Text(
-                      "Episode: ${snapshot.data['episodes'][index]['number']} ${snapshot.data["episodes"][index]["title"]} "),
+                      "Episode: ${snapshot.data['episodes'][index]['number']} ${snapshot.data["episodes"][index]["title"]}"),
                 ),
               );
             }),
