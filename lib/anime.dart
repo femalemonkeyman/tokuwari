@@ -3,8 +3,83 @@ import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:universal_io/io.dart';
-import 'package:video_player/video_player.dart';
+import 'anigrid.dart';
+import 'anisearch.dart';
+
+final ValueNotifier<GraphQLClient> client = ValueNotifier(
+  GraphQLClient(
+    cache: GraphQLCache(),
+    link: HttpLink(anilist),
+  ),
+);
+
+const anilist = "https://graphql.anilist.co/";
+
+const base = """
+  {
+  Page(perPage: 50, page: 1) {
+    pageInfo {
+      currentPage
+      hasNextPage
+    },
+      media(sort: [TRENDING_DESC], type: ANIME) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        type
+        chapters
+        averageScore
+        episodes
+        description
+        coverImage{
+          extraLarge
+        }
+        episodes
+        tags {
+          name
+        }
+      }
+  }
+}
+""";
+
+const listSearch = """
+query media(\$search: String!)
+{
+  Page(perPage: 50, page: 1,) {
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
+  	media(search: \$search, type: ANIME) {
+  	  title {
+  	    romaji
+  	    english
+  	    native
+  	  }
+      averageScore
+        episodes
+        description
+        coverImage{
+          extraLarge
+        }
+        episodes
+        tags {
+          name
+        }
+  	}
+  }
+}
+
+""";
 
 aniInfo(id) async {
   String link = "https://api.consumet.org/meta/anilist/info/$id";
@@ -18,10 +93,55 @@ episodeInfo(name) async {
   return json.data;
 }
 
+class AniPage extends StatelessWidget {
+  const AniPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(context) {
+    return ListView(
+      controller: ScrollController(),
+      primary: false,
+      shrinkWrap: true,
+      children: [
+        const Center(
+          child: SearchButton(
+            text: "anilist",
+          ),
+        ),
+        GraphQLProvider(
+          client: client,
+          child: Query(
+            options: QueryOptions(
+              document: gql(base),
+            ),
+            builder: (result, {refetch, fetchMore}) {
+              if (result.hasException) {
+                print(result.exception);
+              }
+              if (result.isNotLoading) {
+                var data = result.data!['Page']['media'];
+                return AniGrid(
+                  data: data,
+                  place: "anilist",
+                );
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class AniViewer extends StatefulWidget {
-  Map server;
-  String? headers;
-  AniViewer({super.key, required this.server, this.headers});
+  final Map server;
+  const AniViewer({
+    super.key,
+    required this.server,
+  });
 
   @override
   State<StatefulWidget> createState() => AniViewerState();
@@ -33,7 +153,6 @@ class AniViewerState extends State<AniViewer> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (isPhone) {
       BetterPlayerDataSource source = BetterPlayerDataSource(
@@ -43,7 +162,7 @@ class AniViewerState extends State<AniViewer> {
         videoFormat: BetterPlayerVideoFormat.hls,
       );
       player = BetterPlayerController(
-        BetterPlayerConfiguration(
+        const BetterPlayerConfiguration(
             deviceOrientationsOnFullScreen: [DeviceOrientation.landscapeLeft],
             fullScreenByDefault: true,
             autoPlay: true,
@@ -58,7 +177,7 @@ class AniViewerState extends State<AniViewer> {
       );
       player.open(
         Media.network(
-          widget.server,
+          widget.server['url'],
         ),
       );
     }
@@ -113,7 +232,6 @@ class AniEpisodes extends StatelessWidget {
                           builder: (context, info) {
                             if (info.hasData) {
                               return AniViewer(
-                                headers: info.data['headers']["Referer"],
                                 server: info.data['sources'][
                                     info.data['sources'].indexWhere((source) =>
                                         source['quality'] == "1080p")],

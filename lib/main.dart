@@ -1,12 +1,12 @@
 import 'package:anicross/anigrid.dart';
 import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:universal_io/io.dart';
+import 'anime.dart';
 import 'epub.dart';
-import 'functions.dart';
 import 'anisearch.dart';
+import 'manga.dart';
 
 void main() async {
   await DartVLC.initialize();
@@ -42,42 +42,40 @@ class AniNav extends StatelessWidget {
       body: DefaultTabController(
         length: 3,
         child: SafeArea(
-          child: Stack(
+          child: Column(
             children: [
-              const TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  AniPage(),
-                  MangaPage(),
-                  NovelPage(),
-                ],
+              const Expanded(
+                child: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    AniPage(),
+                    MangaPage(),
+                    NovelPage(),
+                  ],
+                ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  width: MediaQuery.of(context).size.width / 1.5,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: const Color.fromARGB(255, 0, 0, 0),
+              Container(
+                //margin: const EdgeInsets.only(bottom: 20),
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(200, 0, 0, 20),
+                ),
+                child: const TabBar(
+                  indicator: UnderlineTabIndicator(
+                    borderSide: BorderSide(width: 2, color: Colors.blue),
+                    insets: EdgeInsets.fromLTRB(50, 0, 50, 8),
                   ),
-                  child: const TabBar(
-                    indicator: UnderlineTabIndicator(
-                      borderSide: BorderSide(width: 2, color: Colors.blue),
-                      insets: EdgeInsets.fromLTRB(50, 0, 50, 8),
+                  tabs: [
+                    Tab(
+                      text: "Anime",
                     ),
-                    tabs: [
-                      Tab(
-                        text: "Anime",
-                      ),
-                      Tab(
-                        text: "Manga",
-                      ),
-                      Tab(
-                        text: "Novel",
-                      ),
-                    ],
-                  ),
+                    Tab(
+                      text: "Manga",
+                    ),
+                    Tab(
+                      text: "Novel",
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -102,6 +100,7 @@ class NovelPageState extends State {
     return ListView(
       controller: ScrollController(),
       primary: false,
+      shrinkWrap: true,
       children: [
         const Center(
           child: SearchButton(
@@ -114,6 +113,7 @@ class NovelPageState extends State {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   //print(snapshot.data);
+                  setState(() {});
                   return Text(snapshot.data.toString());
                 }
                 return const CircularProgressIndicator();
@@ -131,125 +131,6 @@ class NovelPageState extends State {
           icon: const Icon(Icons.refresh),
         )
       ],
-    );
-  }
-}
-
-class MangaPage extends StatelessWidget {
-  const MangaPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(context) {
-    return ListView(
-      controller: ScrollController(),
-      primary: false,
-      children: [
-        const Center(
-          child: SearchButton(
-            text: "mangadex",
-          ),
-        ),
-        FutureBuilder<dynamic>(
-          future: dexList(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return AniGrid(
-                data: snapshot.data['data'],
-                place: "mangadex",
-              );
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class AniPage extends StatelessWidget {
-  const AniPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(context) {
-    return ListView(
-      controller: ScrollController(),
-      primary: false,
-      children: [
-        const Center(
-          child: SearchButton(
-            text: "anilist",
-          ),
-        ),
-        GraphQLProvider(
-          client: client,
-          child: Query(
-            options: QueryOptions(
-              document: gql(base),
-            ),
-            builder: (result, {refetch, fetchMore}) {
-              if (result.hasException) {
-                print(result.exception);
-              }
-              if (result.isNotLoading) {
-                var data = result.data!['Page']['media'];
-                return AniGrid(
-                  data: data,
-                  place: "anilist",
-                );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class SearchButton extends StatelessWidget {
-  const SearchButton({Key? key, required this.text}) : super(key: key);
-
-  final String text;
-
-  @override
-  Widget build(context) {
-    return GestureDetector(
-      onTap: (() => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AniSearch(
-                place: text,
-              ),
-            ),
-          )),
-      child: Container(
-        padding: const EdgeInsets.only(left: 10, right: 10),
-        margin: const EdgeInsets.only(bottom: 20, top: 20),
-        height: 45,
-        width: MediaQuery.of(context).size.width / 1.5,
-        decoration: BoxDecoration(
-          color: Colors.blueGrey,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.search),
-            const Spacer(),
-            const Text("Search"),
-            const Spacer(
-              flex: 95,
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.settings),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

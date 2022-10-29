@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive_io.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:xml/xml.dart';
-import 'functions.dart';
 
 class Epub {
   final Archive archive;
@@ -85,6 +86,20 @@ openArchive(String location) async {
       InputFileStream(location),
     ),
   );
+}
+
+getFilepath() async {
+  String? directory;
+  if (Platform.isAndroid) {
+    await Permission.manageExternalStorage.request();
+  }
+  directory = await FilePicker.platform.getDirectoryPath();
+
+  if (directory != null) {
+    //print(await Directory(directory).list().length);
+    //Hive.box("settings").put("novels", directory);
+    return Directory(directory);
+  }
 }
 
 importBooks() async* {

@@ -41,8 +41,7 @@ dependencies:
   permission_handler: ^9.2.0
   xml: ^6.1.0
   html: ^0.15.0
-  simple_html_css: ^4.0.0
-  flutter_html: ^3.0.0-alpha.3
+  flutter_html: ^3.0.0-alpha.6
   dart_vlc: ^0.3.0
   video_player: ^2.4.7
   better_player:
