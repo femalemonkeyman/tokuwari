@@ -59,6 +59,8 @@ jobs:
           files: build/windows/runner/Release/Anicross-${{github.ref_name}}-windows.zip
 
   build-and-release-android:
+    runs-on: windows-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
