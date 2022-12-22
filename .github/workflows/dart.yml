@@ -13,24 +13,25 @@ jobs:
           channel: 'stable'
       - run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev
+          sudo apt-get install -y ninja-build libgtk-3-dev clang
       - name: Install project dependencies
         run: flutter pub get
       - name: Build artifacts
-        run: flutter build linux --release
+        run: flutter build linux --release -v
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          filename: Anicross-${{github.ref_name}}-linux.zip
+          filename: Anicross-linux.zip
           directory: build/linux/x64/release/bundle
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Linux
+          path: build/linux/x64/release/bundle/Anicross-linux.zip
       - name: Linux Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/linux/x64/release/bundle/Anicross-${{github.ref_name}}-linux.zip
+          files: build/linux/x64/release/bundle/Anicross-linux.zip
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -48,15 +49,16 @@ jobs:
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          filename: Anicross-${{github.ref_name}}-windows.zip
+          filename: Anicross-windows.zip
           directory: build/windows/runner/Release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Windows
+          path: build/windows/runner/Release/Anicross-windows.zip
       - name: Windows Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/windows/runner/Release/Anicross-${{github.ref_name}}-windows.zip
+          files: build/windows/runner/Release/Anicross-windows.zip
 
   build-and-release-android:
     runs-on: windows-latest
@@ -78,11 +80,12 @@ jobs:
         run: flutter pub get   
        
       - run: flutter build apk --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: android
+          path: build/app/outputs/apk/release/app-release.apk
       - name: Android Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/app/outputs/apk/release/app-release.apk
 
@@ -103,12 +106,13 @@ jobs:
         uses: thedoctor0/zip-release@master
         with:
           type: 'zip'
-          filename: Anicross-${{github.ref_name}}-macos.zip
+          filename: Anicross-macos.zip
           directory: build/macos/Build/Products/Release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: MacOS
+          path: build/macos/Build/Products/Release/Anicross-macos.zip
       - name: macOS Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/macos/Build/Products/Release/Anicross-${{github.ref_name}}-macos.zip
+          files: build/macos/Build/Products/Release/Anicross-macos.zip
