@@ -59,7 +59,7 @@ jobs:
         with:
           files: build/windows/runner/Release/Anicross-${{github.ref_name}}-windows.zip
 
-  build-and-release-windows:
+  build-and-release-android:
     runs-on: windows-latest
 
     steps:
