@@ -28,10 +28,6 @@ jobs:
         with:
           name: Linux
           path: build/linux/x64/release/bundle/Anicross-linux.zip
-      - name: Linux Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/linux/x64/release/bundle/Anicross-linux.zip
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -55,10 +51,6 @@ jobs:
         with:
           name: Windows
           path: build/windows/runner/Release/Anicross-windows.zip
-      - name: Windows Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/windows/runner/Release/Anicross-windows.zip
 
   build-and-release-android:
     runs-on: windows-latest
@@ -84,11 +76,6 @@ jobs:
         with:
           name: android
           path: build/app/outputs/apk/release/app-release.apk
-      - name: Android Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/app/outputs/apk/release/app-release.apk
-
 
   build-and-release-macos:
     runs-on: macos-latest
@@ -112,7 +99,3 @@ jobs:
         with:
           name: MacOS
           path: build/macos/Build/Products/Release/Anicross-macos.zip
-      - name: macOS Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/macos/Build/Products/Release/Anicross-macos.zip
