@@ -61,7 +61,8 @@ jobs:
 
   build-and-release-windows:
     runs-on: windows-latest
-     steps:
+
+    steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
