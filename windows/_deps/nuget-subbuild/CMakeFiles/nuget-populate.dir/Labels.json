@@ -1,0 +1,49 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/nuget-populate"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/nuget-populate.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/nuget-populate-complete.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test.rule"
+		},
+		{
+			"file" : "/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"nuget-populate"
+		],
+		"name" : "nuget-populate"
+	}
+}

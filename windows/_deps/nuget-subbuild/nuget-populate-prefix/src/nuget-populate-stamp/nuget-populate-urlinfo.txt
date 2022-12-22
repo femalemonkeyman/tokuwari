@@ -1,0 +1,12 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=url
+command=/usr/bin/cmake;-P;/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/download-nuget-populate.cmake;COMMAND;/usr/bin/cmake;-P;/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/verify-nuget-populate.cmake
+source_dir=/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-src
+work_dir=/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps
+url(s)=https://dist.nuget.org/win-x86-commandline/v6.0.0/nuget.exe
+hash=SHA256=04eb6c4fe4213907e2773e1be1bbbd730e9a655a3c9c58387ce8d4a714a5b9e1
+no_extract=YES
+

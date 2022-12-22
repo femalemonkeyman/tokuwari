@@ -1,0 +1,15 @@
+# Target labels
+ nuget-populate
+# Source files and their labels
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/nuget-populate
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/nuget-populate.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/nuget-populate-complete.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test.rule
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update.rule
