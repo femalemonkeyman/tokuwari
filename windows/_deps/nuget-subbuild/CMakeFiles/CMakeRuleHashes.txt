@@ -1,0 +1,12 @@
+# Hashes of file build rules.
+803f6a4d56d9a80649777e5f62f24512 CMakeFiles/nuget-populate
+b791a63cb70411aed6b70d6799487fa3 CMakeFiles/nuget-populate-complete
+53bc96c1184df778540cce5d52980cb8 nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build
+d1585b13c50da588942efa09d09662ac nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure
+466b0eed9c8c721a0e6a57737f8d22e9 nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile
+b3f73cc51dea7919c45c7456b93484c1 nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download
+900b1d036846e9330dbde275f8e6b0b7 nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install
+5b1611fddc987721139cf3377ea96aa6 nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir
+02cc572c41bd9555f47627f3460dfca6 nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch
+766a8d3a529a3f34b3b31c4c4c83fba2 nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test
+00649fa3839fd860480acb9533f79173 nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update

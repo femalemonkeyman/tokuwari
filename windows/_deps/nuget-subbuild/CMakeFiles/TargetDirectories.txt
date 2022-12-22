@@ -1,0 +1,3 @@
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/nuget-populate.dir
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/edit_cache.dir
+/mnt/Storage/HomeStuff/Documents/anicross/windows/_deps/nuget-subbuild/CMakeFiles/rebuild_cache.dir
