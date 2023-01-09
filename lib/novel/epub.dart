@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:anicross/search_button.dart';
 import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xml/xml.dart';
+
+import 'novel_grid.dart';
 
 class Epub {
   final Archive archive;
@@ -203,6 +206,56 @@ class NovelReader extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class NovelPage extends StatefulWidget {
+  const NovelPage({Key? key}) : super(key: key);
+
+  @override
+  State createState() => NovelPageState();
+}
+
+class NovelPageState extends State {
+  Directory? directory;
+  @override
+  Widget build(context) {
+    return ListView(
+      controller: ScrollController(),
+      primary: false,
+      shrinkWrap: true,
+      children: [
+        const Center(
+          child: SearchButton(
+            text: "local novels",
+          ),
+        ),
+        if (Hive.box("settings").get("novels") == null)
+          StreamBuilder(
+              stream: importBooks(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  //print(snapshot.data);
+                  setState(() {});
+                  return Text(snapshot.data.toString());
+                }
+                return const CircularProgressIndicator();
+              }
+              //child: const Text("Please select a directory"),
+              ),
+        if (Hive.box("settings").get("novels") != null)
+          NovelGrid(
+            data: Hive.box("settings").get("novels"),
+          ),
+        IconButton(
+          onPressed: () {
+            Hive.box("settings").delete("novels");
+            setState(() {});
+          },
+          icon: const Icon(Icons.refresh),
+        )
+      ],
     );
   }
 }

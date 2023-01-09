@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 
-import 'anigrid.dart';
-import 'anisearch.dart';
+import '../search_button.dart';
+import 'manga_grid.dart';
 
 const mangadex = "https://api.mangadex.org/";
 
@@ -83,9 +83,8 @@ class MangaPage extends StatelessWidget {
           future: dexList(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return AniGrid(
+              return MangaGrid(
                 data: snapshot.data['data'],
-                place: "mangadex",
               );
             }
             return const Center(
@@ -204,11 +203,13 @@ class MangaReader extends StatelessWidget {
                         return InteractiveViewer(
                           child: Stack(
                             children: [
-                              CachedNetworkImage(
-                                placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator(),
+                              Center(
+                                child: CachedNetworkImage(
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  imageUrl: snapshot.data?[index],
                                 ),
-                                imageUrl: snapshot.data?[index],
                               ),
                             ],
                           ),

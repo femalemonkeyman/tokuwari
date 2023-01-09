@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:universal_io/io.dart';
-import 'anigrid.dart';
-import 'anisearch.dart';
+
+import '../search_button.dart';
+import 'anime_grid.dart';
 
 final ValueNotifier<GraphQLClient> client = ValueNotifier(
   GraphQLClient(
@@ -60,12 +61,15 @@ query media(\$search: String!)
       hasNextPage
     }
   	media(search: \$search, type: ANIME) {
-  	  title {
-  	    romaji
-  	    english
-  	    native
-  	  }
-      averageScore
+  	    id
+        title {
+          romaji
+          english
+          native
+        }
+        type
+        chapters
+        averageScore
         episodes
         description
         coverImage{
@@ -78,17 +82,17 @@ query media(\$search: String!)
   	}
   }
 }
-
 """;
 
 aniInfo(id) async {
-  String link = "https://api.consumet.org/meta/anilist/info/$id";
+  String link = "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
   var json = await Dio().get(link);
   return json.data;
 }
 
 episodeInfo(name) async {
-  String link = "https://api.consumet.org/meta/anilist/watch/$name";
+  String link =
+      "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
   var json = await Dio().get(link);
   return json.data;
 }
@@ -119,10 +123,8 @@ class AniPage extends StatelessWidget {
                 print(result.exception);
               }
               if (result.isNotLoading) {
-                var data = result.data!['Page']['media'];
-                return AniGrid(
-                  data: data,
-                  place: "anilist",
+                return AnimeGrid(
+                  data: result.data!['Page']['media'],
                 );
               }
               return const Center(
@@ -172,9 +174,8 @@ class AniViewerState extends State<AniViewer> {
     } else {
       player = Player(
         id: 1,
-        registerTexture: true,
-        commandlineArguments: Platform.isLinux ? ["--demux=ffmpeg"] : [],
       );
+      print(widget.server['url']);
       player.open(
         Media.network(
           widget.server['url'],
@@ -185,23 +186,18 @@ class AniViewerState extends State<AniViewer> {
 
   @override
   Widget build(context) {
-    return Scaffold(
-      body: GestureDetector(
-        child: !isPhone
-            ? Video(
-                player: player,
-                showFullscreenButton: true,
-              )
-            : BetterPlayer(
-                controller: player,
-              ),
-      ),
-    );
+    return !isPhone
+        ? Video(
+            player: player,
+          )
+        : BetterPlayer(
+            controller: player,
+          );
   }
 
   @override
   void dispose() {
-    player.dispose();
+    player.stop();
     super.dispose();
   }
 }
@@ -226,19 +222,29 @@ class AniEpisodes extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) {
                       return Scaffold(
-                        body: FutureBuilder<dynamic>(
-                          future: episodeInfo(
-                              snapshot.data['episodes'][index]['id']),
-                          builder: (context, info) {
-                            if (info.hasData) {
-                              return AniViewer(
-                                server: info.data['sources'][
-                                    info.data['sources'].indexWhere((source) =>
-                                        source['quality'] == "1080p")],
-                              );
+                        body: RawKeyboardListener(
+                          autofocus: true,
+                          focusNode: FocusNode(),
+                          onKey: (value) {
+                            if (value.isKeyPressed(LogicalKeyboardKey.escape)) {
+                              Navigator.pop(context);
                             }
-                            return const CircularProgressIndicator();
                           },
+                          child: FutureBuilder<dynamic>(
+                            future: episodeInfo(
+                                snapshot.data['episodes'][index]['id']),
+                            builder: (context, info) {
+                              if (info.hasData) {
+                                return AniViewer(
+                                  server: info.data['sources'][info
+                                      .data['sources']
+                                      .indexWhere((source) =>
+                                          source['quality'] == "1080p")],
+                                );
+                              }
+                              return const CircularProgressIndicator();
+                            },
+                          ),
                         ),
                       );
                     },
