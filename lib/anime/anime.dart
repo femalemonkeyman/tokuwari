@@ -1,10 +1,12 @@
 import 'package:better_player/better_player.dart';
-import 'package:dart_vlc/dart_vlc.dart';
+//import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:universal_io/io.dart';
+import 'package:media_kit_core_video/media_kit_core_video.dart';
 
 import '../search_button.dart';
 import 'anime_grid.dart';
@@ -150,7 +152,9 @@ class AniViewer extends StatefulWidget {
 }
 
 class AniViewerState extends State<AniViewer> {
-  dynamic player;
+  Player desktopPlayer = Player();
+  VideoController? controller;
+  BetterPlayerController? phonePlayer;
   bool isPhone = Platform.isAndroid || Platform.isIOS;
 
   @override
@@ -163,7 +167,7 @@ class AniViewerState extends State<AniViewer> {
         headers: {"User-Agent": "Death"},
         videoFormat: BetterPlayerVideoFormat.hls,
       );
-      player = BetterPlayerController(
+      phonePlayer = BetterPlayerController(
         const BetterPlayerConfiguration(
             deviceOrientationsOnFullScreen: [DeviceOrientation.landscapeLeft],
             fullScreenByDefault: true,
@@ -172,13 +176,21 @@ class AniViewerState extends State<AniViewer> {
         betterPlayerDataSource: source,
       );
     } else {
-      player = Player(
-        id: 1,
-      );
       print(widget.server['url']);
+      Player player = Player(
+          configuration: const PlayerConfiguration(osd: 1, texture: false));
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+        controller = await VideoController.create(player.handle);
+        setState(() {});
+      });
+
       player.open(
-        Media.network(
-          widget.server['url'],
+        Playlist(
+          [
+            Media(
+              widget.server['url'],
+            ),
+          ],
         ),
       );
     }
@@ -188,16 +200,20 @@ class AniViewerState extends State<AniViewer> {
   Widget build(context) {
     return !isPhone
         ? Video(
-            player: player,
+            controller: controller,
           )
         : BetterPlayer(
-            controller: player,
+            controller: phonePlayer!,
           );
   }
 
   @override
   void dispose() {
-    player.stop();
+    Future.microtask(() async {
+      debugPrint('Disposing [Player] and [VideoController]...');
+      await controller!.dispose();
+      await desktopPlayer.dispose();
+    });
     super.dispose();
   }
 }

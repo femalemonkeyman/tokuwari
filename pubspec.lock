@@ -190,10 +190,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: ecf52f978e72763ede54a93271318bbbca65a2be2d9ff658ec8ca4ea3a23d7ef
+      sha256: d090ae03df98b0247b82e5928f44d1b959867049d18d73635e2e0bc3f49542b9
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.4"
+    version: "5.2.5"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -336,18 +336,18 @@ packages:
     dependency: transitive
     description:
       name: graphql
-      sha256: "68bb34f7d239b7c9530c37de754ccb4b9e19927d838fd103da297444c11dad62"
+      sha256: b061201579040e9548cec2bae17bbdea0ab30666cb4e7ba48b9675f14d982199
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.2"
+    version: "5.1.3"
   graphql_flutter:
     dependency: "direct main"
     description:
       name: graphql_flutter
-      sha256: "5c9330a0cd0651cb9f57f35c7d11d5ea8b547db227704befca72c3602186e9f0"
+      sha256: "06059ac9e8417c71582f05e28a59b1416d43959d34a6a0d9565341e3a362e117"
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.1"
+    version: "5.1.2"
   hive:
     dependency: "direct main"
     description:
@@ -392,10 +392,10 @@ packages:
     dependency: transitive
     description:
       name: js
-      sha256: "5528c2f391ededb7775ec1daa69e65a2d61276f7552de2b5f7b8d34ee9fd4ab7"
+      sha256: "323b7c70073cccf6b9b8d8b334be418a3293cfb612a560dc2737160a37bf61bd"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.5"
+    version: "0.6.6"
   lints:
     dependency: transitive
     description:
@@ -412,6 +412,24 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  media_kit:
+    dependency: "direct main"
+    description:
+      path: media_kit
+      ref: main
+      resolved-ref: "7f1bcc1f503b21ac49c75271d43ef12e4948bdb3"
+      url: "https://github.com/alexmercerind/media_kit.git"
+    source: git
+    version: "0.0.1"
+  media_kit_core_video:
+    dependency: "direct main"
+    description:
+      path: media_kit_core_video
+      ref: main
+      resolved-ref: "7f1bcc1f503b21ac49c75271d43ef12e4948bdb3"
+      url: "https://github.com/alexmercerind/media_kit.git"
+    source: git
+    version: "0.0.1"
   meta:
     dependency: transitive
     description:
@@ -496,10 +514,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_macos
-      sha256: "2a97e7fbb7ae9dcd0dfc1220a78e9ec3e71da691912e617e8715ff2a13086ae8"
+      sha256: cd57cb98a30ce9d12fdd1896d9d3b0517ce689f942de6ccd2708cd39b3d18a7c
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.6"
+    version: "2.0.7"
   path_provider_platform_interface:
     dependency: transitive
     description:
@@ -596,14 +614,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.6.2"
-  preload_page_view:
-    dependency: "direct main"
-    description:
-      name: preload_page_view
-      sha256: "698e4d6eb1fa3489768c9d2d8c8322ed686015af633d04cc537c57e38566834a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.6"
   process:
     dependency: transitive
     description:
@@ -628,6 +638,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.27.7"
+  safe_local_storage:
+    dependency: transitive
+    description:
+      name: safe_local_storage
+      sha256: "7ca14be87040e6badfcdb9c71e963846c4e7d827dbc9f62cab7496497352f8d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -645,18 +663,18 @@ packages:
     dependency: transitive
     description:
       name: sqflite
-      sha256: "2b1697c7b78576fdc722c358f16f62171bd56e92dc13422d9e44be3fc446c276"
+      sha256: "067ab48dbc66bae05e18073a604443baa35957101bd3905b94f65e764c6d0688"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.3"
   sqflite_common:
     dependency: transitive
     description:
       name: sqflite_common
-      sha256: "0c21a187d645aa65da5be6997c0c713eed61e049158870ae2de157e6897067ab"
+      sha256: b2ed22d1d62c944ec0dac5cc687ae99cb3331c3ebe146d726ed24704634b5ccd
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0+2"
+    version: "2.4.1"
   stack_trace:
     dependency: transitive
     description:
@@ -693,10 +711,10 @@ packages:
     dependency: transitive
     description:
       name: synchronized
-      sha256: "7b530acd9cb7c71b0019a1e7fa22c4105e675557a4400b6a401c71c5e0ade1ac"
+      sha256: "33b31b6beb98100bf9add464a36a8dd03eb10c7a8cf15aeec535e9b054aaf04b"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0+3"
+    version: "3.0.1"
   term_glyph:
     dependency: transitive
     description:
@@ -721,6 +739,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.4"
+  uri_parser:
+    dependency: transitive
+    description:
+      name: uri_parser
+      sha256: a41b242c319cdc30958963b362ad2f9c63ede569bdab106c7a926638963d53e7
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   uuid:
     dependency: transitive
     description:
@@ -805,10 +831,10 @@ packages:
     dependency: transitive
     description:
       name: xdg_directories
-      sha256: "11541eedefbcaec9de35aa82650b695297ce668662bbd6e3911a7fabdbde589f"
+      sha256: bd512f03919aac5f1313eb8249f223bacf4927031bf60b02601f81f687689e86
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0+2"
+    version: "0.2.0+3"
   xml:
     dependency: "direct main"
     description:
@@ -818,5 +844,5 @@ packages:
     source: hosted
     version: "6.2.2"
 sdks:
-  dart: ">=2.18.0 <4.0.0"
+  dart: ">=2.19.0-345.0.dev <4.0.0"
   flutter: ">=3.3.0"

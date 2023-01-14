@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_io/io.dart';
 
-import 'epub.dart';
+import 'novel.dart';
 
 class NovelGrid extends StatefulWidget {
   final List data;

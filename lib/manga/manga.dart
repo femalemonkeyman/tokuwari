@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 
 import '../search_button.dart';
 import 'manga_grid.dart';
@@ -159,7 +158,7 @@ class MangaReader extends StatelessWidget {
   final List chapters;
   final int index;
   final bool reverse;
-  final PreloadPageController controller = PreloadPageController();
+  final PageController controller = PageController();
 
   MangaReader(
       {Key? key,
@@ -193,10 +192,11 @@ class MangaReader extends StatelessWidget {
                       }
                     },
                     focusNode: FocusNode(),
-                    child: PreloadPageView.builder(
+                    child: PageView.builder(
                       controller: controller,
+                      allowImplicitScrolling: true,
                       reverse: true,
-                      preloadPagesCount: 3,
+                      //preloadPagesCount: 3,
                       //scrollDirection: Axis.horizontal,
                       itemCount: snapshot.data?.length,
                       itemBuilder: (context, index) {

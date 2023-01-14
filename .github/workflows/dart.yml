@@ -18,16 +18,10 @@ jobs:
         run: flutter pub get
       - name: Build artifacts
         run: flutter build linux --release -v
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: Anicross-linux.zip
-          directory: build/linux/x64/release/bundle
       - uses: actions/upload-artifact@v3
         with:
           name: Linux
-          path: build/linux/x64/release/bundle/Anicross-linux.zip
+          path: build/linux/x64/release/bundle
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -41,16 +35,10 @@ jobs:
         run: flutter pub get
       - name: Build artifacts
         run: flutter build windows --release
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: Anicross-windows.zip
-          directory: build/windows/runner/Release
       - uses: actions/upload-artifact@v3
         with:
           name: Windows
-          path: build/windows/runner/Release/Anicross-windows.zip
+          path: build/windows/runner/Release
 
   build-and-release-android:
     runs-on: windows-latest
@@ -89,13 +77,7 @@ jobs:
         run: flutter pub get
       - name: Build artifacts
         run: flutter build macos --release
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          filename: Anicross-macos.zip
-          directory: build/macos/Build/Products/Release
       - uses: actions/upload-artifact@v3
         with:
           name: MacOS
-          path: build/macos/Build/Products/Release/Anicross-macos.zip
+          path: build/macos/Build/Products/Release

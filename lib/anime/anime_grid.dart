@@ -1,14 +1,15 @@
+import 'package:anicross/anime/anime.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_io/io.dart';
-import 'anime.dart';
+import '../block.dart';
 
 class AnimeGrid extends StatefulWidget {
   final List data;
   const AnimeGrid({
-    Key? key,
     required this.data,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -25,141 +26,34 @@ class AnimeGridState extends State<AnimeGrid>
     super.build(context);
     return GridView.builder(
       controller: ScrollController(),
-      //controller: ScrollController(),
       itemCount: widget.data.length,
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: Platform.isAndroid && !kIsWeb ? 2 : 4,
-          crossAxisSpacing: 7),
+        mainAxisSpacing: 3,
+        childAspectRatio: 0.70,
+        crossAxisCount: Platform.isAndroid && !kIsWeb ? 2 : 3,
+      ),
       itemBuilder: (context, index) {
         return Block(
-          id: widget.data[index]['id'].toString(),
-          title: widget.data[index]['title']['romaji'],
-          image: widget.data[index]['coverImage']['extraLarge'],
+          mediaList: AniEpisodes(
+            id: widget.data[index]['id'].toString(),
+          ),
+          title: Text(
+            "${widget.data[index]['title']['romaji']}",
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
+          image: CachedNetworkImage(
+            fit: BoxFit.contain,
+            imageUrl: widget.data[index]['coverImage']['extraLarge'],
+            //width: MediaQuery.of(context).size.width / 2,
+            //height: MediaQuery.of(context).size.width / 5,
+          ),
           count: widget.data[index]['episodes'],
           score: widget.data[index]['averageScore'],
           description: widget.data[index]['description'] ?? "",
         );
       },
-    );
-  }
-}
-
-class Block extends StatelessWidget {
-  final String title;
-  final dynamic image;
-  final int? count;
-  final int? score;
-  final String description;
-  final String id;
-
-  const Block({
-    Key? key,
-    required this.title,
-    this.image,
-    this.count,
-    this.score,
-    required this.description,
-    this.id = "",
-  }) : super(key: key);
-  @override
-  Widget build(context) {
-    return GestureDetector(
-      onTap: () {
-        {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return Scaffold(
-                  body: SingleChildScrollView(
-                    child: SafeArea(
-                      child: Column(
-                        children: [
-                          const Align(
-                            alignment: Alignment.topLeft,
-                            child: BackButton(),
-                          ),
-                          Row(
-                            children: [
-                              const Spacer(),
-                              Flexible(
-                                child: Text(title),
-                              ),
-                              const Spacer(),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 20, bottom: 40),
-                                  child: CachedNetworkImage(
-                                    width:
-                                        MediaQuery.of(context).size.width / 2,
-                                    height:
-                                        MediaQuery.of(context).size.width / 2.5,
-                                    imageUrl: image,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(40),
-                            child: Text(
-                              description,
-                            ),
-                          ),
-                          AniEpisodes(
-                            id: id,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
-        }
-      },
-      child: Card(
-        borderOnForeground: false,
-        color: Colors.black,
-        shadowColor: Colors.purple,
-        elevation: 10,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 50,
-              child: CachedNetworkImage(
-                imageUrl: image,
-              ),
-            ),
-            const Spacer(),
-            Text(
-              title,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                const Spacer(),
-                Text("Episodes: ${count ?? "n/a"}"),
-                const Spacer(
-                  flex: 2,
-                ),
-                if (score != null)
-                  Text(
-                    "Score: $score",
-                  ),
-                const Spacer(),
-              ],
-            ),
-            const Spacer(),
-          ],
-        ),
-      ),
     );
   }
 }

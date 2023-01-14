@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'anime/anime.dart';
 import 'manga/manga.dart';
-import 'novel/epub.dart';
+import 'novel/novel.dart';
 
 void main() async {
   DartVLC.initialize();
@@ -18,7 +18,7 @@ void main() async {
           dividerColor: Colors.transparent,
           brightness: Brightness.dark,
           primaryColor: Colors.purple,
-          scaffoldBackgroundColor: Colors.black,
+          scaffoldBackgroundColor: Color.fromARGB(200, 0, 0, 20),
           colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
               .copyWith(
                   background: Colors.blueAccent, brightness: Brightness.dark),
