@@ -87,14 +87,15 @@ query media(\$search: String!)
 """;
 
 aniInfo(id) async {
-  String link = "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
+  String link =
+      "https://api.consumet.org/meta/anilist/info/$id?provider=gogoanime";
   var json = await Dio().get(link);
   return json.data;
 }
 
 episodeInfo(name) async {
   String link =
-      "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
+      "https://api.consumet.org/meta/anilist/watch/$name?provider=gogoanime";
   var json = await Dio().get(link);
   return json.data;
 }
