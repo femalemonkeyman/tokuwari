@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Block extends StatelessWidget {
-  final Text title;
+  final String title;
   final Widget image;
   final int? count;
   final int? score;
@@ -38,18 +38,23 @@ class Block extends StatelessWidget {
                           Row(
                             children: [
                               const Spacer(),
-                              Flexible(child: title),
+                              Flexible(
+                                child: Text(title),
+                              ),
                               const Spacer(),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 20, bottom: 40),
-                                  child: image,
+                              Flexible(
+                                child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 20, bottom: 40),
+                                    child: image,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
+
                           Padding(
                             padding: const EdgeInsets.all(40),
                             child: Text(
@@ -83,7 +88,7 @@ class Block extends StatelessWidget {
             margin: const EdgeInsets.only(left: 12, right: 12),
             child: Column(
               children: [
-                title,
+                Text(title),
                 Row(
                   children: [
                     const Spacer(

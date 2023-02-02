@@ -1,12 +1,11 @@
 import 'package:better_player/better_player.dart';
-//import 'package:dart_vlc/dart_vlc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:universal_io/io.dart';
-import 'package:media_kit_core_video/media_kit_core_video.dart';
 
 import '../search_button.dart';
 import 'anime_grid.dart';
@@ -87,16 +86,17 @@ query media(\$search: String!)
 """;
 
 aniInfo(id) async {
-  String link =
-      "https://api.consumet.org/meta/anilist/info/$id?provider=gogoanime";
+  String link = "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
   var json = await Dio().get(link);
+  //print(json.data);
   return json.data;
 }
 
 episodeInfo(name) async {
   String link =
-      "https://api.consumet.org/meta/anilist/watch/$name?provider=gogoanime";
+      "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
   var json = await Dio().get(link);
+
   return json.data;
 }
 
@@ -142,10 +142,12 @@ class AniPage extends StatelessWidget {
 }
 
 class AniViewer extends StatefulWidget {
-  final Map server;
+  final List sources;
+  final List subtitles;
   const AniViewer({
     super.key,
-    required this.server,
+    required this.sources,
+    this.subtitles = const [],
   });
 
   @override
@@ -153,7 +155,7 @@ class AniViewer extends StatefulWidget {
 }
 
 class AniViewerState extends State<AniViewer> {
-  Player desktopPlayer = Player();
+  Player? player;
   VideoController? controller;
   BetterPlayerController? phonePlayer;
   bool isPhone = Platform.isAndroid || Platform.isIOS;
@@ -161,35 +163,56 @@ class AniViewerState extends State<AniViewer> {
   @override
   void initState() {
     super.initState();
+    //print(widget.sources.first["url"]);
+    print(widget.subtitles);
+    List<String> subs = [];
+    for (final i in widget.subtitles) {
+      subs.add(i['url']);
+    }
     if (isPhone) {
       BetterPlayerDataSource source = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
-        widget.server['url'],
+        widget.sources.first['url'],
         headers: {"User-Agent": "Death"},
         videoFormat: BetterPlayerVideoFormat.hls,
+        subtitles: [
+          BetterPlayerSubtitlesSource(
+            urls: subs,
+          )
+        ],
       );
       phonePlayer = BetterPlayerController(
         const BetterPlayerConfiguration(
-            deviceOrientationsOnFullScreen: [DeviceOrientation.landscapeLeft],
-            fullScreenByDefault: true,
-            autoPlay: true,
-            allowedScreenSleep: false),
+          deviceOrientationsOnFullScreen: [
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight,
+          ],
+          fullScreenByDefault: true,
+          autoPlay: true,
+          aspectRatio: 16 / 9,
+          allowedScreenSleep: false,
+          fit: BoxFit.contain,
+        ),
         betterPlayerDataSource: source,
       );
+      SystemChrome.setPreferredOrientations(
+        [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ],
+      );
     } else {
-      print(widget.server['url']);
-      Player player = Player(
-          configuration: const PlayerConfiguration(osd: 1, texture: false));
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-        controller = await VideoController.create(player.handle);
+      print(widget.sources.first['url']);
+      player = Player(configuration: const PlayerConfiguration(osc: true));
+      Future.microtask(() async {
+        controller = await VideoController.create(player!.handle);
         setState(() {});
       });
-
-      player.open(
+      player!.open(
         Playlist(
           [
             Media(
-              widget.server['url'],
+              widget.sources.first['url'],
             ),
           ],
         ),
@@ -199,29 +222,39 @@ class AniViewerState extends State<AniViewer> {
 
   @override
   Widget build(context) {
-    return !isPhone
-        ? Video(
-            controller: controller,
-          )
-        : BetterPlayer(
-            controller: phonePlayer!,
-          );
+    if (Platform.isWindows || Platform.isLinux) {
+      return Video(
+        controller: controller,
+      );
+    } else {
+      return AspectRatio(
+        aspectRatio: 16 / 9,
+        child: BetterPlayer(
+          controller: phonePlayer!,
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
-    Future.microtask(() async {
-      debugPrint('Disposing [Player] and [VideoController]...');
-      await controller!.dispose();
-      await desktopPlayer.dispose();
-    });
+    if (Platform.isWindows) {
+      Future.microtask(() async {
+        debugPrint('Disposing [Player] and [VideoController]...');
+        await controller!.dispose();
+        await player!.dispose();
+      });
+    }
     super.dispose();
   }
 }
 
 class AniEpisodes extends StatelessWidget {
   final id;
-  const AniEpisodes({this.id, super.key});
+  const AniEpisodes({
+    this.id,
+    super.key,
+  });
 
   @override
   Widget build(context) {
@@ -233,7 +266,10 @@ class AniEpisodes extends StatelessWidget {
             shrinkWrap: true,
             itemCount: snapshot.data['episodes'].length,
             itemBuilder: ((context, index) {
-              return GestureDetector(
+              return ListTile(
+                title: Text(
+                  "Episode: ${snapshot.data['episodes'][index]['number']} - ${snapshot.data["episodes"][index]["title"]}",
+                ),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -253,13 +289,13 @@ class AniEpisodes extends StatelessWidget {
                             builder: (context, info) {
                               if (info.hasData) {
                                 return AniViewer(
-                                  server: info.data['sources'][info
-                                      .data['sources']
-                                      .indexWhere((source) =>
-                                          source['quality'] == "1080p")],
+                                  sources: info.data['sources'],
+                                  subtitles: info.data['subtitles'],
                                 );
                               }
-                              return const CircularProgressIndicator();
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
                             },
                           ),
                         ),
@@ -267,15 +303,59 @@ class AniEpisodes extends StatelessWidget {
                     },
                   ),
                 ),
-                child: Container(
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    border: Border(top: BorderSide(color: Colors.blueGrey)),
-                  ),
-                  child: Text(
-                      "Episode: ${snapshot.data['episodes'][index]['number']} ${snapshot.data["episodes"][index]["title"]}"),
-                ),
               );
+              // return DropdownButton(
+              //   hint: Container(
+              //     height: 40,
+              //     decoration: const BoxDecoration(
+              //         // border: Border(
+              //         //   top: BorderSide(color: Colors.blueGrey),
+              //         // ),
+              //         ),
+              //     child: Text(
+              //         "Episode: ${snapshot.data['episodes'][index]['number']} - ${snapshot.data["episodes"][index]["title"]}"),
+              //   ),
+              //   items: [
+              //     DropdownMenuItem(
+              //       child: SizedBox.shrink(),
+              //     )
+              //   ],
+              //   onChanged: (value) {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) {
+              //           return Scaffold(
+              //             body: RawKeyboardListener(
+              //               autofocus: true,
+              //               focusNode: FocusNode(),
+              //               onKey: (value) {
+              //                 if (value
+              //                     .isKeyPressed(LogicalKeyboardKey.escape)) {
+              //                   Navigator.pop(context);
+              //                 }
+              //               },
+              //               child: FutureBuilder<dynamic>(
+              //                 future: episodeInfo(
+              //                     snapshot.data['episodes'][index]['id']),
+              //                 builder: (context, info) {
+              //                   if (info.hasData) {
+              //                     return AniViewer(
+              //                       server: info.data['sources'],
+              //                     );
+              //                   }
+              //                   return const Center(
+              //                     child: CircularProgressIndicator(),
+              //                   );
+              //                 },
+              //               ),
+              //             ),
+              //           );
+              //         },
+              //       ),
+              //     );
+              //   },
+              // );
             }),
           );
         }

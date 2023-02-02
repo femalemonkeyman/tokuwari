@@ -38,11 +38,7 @@ class AnimeGridState extends State<AnimeGrid>
           mediaList: AniEpisodes(
             id: widget.data[index]['id'].toString(),
           ),
-          title: Text(
-            "${widget.data[index]['title']['romaji']}",
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
+          title: "${widget.data[index]['title']['romaji']}",
           image: CachedNetworkImage(
             fit: BoxFit.contain,
             imageUrl: widget.data[index]['coverImage']['extraLarge'],

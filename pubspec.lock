@@ -5,18 +5,18 @@ packages:
     dependency: "direct main"
     description:
       name: archive
-      sha256: ed7cc591a948744994714375caf9a2ce89e1d82e8243997c8a2994d57181c212
+      sha256: d6347d54a2d8028e0437e3c099f66fdb8ae02c4720c1e7534c9f24c10351f85d
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.5"
+    version: "3.3.6"
   args:
     dependency: transitive
     description:
       name: args
-      sha256: b003c3098049a51720352d219b0bb5f219b60fbfb68e7a4748139a06a5676515
+      sha256: "139d809800a412ebb26a3892da228b2d0ba36f0ef5d9a82166e5e52ec8d61611"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "2.3.2"
   async:
     dependency: transitive
     description:
@@ -25,21 +25,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
-  audio_video_progress_bar:
-    dependency: transitive
-    description:
-      name: audio_video_progress_bar
-      sha256: "7be62917604e19e3873e12c8025bbc6dbee5876e1fa4cd7772ea1d0eb0e88d99"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.11.0"
   better_player:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "91a9625524cdff448e0a9deb5047bcf20cc8dcf1"
-      url: "https://github.com/tintran-dev/betterplayer.git"
+      ref: new_fixes
+      resolved-ref: "5bd17a30dd1537ef8b0f0b415ef6e68e538c3d19"
+      url: "https://github.com/sha3rawi33/betterplayer/"
     source: git
     version: "0.0.83"
   cached_network_image:
@@ -138,22 +130,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
-  dart_vlc:
-    dependency: "direct main"
-    description:
-      name: dart_vlc
-      sha256: f93499b938fbb6ce9eb3fb0368878cd18eac4e18ed45956731a0d6e758d75a34
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.0"
-  dart_vlc_ffi:
-    dependency: transitive
-    description:
-      name: dart_vlc_ffi
-      sha256: "670d4b27296935e4e4b8d903d6833c222fc94133bbd3e9fa36d8a2e7751a63d0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0+1"
   dbus:
     dependency: transitive
     description:
@@ -247,14 +223,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.7"
-  flutter_riverpod:
-    dependency: "direct main"
-    description:
-      name: flutter_riverpod
-      sha256: "0c997763ce06359ee4686553b74def84062e9d6929ac63f61fa02465c1f8e32c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.3"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -416,17 +384,35 @@ packages:
     dependency: "direct main"
     description:
       path: media_kit
-      ref: main
-      resolved-ref: "7f1bcc1f503b21ac49c75271d43ef12e4948bdb3"
+      ref: linux-video-support
+      resolved-ref: bec9c80778f4520061aa03c8fefd6df6a488df12
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.1"
-  media_kit_core_video:
+  media_kit_libs_linux:
     dependency: "direct main"
     description:
-      path: media_kit_core_video
-      ref: main
-      resolved-ref: "7f1bcc1f503b21ac49c75271d43ef12e4948bdb3"
+      path: media_kit_libs_linux
+      ref: linux-video-support
+      resolved-ref: bec9c80778f4520061aa03c8fefd6df6a488df12
+      url: "https://github.com/alexmercerind/media_kit"
+    source: git
+    version: "1.0.0"
+  media_kit_libs_windows_video:
+    dependency: "direct main"
+    description:
+      path: media_kit_libs_windows_video
+      ref: linux-video-support
+      resolved-ref: bec9c80778f4520061aa03c8fefd6df6a488df12
+      url: "https://github.com/alexmercerind/media_kit"
+    source: git
+    version: "1.0.0"
+  media_kit_video:
+    dependency: "direct main"
+    description:
+      path: media_kit_video
+      ref: linux-video-support
+      resolved-ref: bec9c80778f4520061aa03c8fefd6df6a488df12
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.1"
@@ -482,10 +468,10 @@ packages:
     dependency: "direct main"
     description:
       name: path_provider
-      sha256: "050e8e85e4b7fecdf2bb3682c1c64c4887a183720c802d323de8a5fd76d372dd"
+      sha256: dcea5feb97d8abf90cab9e9030b497fb7c3cbf26b7a1fe9e3ef7dcb0a1ddec95
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.11"
+    version: "2.0.12"
   path_provider_android:
     dependency: transitive
     description:
@@ -494,14 +480,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.22"
-  path_provider_ios:
+  path_provider_foundation:
     dependency: transitive
     description:
-      name: path_provider_ios
-      sha256: "03d639406f5343478352433f00d3c4394d52dac8df3d847869c5e2333e0bbce8"
+      name: path_provider_foundation
+      sha256: "62a68e7e1c6c459f9289859e2fae58290c981ce21d1697faf54910fe1faa4c74"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.11"
+    version: "2.1.1"
   path_provider_linux:
     dependency: transitive
     description:
@@ -510,14 +496,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.7"
-  path_provider_macos:
-    dependency: transitive
-    description:
-      name: path_provider_macos
-      sha256: cd57cb98a30ce9d12fdd1896d9d3b0517ce689f942de6ccd2708cd39b3d18a7c
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.7"
   path_provider_platform_interface:
     dependency: transitive
     description:
@@ -622,14 +600,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
-  riverpod:
-    dependency: transitive
-    description:
-      name: riverpod
-      sha256: "0f43c64f1f79c2112c843305a879a746587fb7c1e388f1d4717737796756e2c4"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.3"
   rxdart:
     dependency: transitive
     description:
@@ -663,34 +633,18 @@ packages:
     dependency: transitive
     description:
       name: sqflite
-      sha256: "067ab48dbc66bae05e18073a604443baa35957101bd3905b94f65e764c6d0688"
+      sha256: "78324387dc81df14f78df06019175a86a2ee0437624166c382e145d0a7fd9a4f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.3"
+    version: "2.2.4+1"
   sqflite_common:
     dependency: transitive
     description:
       name: sqflite_common
-      sha256: b2ed22d1d62c944ec0dac5cc687ae99cb3331c3ebe146d726ed24704634b5ccd
+      sha256: bfd6973aaeeb93475bc0d875ac9aefddf7965ef22ce09790eb963992ffc5183f
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
-  stack_trace:
-    dependency: transitive
-    description:
-      name: stack_trace
-      sha256: c3c7d8edb15bee7f0f74debd4b9c5f3c2ea86766fe4178eb2a18eb30a0bdaed5
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.11.0"
-  state_notifier:
-    dependency: transitive
-    description:
-      name: state_notifier
-      sha256: "8fe42610f179b843b12371e40db58c9444f8757f8b69d181c97e50787caed289"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.2+1"
+    version: "2.4.2+2"
   stream_channel:
     dependency: transitive
     description:

@@ -1,35 +1,31 @@
-import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'anime/anime.dart';
 import 'manga/manga.dart';
 import 'novel/novel.dart';
 
 void main() async {
-  DartVLC.initialize();
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter("anisettings");
   Hive.openBox("settings");
   runApp(
-    ProviderScope(
-      child: MaterialApp(
-        theme: ThemeData(
-          dividerColor: Colors.transparent,
+    MaterialApp(
+      theme: ThemeData(
+        dividerColor: Colors.transparent,
+        brightness: Brightness.dark,
+        primaryColor: Colors.purple,
+        scaffoldBackgroundColor: const Color.fromARGB(200, 0, 0, 20),
+        colorScheme:
+            ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
+          background: Colors.blueAccent,
           brightness: Brightness.dark,
-          primaryColor: Colors.purple,
-          scaffoldBackgroundColor: Color.fromARGB(200, 0, 0, 20),
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
-              .copyWith(
-                  background: Colors.blueAccent, brightness: Brightness.dark),
-          /* dark theme settings */
         ),
-        debugShowCheckedModeBanner: false,
-        routes: {
-          "Dashboard": (context) => const AniNav(),
-        },
-        initialRoute: 'Dashboard',
       ),
+      debugShowCheckedModeBanner: false,
+      routes: {
+        "Dashboard": (context) => const AniNav(),
+      },
+      initialRoute: 'Dashboard',
     ),
   );
 }
