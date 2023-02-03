@@ -54,7 +54,6 @@ class Block extends StatelessWidget {
                               ),
                             ],
                           ),
-
                           Padding(
                             padding: const EdgeInsets.all(40),
                             child: Text(
@@ -62,9 +61,6 @@ class Block extends StatelessWidget {
                             ),
                           ),
                           mediaList,
-                          // AniEpisodes(
-                          //   id: id,
-                          // ),
                         ],
                       ),
                     ),
@@ -88,7 +84,11 @@ class Block extends StatelessWidget {
             margin: const EdgeInsets.only(left: 12, right: 12),
             child: Column(
               children: [
-                Text(title),
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 Row(
                   children: [
                     const Spacer(
@@ -97,7 +97,10 @@ class Block extends StatelessWidget {
                     if (count != null)
                       Flexible(
                         flex: 4,
-                        child: Text("Episodes: ${count ?? "n/a"}"),
+                        child: Text(
+                          "Epi: ${count ?? "n/a"}",
+                          textScaleFactor: 0.8,
+                        ),
                       ),
                     const Spacer(
                       flex: 1,
@@ -107,6 +110,7 @@ class Block extends StatelessWidget {
                         flex: 4,
                         child: Text(
                           "Score: $score",
+                          textScaleFactor: 0.8,
                         ),
                       ),
                     const Spacer(

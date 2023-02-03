@@ -175,11 +175,15 @@ class AniViewerState extends State<AniViewer> {
         widget.sources.first['url'],
         headers: {"User-Agent": "Death"},
         videoFormat: BetterPlayerVideoFormat.hls,
-        subtitles: [
-          BetterPlayerSubtitlesSource(
-            urls: subs,
-          )
-        ],
+        subtitles: List.generate(widget.subtitles.length - 1, (index) {
+          return BetterPlayerSubtitlesSource(
+            selectedByDefault:
+                (widget.subtitles[index]['lang'] == "English") ? true : false,
+            type: BetterPlayerSubtitlesSourceType.network,
+            name: widget.subtitles[index]['lang'],
+            urls: [widget.subtitles[index]['url']],
+          );
+        }),
       );
       phonePlayer = BetterPlayerController(
         const BetterPlayerConfiguration(
@@ -202,8 +206,7 @@ class AniViewerState extends State<AniViewer> {
         ],
       );
     } else {
-      print(widget.sources.first['url']);
-      player = Player(configuration: const PlayerConfiguration(osc: true));
+      player = Player(configuration: const PlayerConfiguration());
       Future.microtask(() async {
         controller = await VideoController.create(player!.handle);
         setState(() {});
