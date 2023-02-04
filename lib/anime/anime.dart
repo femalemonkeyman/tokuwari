@@ -1,13 +1,9 @@
-import 'package:better_player/better_player.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
-import 'package:universal_io/io.dart';
-
 import '../search_button.dart';
+import 'anime_videos.dart';
 import 'anime_grid.dart';
 
 final ValueNotifier<GraphQLClient> client = ValueNotifier(
@@ -88,7 +84,6 @@ query media(\$search: String!)
 aniInfo(id) async {
   String link = "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
   var json = await Dio().get(link);
-  //print(json.data);
   return json.data;
 }
 
@@ -123,7 +118,7 @@ class AniPage extends StatelessWidget {
             ),
             builder: (result, {refetch, fetchMore}) {
               if (result.hasException) {
-                print(result.exception);
+                debugPrint(result.exception.toString());
               }
               if (result.isNotLoading) {
                 return AnimeGrid(
@@ -138,117 +133,6 @@ class AniPage extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class AniViewer extends StatefulWidget {
-  final List sources;
-  final List subtitles;
-  const AniViewer({
-    super.key,
-    required this.sources,
-    this.subtitles = const [],
-  });
-
-  @override
-  State<StatefulWidget> createState() => AniViewerState();
-}
-
-class AniViewerState extends State<AniViewer> {
-  Player? player;
-  VideoController? controller;
-  BetterPlayerController? phonePlayer;
-  bool isPhone = Platform.isAndroid || Platform.isIOS;
-
-  @override
-  void initState() {
-    super.initState();
-    //print(widget.sources.first["url"]);
-    print(widget.subtitles);
-    List<String> subs = [];
-    for (final i in widget.subtitles) {
-      subs.add(i['url']);
-    }
-    if (isPhone) {
-      BetterPlayerDataSource source = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        widget.sources.first['url'],
-        headers: {"User-Agent": "Death"},
-        videoFormat: BetterPlayerVideoFormat.hls,
-        subtitles: List.generate(widget.subtitles.length - 1, (index) {
-          return BetterPlayerSubtitlesSource(
-            selectedByDefault:
-                (widget.subtitles[index]['lang'] == "English") ? true : false,
-            type: BetterPlayerSubtitlesSourceType.network,
-            name: widget.subtitles[index]['lang'],
-            urls: [widget.subtitles[index]['url']],
-          );
-        }),
-      );
-      phonePlayer = BetterPlayerController(
-        const BetterPlayerConfiguration(
-          deviceOrientationsOnFullScreen: [
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight,
-          ],
-          fullScreenByDefault: true,
-          autoPlay: true,
-          aspectRatio: 16 / 9,
-          allowedScreenSleep: false,
-          fit: BoxFit.contain,
-        ),
-        betterPlayerDataSource: source,
-      );
-      SystemChrome.setPreferredOrientations(
-        [
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ],
-      );
-    } else {
-      player = Player(configuration: const PlayerConfiguration());
-      Future.microtask(() async {
-        controller = await VideoController.create(player!.handle);
-        setState(() {});
-      });
-      player!.open(
-        Playlist(
-          [
-            Media(
-              widget.sources.first['url'],
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(context) {
-    if (Platform.isWindows || Platform.isLinux) {
-      return Video(
-        controller: controller,
-      );
-    } else {
-      return AspectRatio(
-        aspectRatio: 16 / 9,
-        child: BetterPlayer(
-          controller: phonePlayer!,
-        ),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    if (Platform.isWindows) {
-      Future.microtask(() async {
-        debugPrint('Disposing [Player] and [VideoController]...');
-        await controller!.dispose();
-        await player!.dispose();
-      });
-    }
-    super.dispose();
   }
 }
 

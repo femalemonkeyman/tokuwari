@@ -22,6 +22,19 @@ jobs:
         with:
           name: Linux
           path: build/linux/x64/release/bundle
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+         with:
+          type: 'zip'
+          filename: {{github.ref_name}}-linux.zip
+          directory: build/linux/x64/release/bundle
+      - name: Linux Release
+        uses: softprops/action-gh-release@v1
+          if: startsWith(github.ref, 'refs/tags/')
+          env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/linux/x64/release/bundle/{{github.ref_name}}-linux.zip
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -39,6 +52,22 @@ jobs:
         with:
           name: Windows
           path: build/windows/runner/Release
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: {{github.ref_name}}-windows.zip
+          directory: build/windows/runner/Release
+      - name: Windows Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/windows/runner/Release/{{github.ref_name}}-windows.zip
+
+
+
 
   build-and-release-android:
     runs-on: windows-latest
@@ -65,6 +94,14 @@ jobs:
           name: android
           path: build/app/outputs/apk/release/app-release.apk
 
+      - name: Android release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/app/outputs/apk/release/app-release.apk
+
   build-and-release-macos:
     runs-on: macos-latest
 
@@ -81,3 +118,18 @@ jobs:
         with:
           name: MacOS
           path: build/macos/Build/Products/Release
+
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+         type: 'zip'
+          filename: {{github.ref_name}}-macos.zip
+          directory: build/macos/Build/Products/Release
+      - name: macOS Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/macos/Build/Products/Release/MacRecoveryX-${{github.ref_name}}-macos.zip
+      

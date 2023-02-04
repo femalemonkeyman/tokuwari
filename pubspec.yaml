@@ -51,6 +51,8 @@ dependencies:
   #preload_page_view: ^0.1.6
   universal_io: 
   xml: 
+  audio_video_progress_bar: 
+  subtitle: 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
