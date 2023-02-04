@@ -24,7 +24,7 @@ jobs:
           path: build/linux/x64/release/bundle
       - name: Archive Release
         uses: thedoctor0/zip-release@master
-         with:
+        with:
           type: 'zip'
           filename: {{github.ref_name}}-linux.zip
           directory: build/linux/x64/release/bundle
