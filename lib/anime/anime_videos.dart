@@ -30,12 +30,6 @@ class AniViewerState extends State<AniViewer> {
   @override
   void initState() {
     super.initState();
-    //print(widget.sources.first["url"]);
-    print(widget.subtitles);
-    List<String> subs = [];
-    for (final i in widget.subtitles) {
-      subs.add(i['url']);
-    }
     if (isPhone) {
       BetterPlayerDataSource source = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
@@ -78,11 +72,12 @@ class AniViewerState extends State<AniViewer> {
         controller = await VideoController.create(player!.handle);
         setState(() {});
       });
+      print(widget.sources.last['url']);
       player!.open(
         Playlist(
           [
             Media(
-              widget.sources.first['url'],
+              widget.sources.last['url'],
             ),
           ],
         ),
@@ -101,7 +96,9 @@ class AniViewerState extends State<AniViewer> {
             right: MediaQuery.of(context).size.width / 3,
             bottom: MediaQuery.of(context).size.height / 10,
             child: AnimeSubtitles(
-              url: widget.subtitles.first['url'],
+              url: (widget.subtitles.isEmpty)
+                  ? null
+                  : widget.subtitles.first['url'],
               player: player!,
             ),
           ),
@@ -234,7 +231,7 @@ class VideoControlsState extends State<VideoControls> {
 }
 
 class AnimeSubtitles extends StatefulWidget {
-  final String url;
+  final String? url;
   final Player player;
 
   const AnimeSubtitles({required this.url, required this.player, super.key});
@@ -243,16 +240,18 @@ class AnimeSubtitles extends StatefulWidget {
 }
 
 class AnimeSubtitlesState extends State<AnimeSubtitles> {
-  late SubtitleController controller;
+  SubtitleController? controller;
 
   @override
   void initState() {
-    controller = SubtitleController(
-      provider: SubtitleProvider.fromNetwork(
-        Uri.parse(widget.url),
-      ),
-    );
-    controller.initial();
+    if (widget.url != null) {
+      controller = SubtitleController(
+        provider: SubtitleProvider.fromNetwork(
+          Uri.parse(widget.url!),
+        ),
+      );
+      controller!.initial();
+    }
     super.initState();
   }
 
@@ -262,8 +261,7 @@ class AnimeSubtitlesState extends State<AnimeSubtitles> {
       stream: widget.player.streams.position,
       builder: (context, AsyncSnapshot<Duration> snapshot) {
         if (snapshot.hasData) {
-          String? data = controller.durationSearch(snapshot.data!)?.data;
-          return (data != null)
+          return (controller != null)
               ? ConstraintsTransformBox(
                   constraintsTransform:
                       ConstraintsTransformBox.maxHeightUnconstrained,
@@ -272,7 +270,9 @@ class AnimeSubtitlesState extends State<AnimeSubtitles> {
                       color: Color.fromRGBO(0, 0, 0, 0.3),
                     ),
                     child: Text(
-                      controller.durationSearch(snapshot.data!)?.data ?? "",
+                      (controller != null)
+                          ? controller!.durationSearch(snapshot.data!)!.data
+                          : "",
                       textAlign: TextAlign.center,
                       textWidthBasis: TextWidthBasis.longestLine,
                       style: const TextStyle(

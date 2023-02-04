@@ -82,16 +82,14 @@ query media(\$search: String!)
 """;
 
 aniInfo(id) async {
-  String link = "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
+  String link = "https://api.consumet.org/meta/anilist/info/$id";
   var json = await Dio().get(link);
   return json.data;
 }
 
 episodeInfo(name) async {
-  String link =
-      "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
+  String link = "https://api.consumet.org/meta/anilist/watch/$name";
   var json = await Dio().get(link);
-
   return json.data;
 }
 
@@ -176,8 +174,8 @@ class AniEpisodes extends StatelessWidget {
                             builder: (context, info) {
                               if (info.hasData) {
                                 return AniViewer(
-                                  sources: info.data['sources'],
-                                  subtitles: info.data['subtitles'],
+                                  sources: info.data['sources'] ?? [],
+                                  //subtitles: info.data['subtitles'],
                                 );
                               }
                               return const Center(
