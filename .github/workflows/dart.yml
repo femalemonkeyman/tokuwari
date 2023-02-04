@@ -34,7 +34,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/linux/x64/release/bundle/{{github.ref_name}}-linux.zip
+          files: build/linux/x64/release/bundle/Release-{{github.ref_name}}-linux.zip
 
   build-and-release-windows:
     runs-on: windows-latest
@@ -64,7 +64,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/windows/runner/Release/{{github.ref_name}}-windows.zip
+          files: build/windows/runner/Release/Release-{{github.ref_name}}-windows.zip
 
 
 
@@ -131,5 +131,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/macos/Build/Products/Release/{{github.ref_name}}-macos.zip
+          files: build/macos/Build/Products/Release/Release-{{github.ref_name}}-macos.zip
       
