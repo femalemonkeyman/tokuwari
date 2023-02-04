@@ -97,9 +97,9 @@ class AniViewerState extends State<AniViewer> {
         children: [
           Video(controller: controller),
           Positioned(
-            left: 0, //MediaQuery.of(context).size.width / 0,
-            right: 0,
-            bottom: 0,
+            left: MediaQuery.of(context).size.width / 3,
+            right: MediaQuery.of(context).size.width / 3,
+            bottom: MediaQuery.of(context).size.height / 10,
             child: AnimeSubtitles(
               url: widget.subtitles.first['url'],
               player: player!,
@@ -262,18 +262,27 @@ class AnimeSubtitlesState extends State<AnimeSubtitles> {
       stream: widget.player.streams.position,
       builder: (context, AsyncSnapshot<Duration> snapshot) {
         if (snapshot.hasData) {
-          return SizedBox(
-            height: 150,
-            width: 800,
-            child: Text(
-              controller.durationSearch(snapshot.data!)?.data ?? "",
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold),
-            ),
-          );
+          String? data = controller.durationSearch(snapshot.data!)?.data;
+          return (data != null)
+              ? ConstraintsTransformBox(
+                  constraintsTransform:
+                      ConstraintsTransformBox.maxHeightUnconstrained,
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      color: Color.fromRGBO(0, 0, 0, 0.3),
+                    ),
+                    child: Text(
+                      controller.durationSearch(snapshot.data!)?.data ?? "",
+                      textAlign: TextAlign.center,
+                      textWidthBasis: TextWidthBasis.longestLine,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                      ),
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink();
         }
         return const SizedBox.shrink();
       },
