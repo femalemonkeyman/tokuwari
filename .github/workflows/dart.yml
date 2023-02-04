@@ -1,6 +1,9 @@
 name: Flutter CI
 
-on: push
+on:
+  push:
+    tags:
+      - v
 
 jobs:
   build-and-release-linux:
