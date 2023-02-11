@@ -17,13 +17,12 @@ dependencies:
     git:
       url: https://github.com/sha3rawi33/betterplayer/
       ref: new_fixes
-  cached_network_image: 
+  cached_network_image:
   dio: 
   file_picker: 
   flutter:
     sdk: flutter
   flutter_html: ^3.0.0-alpha.6
-  graphql_flutter: 
   hive: 
   hive_flutter: 
   media_kit:
@@ -54,6 +53,7 @@ dependencies:
   audio_video_progress_bar: 
   subtitle: 
   window_manager: 
+  graphql:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

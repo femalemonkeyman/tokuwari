@@ -3,7 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  connectivity_plus
   media_kit_video
   permission_handler_windows
   screen_retriever

@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:better_player/better_player.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:subtitle/subtitle.dart';
+import 'package:path_provider/path_provider.dart';
+//import 'package:subtitle/subtitle.dart';
 import 'package:universal_io/io.dart';
+import 'package:window_manager/window_manager.dart';
 
 class AniViewer extends StatefulWidget {
   final List sources;
@@ -70,9 +73,18 @@ class AniViewerState extends State<AniViewer> {
       player = Player(configuration: const PlayerConfiguration());
       Future.microtask(() async {
         controller = await VideoController.create(player!.handle);
+        Directory dir = await getTemporaryDirectory();
+        String path = "";
+        for (final i in widget.subtitles) {
+          print(i['lang']);
+          await Dio().download(i['url'], "${dir.path}/${i['lang']}subs.vtt");
+          if (i['lang'] == "English") {
+            path = "${dir.path}/${i['lang']}subs.vtt";
+          }
+        }
+        (player!.platform as libmpvPlayer).setProperty("sub-files", path);
         setState(() {});
       });
-      print(widget.sources.last['url']);
       player!.open(
         Playlist(
           [
@@ -91,17 +103,17 @@ class AniViewerState extends State<AniViewer> {
       return Stack(
         children: [
           Video(controller: controller),
-          Positioned(
-            left: MediaQuery.of(context).size.width / 3,
-            right: MediaQuery.of(context).size.width / 3,
-            bottom: MediaQuery.of(context).size.height / 10,
-            child: AnimeSubtitles(
-              url: (widget.subtitles.isEmpty)
-                  ? null
-                  : widget.subtitles.first['url'],
-              player: player!,
-            ),
-          ),
+          // Positioned(
+          //   left: MediaQuery.of(context).size.width / 3,
+          //   right: MediaQuery.of(context).size.width / 3,
+          //   bottom: MediaQuery.of(context).size.height / 10,
+          //   child: AnimeSubtitles(
+          //     url: (widget.subtitles.isEmpty)
+          //         ? null
+          //         : widget.subtitles.first['url'],
+          //     player: player!,
+          //   ),
+          // ),
           VideoControls(
             player: player!,
           ),
@@ -139,9 +151,14 @@ class VideoControls extends StatefulWidget {
 }
 
 class VideoControlsState extends State<VideoControls> {
+  bool fullscreen = false;
+
   @override
   void dispose() {
     timer!.cancel();
+    Future.microtask(
+      () => windowManager.setFullScreen(false),
+    );
     super.dispose();
   }
 
@@ -222,6 +239,28 @@ class VideoControlsState extends State<VideoControls> {
                   ),
                 ),
               ),
+              Positioned(
+                right: 20,
+                bottom: 0,
+                child: IconButton(
+                  iconSize: 50,
+                  onPressed: () async {
+                    if (fullscreen) {
+                      await windowManager.setFullScreen(false);
+                      fullscreen = false;
+                    } else {
+                      await windowManager.setFullScreen(true);
+                      fullscreen = true;
+                    }
+                    setState(() {});
+                  },
+                  icon: (fullscreen)
+                      ? const Icon(Icons.fullscreen_exit_outlined)
+                      : const Icon(
+                          Icons.fullscreen_outlined,
+                        ),
+                ),
+              ),
             ],
           ),
         ),
@@ -230,62 +269,63 @@ class VideoControlsState extends State<VideoControls> {
   }
 }
 
-class AnimeSubtitles extends StatefulWidget {
-  final String? url;
-  final Player player;
+// class AnimeSubtitles extends StatefulWidget {
+//   final String? url;
+//   final Player player;
 
-  const AnimeSubtitles({required this.url, required this.player, super.key});
-  @override
-  State createState() => AnimeSubtitlesState();
-}
+//   const AnimeSubtitles({required this.url, required this.player, super.key});
+//   @override
+//   State createState() => AnimeSubtitlesState();
+// }
 
-class AnimeSubtitlesState extends State<AnimeSubtitles> {
-  SubtitleController? controller;
+// class AnimeSubtitlesState extends State<AnimeSubtitles> {
+//   SubtitleController? controller;
 
-  @override
-  void initState() {
-    if (widget.url != null) {
-      controller = SubtitleController(
-        provider: SubtitleProvider.fromNetwork(
-          Uri.parse(widget.url!),
-        ),
-      );
-      controller!.initial();
-    }
-    super.initState();
-  }
+//   @override
+//   void initState() {
+//     if (widget.url != null) {
+//       controller = SubtitleController(
+//         provider: SubtitleProvider.fromNetwork(
+//           Uri.parse(widget.url!),
+//         ),
+//       );
+//       controller!.initial();
+//     }
+//     super.initState();
+//   }
 
-  @override
-  Widget build(context) {
-    return StreamBuilder(
-      stream: widget.player.streams.position,
-      builder: (context, AsyncSnapshot<Duration> snapshot) {
-        if (snapshot.hasData) {
-          return (controller != null)
-              ? ConstraintsTransformBox(
-                  constraintsTransform:
-                      ConstraintsTransformBox.maxHeightUnconstrained,
-                  child: DecoratedBox(
-                    decoration: const BoxDecoration(
-                      color: Color.fromRGBO(0, 0, 0, 0.3),
-                    ),
-                    child: Text(
-                      (controller != null)
-                          ? controller!.durationSearch(snapshot.data!)!.data
-                          : "",
-                      textAlign: TextAlign.center,
-                      textWidthBasis: TextWidthBasis.longestLine,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                      ),
-                    ),
-                  ),
-                )
-              : const SizedBox.shrink();
-        }
-        return const SizedBox.shrink();
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(context) {
+//     return StreamBuilder(
+//       stream: widget.player.streams.position,
+//       builder: (context, AsyncSnapshot<Duration> snapshot) {
+//         if (snapshot.hasData) {
+//           return (controller != null &&
+//                   controller!.durationSearch(snapshot.data!)?.data != null)
+//               ? ConstraintsTransformBox(
+//                   constraintsTransform:
+//                       ConstraintsTransformBox.maxHeightUnconstrained,
+//                   child: DecoratedBox(
+//                     decoration: const BoxDecoration(
+//                       color: Color.fromRGBO(0, 0, 0, 0.3),
+//                     ),
+//                     child: Text(
+//                       (controller != null)
+//                           ? controller!.durationSearch(snapshot.data!)!.data
+//                           : "",
+//                       textAlign: TextAlign.center,
+//                       textWidthBasis: TextWidthBasis.longestLine,
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 32,
+//                       ),
+//                     ),
+//                   ),
+//                 )
+//               : const SizedBox.shrink();
+//         }
+//         return const SizedBox.shrink();
+//       },
+//     );
+//   }
+// }

@@ -3,8 +3,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../block.dart';
+import '../grid.dart';
 import '../search_button.dart';
-import 'manga_grid.dart';
 
 const mangadex = "https://api.mangadex.org/";
 
@@ -36,9 +37,6 @@ dexReader(id) async {
   List chapters = [];
   var json =
       await Dio().get("${mangadex}manga/$id/aggregate?translatedLanguage[]=en");
-
-  //print(json.data['volumes']['2'].forEach((k, v) => print(v)));
-
   for (var i in json.data['volumes'].values) {
     if (i['chapters'] is List) {
       i['chapters'] = {i['chapters'][0]['chapter']: i['chapters'][0]};
@@ -47,50 +45,107 @@ dexReader(id) async {
       chapters.add(j);
     }
   }
-
-  //print(id);
-  //print(chapters);
+  print(chapters);
   return chapters;
 }
 
 dexList() async {
-  Map data = {};
   var json = await Dio().get(
       "${mangadex}manga/?includes[]=cover_art&limit=100&order[followedCount]=desc&availableTranslatedLanguage[]=en");
-  for (var i in json.data['data']) {
-    data['title'] = i['title'];
-  }
-  return await json.data;
+  return json.data;
 }
 
-class MangaPage extends StatelessWidget {
+class MangaPage extends StatefulWidget {
   const MangaPage({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => MangaPageState();
+}
+
+class MangaPageState extends State<MangaPage> {
+  final ScrollController scrollController = ScrollController();
+  final TextEditingController textController = TextEditingController();
+  late final getVar = getData();
+  List data = [];
+
+  Future<List> getData() async {
+    data = (await dexList())['data'];
+    return data;
+  }
 
   @override
   Widget build(context) {
     return ListView(
-      controller: ScrollController(),
-      primary: false,
+      controller: scrollController,
       shrinkWrap: true,
       children: [
-        const Center(
+        Center(
           child: SearchButton(
-            text: "mangadex",
+            text: "Mangadex",
+            controller: textController,
+            search: () {},
           ),
         ),
-        FutureBuilder<dynamic>(
-          future: dexList(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return MangaGrid(
-                data: snapshot.data['data'],
-              );
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        ),
+        (data.isEmpty)
+            ? FutureBuilder<List>(
+                future: getVar,
+                builder: (context, snapshot) {
+                  print(snapshot.error);
+                  if (snapshot.hasData) {
+                    return Grid(
+                      data: List.generate(
+                        data.length,
+                        (index) {
+                          print(data[index]['id']);
+                          return Block(
+                            title:
+                                data[index]['attributes']['title'].values.first,
+                            image: CachedNetworkImage(
+                              imageUrl:
+                                  "https://uploads.mangadex.org/covers/${data[index]['id']}/${data[index]['relationships'][data[index]['relationships'].indexWhere((i) => i['type'] == "cover_art")]['attributes']['fileName']}.512.jpg",
+                            ),
+                            description: (data[index]['attributes']
+                                            ['description']
+                                        .length ==
+                                    0)
+                                ? "No description provided."
+                                : data[index]['attributes']['description']
+                                    ['en'],
+                            count: int.tryParse(
+                              data[index]['attributes']['lastChapter'] ?? "",
+                            ),
+                            mediaList: MangaChapters(id: data[index]['id']),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              )
+            : Grid(
+                data: List.generate(
+                  data.length,
+                  (index) {
+                    return Block(
+                      title: data[index]['attributes']['title'].values.first,
+                      image: CachedNetworkImage(
+                          imageUrl:
+                              "https://uploads.mangadex.org/covers/${data[index]['id']}/${data[index]['relationships'][data[index]['relationships'].indexWhere((i) => i['type'] == "cover_art")]['attributes']['fileName']}.512.jpg"),
+                      description:
+                          (data[index]['attributes']['description'].length == 0)
+                              ? "No description provided."
+                              : data[index]['attributes']['description']['en'],
+                      count: int.tryParse(
+                        data[index]['attributes']['lastChapter'] ?? "",
+                      ),
+                      mediaList: MangaChapters(id: data[index]['id']),
+                    );
+                  },
+                ),
+              ),
       ],
     );
   }

@@ -167,39 +167,39 @@ class NovelReader extends StatelessWidget {
                 future: getBook(file),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    List<Html>? html = [];
-                    for (var i in snapshot.data!.getChapters()) {
-                      html.add(
-                        Html(
-                          data: i,
-                          customRenders: {
-                            tagMatcher('img'): CustomRender.widget(
-                              widget: (context, buildChildren) {
-                                final url = context
-                                    .tree.element!.attributes['src']!
-                                    .replaceAll('../', '');
-                                return Image(
-                                  image: MemoryImage(
-                                    Uint8List.fromList(snapshot.data!.archive
-                                            .findFile(
-                                                "${snapshot.data?.epub?.folder}/$url")
-                                            ?.content ??
-                                        snapshot.data?.archive
-                                            .findFile(url)
-                                            ?.content),
-                                  ),
-                                );
-                              },
-                            ),
-                          },
-                        ),
-                      );
-                    }
-                    return Column(
-                      children: html,
-                    );
+                    final chapters = snapshot.data!.getChapters();
+                    return ListView.builder(
+                        itemCount: chapters.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return Html(
+                            data: chapters[index],
+                            customRenders: {
+                              tagMatcher('img'): CustomRender.widget(
+                                widget: (context, buildChildren) {
+                                  final url = context
+                                      .tree.element!.attributes['src']!
+                                      .replaceAll('../', '');
+                                  return Image(
+                                    image: MemoryImage(
+                                      Uint8List.fromList(snapshot.data!.archive
+                                              .findFile(
+                                                  "${snapshot.data?.epub?.folder}/$url")
+                                              ?.content ??
+                                          snapshot.data?.archive
+                                              .findFile(url)
+                                              ?.content),
+                                    ),
+                                  );
+                                },
+                              )
+                            },
+                          );
+                        });
                   }
-                  return Container();
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 },
               ),
             ],
@@ -226,11 +226,11 @@ class NovelPageState extends State {
       primary: false,
       shrinkWrap: true,
       children: [
-        const Center(
-          child: SearchButton(
-            text: "local novels",
-          ),
-        ),
+        // const Center(
+        //   child: SearchButton(
+        //     text: "local novels",
+        //   ),
+        // ),
         if (Hive.box("settings").get("novels") == null)
           StreamBuilder(
               stream: importBooks(),

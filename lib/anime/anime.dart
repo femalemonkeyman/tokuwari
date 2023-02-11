@@ -1,134 +1,265 @@
+import 'package:anicross/block.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:graphql/client.dart';
 import '../search_button.dart';
+import '../grid.dart';
 import 'anime_videos.dart';
-import 'anime_grid.dart';
+import "./graphql/anilist.dart";
 
-final ValueNotifier<GraphQLClient> client = ValueNotifier(
-  GraphQLClient(
-    cache: GraphQLCache(),
-    link: HttpLink(anilist),
-  ),
+final client = GraphQLClient(
+  cache: GraphQLCache(),
+  link: HttpLink("https://graphql.anilist.co/"),
 );
 
-const anilist = "https://graphql.anilist.co/";
-
-const base = """
-  {
-  Page(perPage: 50, page: 1) {
-    pageInfo {
-      currentPage
-      hasNextPage
-    },
-      media(sort: [TRENDING_DESC], type: ANIME) {
-        id
-        title {
-          romaji
-          english
-          native
-        }
-        type
-        chapters
-        averageScore
-        episodes
-        description
-        coverImage{
-          extraLarge
-        }
-        episodes
-        tags {
-          name
-        }
-      }
-  }
-}
-""";
-
-const listSearch = """
-query media(\$search: String!)
-{
-  Page(perPage: 50, page: 1,) {
-    pageInfo {
-      total
-      perPage
-      currentPage
-      lastPage
-      hasNextPage
-    }
-  	media(search: \$search, type: ANIME) {
-  	    id
-        title {
-          romaji
-          english
-          native
-        }
-        type
-        chapters
-        averageScore
-        episodes
-        description
-        coverImage{
-          extraLarge
-        }
-        episodes
-        tags {
-          name
-        }
-  	}
-  }
-}
-""";
+final genresList = [
+  "Action",
+  "Adventure",
+  "Comedy",
+  "Drama",
+  "Ecchi",
+  "Fantasy",
+  "Hentai",
+  "Horror",
+  "Mahou Shoujo",
+  "Mecha",
+  "Music",
+  "Mystery",
+  "Psychological",
+  "Romance",
+  "Sci-Fi",
+  "Slice of Life",
+  "Sports",
+  "Supernatural",
+  "Thriller"
+];
 
 aniInfo(id) async {
-  String link = "https://api.consumet.org/meta/anilist/info/$id";
+  String link = "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
   var json = await Dio().get(link);
   return json.data;
 }
 
 episodeInfo(name) async {
-  String link = "https://api.consumet.org/meta/anilist/watch/$name";
+  String link =
+      "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
   var json = await Dio().get(link);
   return json.data;
 }
 
-class AniPage extends StatelessWidget {
+class AniPage extends StatefulWidget {
   const AniPage({Key? key}) : super(key: key);
 
   @override
+  State createState() => AniPageState();
+}
+
+class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
+  final ScrollController scrollController = ScrollController();
+  final TextEditingController textController = TextEditingController();
+  late Future queryVar = queryData();
+  String? search;
+  List<String> selectedGenres = [];
+  Map? data;
+  int page = 1;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    scrollController.addListener(() async {
+      if (scrollController.offset >=
+          (scrollController.position.maxScrollExtent * (4 / 5))) {
+        if (data?['Page']['pageInfo']['hasNextPage'] &&
+            data?['Page']['pageInfo']['currentPage'] + 1 != page) {
+          page = data?['Page']['pageInfo']['currentPage'] + 1;
+          await updateData();
+          setState(() {});
+        }
+      }
+    });
+    super.initState();
+  }
+
+  Future queryData() async {
+    QueryResult query = await client.query(
+      QueryOptions(
+        fetchPolicy: FetchPolicy.networkOnly,
+        document: gql(base),
+        variables: {
+          "page": page,
+          'search': search,
+          "genre": (selectedGenres.isNotEmpty) ? selectedGenres : null,
+        },
+      ),
+    );
+    setState(() {});
+    return query.data;
+  }
+
+  Future updateData() async {
+    final query = await queryData();
+    data?['Page']['pageInfo'].addAll(query?['Page']['pageInfo']);
+    data?['Page']['media'].addAll(query?['Page']['media']);
+  }
+
+  Future searchData() async {
+    page = 1;
+    if (textController.text.isNotEmpty) {
+      selectedGenres = [];
+      search = textController.text;
+    } else {
+      search = null;
+    }
+    data = await queryData();
+    setState(() {});
+  }
+
+  Future updateGenre() async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => SimpleDialog(
+            children: [
+              SizedBox(
+                width: 200,
+                child: Wrap(
+                  spacing: 500,
+                  children: List.generate(
+                    genresList.length,
+                    (index) {
+                      return CheckboxListTile(
+                        value: selectedGenres.contains(
+                          genresList[index],
+                        ),
+                        title: Text(
+                          genresList[index],
+                        ),
+                        onChanged: (value) async {
+                          if (value!) {
+                            selectedGenres.add(genresList[index]);
+                          } else {
+                            selectedGenres.remove(genresList[index]);
+                          }
+                          data = await queryData();
+                          setState(
+                            () {},
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(context) {
+    super.build(context);
     return ListView(
-      controller: ScrollController(),
-      primary: false,
+      controller: scrollController,
       shrinkWrap: true,
       children: [
-        const Center(
+        Center(
           child: SearchButton(
-            text: "anilist",
-          ),
-        ),
-        GraphQLProvider(
-          client: client,
-          child: Query(
-            options: QueryOptions(
-              document: gql(base),
-            ),
-            builder: (result, {refetch, fetchMore}) {
-              if (result.hasException) {
-                debugPrint(result.exception.toString());
-              }
-              if (result.isNotLoading) {
-                return AnimeGrid(
-                  data: result.data!['Page']['media'],
-                );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+            text: "Anilist",
+            controller: textController,
+            search: () async {
+              await searchData();
+              setState(() {});
             },
           ),
         ),
+        Wrap(
+          alignment: WrapAlignment.spaceAround,
+          children: [
+            TextButton(
+              onPressed: () => updateGenre(),
+              child: const Text(
+                "Filter by genre",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        const Divider(),
+        (data == null)
+            ? FutureBuilder(
+                future: queryVar,
+                builder: (context, AsyncSnapshot snap) {
+                  if (snap.hasData &&
+                      snap.connectionState == ConnectionState.done) {
+                    data = snap.data;
+                    return Grid(
+                      data: List.generate(
+                        data!['Page']['media'].length,
+                        (index) {
+                          return Block(
+                            mediaList: AniEpisodes(
+                              id: data?['Page']['media'][index]['id']
+                                  .toString(),
+                            ),
+                            title:
+                                "${data?['Page']['media'][index]['title']['romaji']}",
+                            image: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: CachedNetworkImage(
+                                fit: BoxFit.contain,
+                                imageUrl: data?['Page']['media'][index]
+                                    ['coverImage']['extraLarge'],
+                              ),
+                            ),
+                            count: data?['Page']['media'][index]['episodes'],
+                            score: data?['Page']['media'][index]
+                                ['averageScore'],
+                            description: data?['Page']['media'][index]
+                                    ['description'] ??
+                                "",
+                          );
+                        },
+                      ), //data!['Page']['media'],
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              )
+            : Grid(
+                data: List.generate(
+                  data!['Page']['media'].length,
+                  (index) {
+                    return Block(
+                      mediaList: AniEpisodes(
+                        id: data?['Page']['media'][index]['id'].toString(),
+                      ),
+                      title:
+                          "${data?['Page']['media'][index]['title']['romaji']}",
+                      image: ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: CachedNetworkImage(
+                          fit: BoxFit.contain,
+                          imageUrl: data?['Page']['media'][index]['coverImage']
+                              ['extraLarge'],
+                        ),
+                      ),
+                      count: data?['Page']['media'][index]['episodes'],
+                      score: data?['Page']['media'][index]['averageScore'],
+                      description:
+                          data?['Page']['media'][index]['description'] ?? "",
+                    );
+                  },
+                ), //data!['Page']['media'],
+              ),
       ],
     );
   }
@@ -148,12 +279,13 @@ class AniEpisodes extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: snapshot.data['episodes'].length,
             itemBuilder: ((context, index) {
               return ListTile(
                 title: Text(
-                  "Episode: ${snapshot.data['episodes'][index]['number']} - ${snapshot.data["episodes"][index]["title"]}",
+                  "Episode: ${(snapshot.data["episodes"][index]["title"]) ?? snapshot.data['episodes'][index]['number']}",
                 ),
                 onTap: () => Navigator.push(
                   context,
@@ -175,7 +307,7 @@ class AniEpisodes extends StatelessWidget {
                               if (info.hasData) {
                                 return AniViewer(
                                   sources: info.data['sources'] ?? [],
-                                  //subtitles: info.data['subtitles'],
+                                  subtitles: info.data['subtitles'] ?? [],
                                 );
                               }
                               return const Center(
@@ -189,58 +321,6 @@ class AniEpisodes extends StatelessWidget {
                   ),
                 ),
               );
-              // return DropdownButton(
-              //   hint: Container(
-              //     height: 40,
-              //     decoration: const BoxDecoration(
-              //         // border: Border(
-              //         //   top: BorderSide(color: Colors.blueGrey),
-              //         // ),
-              //         ),
-              //     child: Text(
-              //         "Episode: ${snapshot.data['episodes'][index]['number']} - ${snapshot.data["episodes"][index]["title"]}"),
-              //   ),
-              //   items: [
-              //     DropdownMenuItem(
-              //       child: SizedBox.shrink(),
-              //     )
-              //   ],
-              //   onChanged: (value) {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) {
-              //           return Scaffold(
-              //             body: RawKeyboardListener(
-              //               autofocus: true,
-              //               focusNode: FocusNode(),
-              //               onKey: (value) {
-              //                 if (value
-              //                     .isKeyPressed(LogicalKeyboardKey.escape)) {
-              //                   Navigator.pop(context);
-              //                 }
-              //               },
-              //               child: FutureBuilder<dynamic>(
-              //                 future: episodeInfo(
-              //                     snapshot.data['episodes'][index]['id']),
-              //                 builder: (context, info) {
-              //                   if (info.hasData) {
-              //                     return AniViewer(
-              //                       server: info.data['sources'],
-              //                     );
-              //                   }
-              //                   return const Center(
-              //                     child: CircularProgressIndicator(),
-              //                   );
-              //                 },
-              //               ),
-              //             ),
-              //           );
-              //         },
-              //       ),
-              //     );
-              //   },
-              // );
             }),
           );
         }

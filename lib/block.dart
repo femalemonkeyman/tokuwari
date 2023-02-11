@@ -29,39 +29,40 @@ class Block extends StatelessWidget {
                 return Scaffold(
                   body: SingleChildScrollView(
                     child: SafeArea(
-                      child: Column(
-                        children: [
-                          const Align(
-                            alignment: Alignment.topLeft,
-                            child: BackButton(),
-                          ),
-                          Row(
-                            children: [
-                              const Spacer(),
-                              Flexible(
-                                child: Text(title),
-                              ),
-                              const Spacer(),
-                              Flexible(
-                                child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 20, bottom: 40),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 20, left: 20),
+                        child: Column(
+                          children: [
+                            const Align(
+                              alignment: Alignment.topLeft,
+                              child: BackButton(),
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(title),
+                                ),
+                                Flexible(
+                                  child: Align(
+                                    alignment: Alignment.topRight,
                                     child: image,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(40),
-                            child: Text(
+                              ],
+                            ),
+                            const Divider(
+                              height: 30,
+                            ),
+                            Text(
                               description,
                             ),
-                          ),
-                          mediaList,
-                        ],
+                            const Divider(
+                              height: 30,
+                            ),
+                            mediaList,
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -74,7 +75,6 @@ class Block extends StatelessWidget {
       child: Column(
         children: [
           Expanded(
-            flex: 55,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
               child: image,
@@ -91,30 +91,22 @@ class Block extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    const Spacer(
-                      flex: 3,
-                    ),
-                    if (count != null)
-                      Flexible(
-                        flex: 4,
-                        child: Text(
-                          "Epi: ${count ?? "n/a"}",
-                          textScaleFactor: 0.8,
-                        ),
+                    Expanded(
+                      child: Wrap(
+                        alignment: WrapAlignment.spaceEvenly,
+                        children: [
+                          if (count != null)
+                            Text(
+                              "Episodes: ${count ?? "n/a"}",
+                              textScaleFactor: 0.8,
+                            ),
+                          if (score != null)
+                            Text(
+                              "Score: $score",
+                              textScaleFactor: 0.8,
+                            ),
+                        ],
                       ),
-                    const Spacer(
-                      flex: 1,
-                    ),
-                    if (score != null)
-                      Flexible(
-                        flex: 4,
-                        child: Text(
-                          "Score: $score",
-                          textScaleFactor: 0.8,
-                        ),
-                      ),
-                    const Spacer(
-                      flex: 1,
                     ),
                   ],
                 ),
