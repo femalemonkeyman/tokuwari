@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'anime/anime.dart';
 import 'manga/manga.dart';
 import 'novel/novel.dart';
@@ -44,45 +45,75 @@ class AniNav extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return Scaffold(
+    return const Scaffold(
       body: DefaultTabController(
-        length: 3,
+        length: 4,
         child: SafeArea(
           child: Column(
             children: [
-              const Expanded(
+              Expanded(
                 child: TabBarView(
                   physics: NeverScrollableScrollPhysics(),
                   children: [
                     AniPage(),
                     MangaPage(),
                     NovelPage(),
+                    SizedBox.shrink(),
                   ],
                 ),
               ),
-              Container(
-                //margin: const EdgeInsets.only(bottom: 20),
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(200, 0, 0, 20),
+              TabBar(
+                unselectedLabelStyle: TextStyle(fontSize: 0),
+                indicator: UnderlineTabIndicator(
+                  borderSide: BorderSide(width: 2, color: Colors.blue),
+                  insets: EdgeInsets.fromLTRB(50, 0, 50, 8),
                 ),
-                child: const TabBar(
-                  indicator: UnderlineTabIndicator(
-                    borderSide: BorderSide(width: 2, color: Colors.blue),
-                    insets: EdgeInsets.fromLTRB(50, 0, 50, 8),
+                tabs: [
+                  Tab(
+                    child: Wrap(
+                      children: [
+                        Icon(MdiIcons.youtubeTv),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text("Anime"),
+                      ],
+                    ),
                   ),
-                  tabs: [
-                    Tab(
-                      text: "Anime",
+                  Tab(
+                    child: Wrap(
+                      children: [
+                        Icon(MdiIcons.bookOpenOutline),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text("Manga"),
+                      ],
                     ),
-                    Tab(
-                      text: "Manga",
+                  ),
+                  Tab(
+                    child: Wrap(
+                      children: [
+                        Icon(MdiIcons.book),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text("Novel"),
+                      ],
                     ),
-                    Tab(
-                      text: "Novel",
+                  ),
+                  Tab(
+                    child: Wrap(
+                      children: [
+                        Icon(MdiIcons.bookmark),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text("Saved"),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),

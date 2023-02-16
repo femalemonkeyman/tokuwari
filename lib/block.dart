@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Block extends StatelessWidget {
   final String title;
   final Widget image;
-  final int? count;
+  final String? count;
   final int? score;
   final String description;
   final Widget mediaList;
@@ -97,7 +97,7 @@ class Block extends StatelessWidget {
                         children: [
                           if (count != null)
                             Text(
-                              "Episodes: ${count ?? "n/a"}",
+                              "Count: ${count ?? "n/a"}",
                               textScaleFactor: 0.8,
                             ),
                           if (score != null)

@@ -7,7 +7,7 @@ import 'package:graphql/client.dart';
 import '../search_button.dart';
 import '../grid.dart';
 import 'anime_videos.dart';
-import "./graphql/anilist.dart";
+import 'extra/anilist.dart';
 
 final client = GraphQLClient(
   cache: GraphQLCache(),
@@ -57,32 +57,15 @@ class AniPage extends StatefulWidget {
 }
 
 class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
-  final ScrollController scrollController = ScrollController();
   final TextEditingController textController = TextEditingController();
   late Future queryVar = queryData();
   String? search;
   List<String> selectedGenres = [];
-  Map? data;
+  Map data = {};
   int page = 1;
 
   @override
   bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    scrollController.addListener(() async {
-      if (scrollController.offset >=
-          (scrollController.position.maxScrollExtent * (4 / 5))) {
-        if (data?['Page']['pageInfo']['hasNextPage'] &&
-            data?['Page']['pageInfo']['currentPage'] + 1 != page) {
-          page = data?['Page']['pageInfo']['currentPage'] + 1;
-          await updateData();
-          setState(() {});
-        }
-      }
-    });
-    super.initState();
-  }
 
   Future queryData() async {
     QueryResult query = await client.query(
@@ -96,14 +79,13 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
         },
       ),
     );
-    setState(() {});
     return query.data;
   }
 
   Future updateData() async {
     final query = await queryData();
-    data?['Page']['pageInfo'].addAll(query?['Page']['pageInfo']);
-    data?['Page']['media'].addAll(query?['Page']['media']);
+    data['Page']['pageInfo'].addAll(query['Page']['pageInfo']);
+    data['Page']['media'].addAll(query['Page']['media']);
   }
 
   Future searchData() async {
@@ -114,8 +96,9 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
     } else {
       search = null;
     }
-    data = await queryData();
-    setState(() {});
+    setState(() {
+      queryVar = queryData();
+    });
   }
 
   Future updateGenre() async {
@@ -145,7 +128,6 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
                           } else {
                             selectedGenres.remove(genresList[index]);
                           }
-                          data = await queryData();
                           setState(
                             () {},
                           );
@@ -159,108 +141,97 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
           ),
         );
       },
+    ).then(
+      (value) => setState(
+        () {
+          queryVar = queryData();
+        },
+      ),
     );
   }
 
   @override
   Widget build(context) {
     super.build(context);
-    return ListView(
-      controller: scrollController,
-      shrinkWrap: true,
-      children: [
-        Center(
-          child: SearchButton(
-            text: "Anilist",
-            controller: textController,
-            search: () async {
-              await searchData();
-              setState(() {});
-            },
-          ),
-        ),
-        Wrap(
-          alignment: WrapAlignment.spaceAround,
-          children: [
-            TextButton(
-              onPressed: () => updateGenre(),
-              child: const Text(
-                "Filter by genre",
-                style: TextStyle(color: Colors.white),
-              ),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification.metrics.extentAfter < 600) {
+          if (data['Page']['pageInfo']['hasNextPage'] &&
+              data['Page']['pageInfo']['currentPage'] + 1 != page) {
+            page = data['Page']['pageInfo']['currentPage'] + 1;
+            updateData().whenComplete(() => setState(() {}));
+          }
+        }
+        return true;
+      },
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          Center(
+            child: SearchButton(
+              text: "Anilist",
+              controller: textController,
+              search: () async {
+                await searchData();
+                setState(() {});
+              },
             ),
-          ],
-        ),
-        const Divider(),
-        (data == null)
-            ? FutureBuilder(
-                future: queryVar,
-                builder: (context, AsyncSnapshot snap) {
-                  if (snap.hasData &&
-                      snap.connectionState == ConnectionState.done) {
-                    data = snap.data;
-                    return Grid(
-                      data: List.generate(
-                        data!['Page']['media'].length,
-                        (index) {
-                          return Block(
-                            mediaList: AniEpisodes(
-                              id: data?['Page']['media'][index]['id']
-                                  .toString(),
-                            ),
-                            title:
-                                "${data?['Page']['media'][index]['title']['romaji']}",
-                            image: ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: CachedNetworkImage(
-                                fit: BoxFit.contain,
-                                imageUrl: data?['Page']['media'][index]
-                                    ['coverImage']['extraLarge'],
-                              ),
-                            ),
-                            count: data?['Page']['media'][index]['episodes'],
-                            score: data?['Page']['media'][index]
-                                ['averageScore'],
-                            description: data?['Page']['media'][index]
-                                    ['description'] ??
-                                "",
-                          );
-                        },
-                      ), //data!['Page']['media'],
-                    );
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              )
-            : Grid(
-                data: List.generate(
-                  data!['Page']['media'].length,
-                  (index) {
-                    return Block(
-                      mediaList: AniEpisodes(
-                        id: data?['Page']['media'][index]['id'].toString(),
-                      ),
-                      title:
-                          "${data?['Page']['media'][index]['title']['romaji']}",
-                      image: ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: CachedNetworkImage(
-                          fit: BoxFit.contain,
-                          imageUrl: data?['Page']['media'][index]['coverImage']
-                              ['extraLarge'],
-                        ),
-                      ),
-                      count: data?['Page']['media'][index]['episodes'],
-                      score: data?['Page']['media'][index]['averageScore'],
-                      description:
-                          data?['Page']['media'][index]['description'] ?? "",
-                    );
-                  },
-                ), //data!['Page']['media'],
+          ),
+          Wrap(
+            alignment: WrapAlignment.spaceAround,
+            children: [
+              TextButton(
+                onPressed: () => updateGenre(),
+                child: const Text(
+                  "Filter by genre",
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-      ],
+            ],
+          ),
+          const Divider(),
+          FutureBuilder(
+            future: queryVar,
+            builder: (context, AsyncSnapshot snap) {
+              if (snap.hasData &&
+                  snap.connectionState == ConnectionState.done) {
+                data = snap.data;
+                return Grid(
+                  data: List.generate(
+                    data['Page']['media'].length,
+                    (index) {
+                      return Block(
+                        mediaList: AniEpisodes(
+                          id: data['Page']['media'][index]['id'].toString(),
+                        ),
+                        title:
+                            "${data['Page']['media'][index]['title']['romaji']}",
+                        image: ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.contain,
+                            imageUrl: data['Page']['media'][index]['coverImage']
+                                ['extraLarge'],
+                          ),
+                        ),
+                        count:
+                            (data['Page']['media'][index]['episodes'] ?? "n/a")
+                                .toString(),
+                        score: data['Page']['media'][index]['averageScore'],
+                        description:
+                            data['Page']['media'][index]['description'] ?? "",
+                      );
+                    },
+                  ), //data!['Page']['media'],
+                );
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          )
+        ],
+      ),
     );
   }
 }

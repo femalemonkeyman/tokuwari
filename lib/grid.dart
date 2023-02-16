@@ -20,18 +20,21 @@ class GridState extends State<Grid> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return GridView.builder(
-      itemCount: widget.data.length,
-      shrinkWrap: true,
-      primary: false,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        mainAxisSpacing: 3,
-        childAspectRatio: 0.70,
-        crossAxisCount: Platform.isAndroid && !kIsWeb ? 2 : 3,
+    return Padding(
+      padding: EdgeInsets.only(left: 15, right: 15),
+      child: GridView.builder(
+        itemCount: widget.data.length,
+        shrinkWrap: true,
+        primary: false,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 3,
+          childAspectRatio: 0.70,
+          crossAxisCount: Platform.isAndroid && !kIsWeb ? 2 : 4,
+        ),
+        itemBuilder: (context, index) {
+          return widget.data[index];
+        },
       ),
-      itemBuilder: (context, index) {
-        return widget.data[index];
-      },
     );
   }
 }
