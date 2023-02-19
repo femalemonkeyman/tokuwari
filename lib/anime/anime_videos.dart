@@ -39,18 +39,22 @@ class AniViewerState extends State<AniViewer> {
         widget.sources.first['url'],
         headers: {"User-Agent": "Death"},
         videoFormat: BetterPlayerVideoFormat.hls,
-        subtitles: List.generate(widget.subtitles.length - 1, (index) {
-          return BetterPlayerSubtitlesSource(
-            selectedByDefault:
-                (widget.subtitles[index]['lang'] == "English") ? true : false,
-            type: BetterPlayerSubtitlesSourceType.network,
-            name: widget.subtitles[index]['lang'],
-            urls: [widget.subtitles[index]['url']],
-          );
-        }),
+        subtitles: List.generate(
+          widget.subtitles.length - 1,
+          (index) {
+            return BetterPlayerSubtitlesSource(
+              selectedByDefault:
+                  (widget.subtitles[index]['lang'] == "English") ? true : false,
+              type: BetterPlayerSubtitlesSourceType.network,
+              name: widget.subtitles[index]['lang'],
+              urls: [widget.subtitles[index]['url']],
+            );
+          },
+        ),
       );
       phonePlayer = BetterPlayerController(
         const BetterPlayerConfiguration(
+          controlsConfiguration: BetterPlayerControlsConfiguration(),
           deviceOrientationsOnFullScreen: [
             DeviceOrientation.landscapeLeft,
             DeviceOrientation.landscapeRight,
@@ -62,12 +66,6 @@ class AniViewerState extends State<AniViewer> {
           fit: BoxFit.contain,
         ),
         betterPlayerDataSource: source,
-      );
-      SystemChrome.setPreferredOrientations(
-        [
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ],
       );
     } else {
       player = Player(configuration: const PlayerConfiguration());
@@ -103,28 +101,14 @@ class AniViewerState extends State<AniViewer> {
       return Stack(
         children: [
           Video(controller: controller),
-          // Positioned(
-          //   left: MediaQuery.of(context).size.width / 3,
-          //   right: MediaQuery.of(context).size.width / 3,
-          //   bottom: MediaQuery.of(context).size.height / 10,
-          //   child: AnimeSubtitles(
-          //     url: (widget.subtitles.isEmpty)
-          //         ? null
-          //         : widget.subtitles.first['url'],
-          //     player: player!,
-          //   ),
-          // ),
           VideoControls(
             player: player!,
           ),
         ],
       );
     } else {
-      return AspectRatio(
-        aspectRatio: 16 / 9,
-        child: BetterPlayer(
-          controller: phonePlayer!,
-        ),
+      return BetterPlayer(
+        controller: phonePlayer!,
       );
     }
   }

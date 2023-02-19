@@ -33,6 +33,7 @@ class MangaPage extends StatefulWidget {
 
 class MangaPageState extends State<MangaPage> {
   final TextEditingController textController = TextEditingController();
+  late final tags = Dio().get("$mangadex/tag");
   late Future getVar = getData();
   List data = [];
   int offset = 0;
@@ -50,9 +51,11 @@ class MangaPageState extends State<MangaPage> {
     } else {
       search = "";
     }
-    setState(() {
-      getVar = getData();
-    });
+    setState(
+      () {
+        getVar = getData();
+      },
+    );
   }
 
   Future<List> getData() async {

@@ -29,9 +29,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: new_fixes
-      resolved-ref: "5bd17a30dd1537ef8b0f0b415ef6e68e538c3d19"
-      url: "https://github.com/sha3rawi33/betterplayer/"
+      ref: master
+      resolved-ref: "8355333efbb49b62edbeb3e68d4b4f1d7b472172"
+      url: "https://github.com/femalemonkeyman/betterplayer"
     source: git
     version: "0.0.83"
   cached_network_image:
@@ -361,7 +361,7 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: "4b02f9caba41df042d59f44b2f65ce8fde2cf1c9"
+      resolved-ref: "21eb88d28f555866f18d1db09f2ebd79f1248487"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.1"
@@ -370,7 +370,7 @@ packages:
     description:
       path: media_kit_libs_linux
       ref: main
-      resolved-ref: "4b02f9caba41df042d59f44b2f65ce8fde2cf1c9"
+      resolved-ref: "21eb88d28f555866f18d1db09f2ebd79f1248487"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.0"
@@ -379,7 +379,7 @@ packages:
     description:
       path: media_kit_libs_windows_video
       ref: main
-      resolved-ref: "4b02f9caba41df042d59f44b2f65ce8fde2cf1c9"
+      resolved-ref: "21eb88d28f555866f18d1db09f2ebd79f1248487"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.0"
@@ -388,7 +388,7 @@ packages:
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: "4b02f9caba41df042d59f44b2f65ce8fde2cf1c9"
+      resolved-ref: "21eb88d28f555866f18d1db09f2ebd79f1248487"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.1"
@@ -645,14 +645,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  subtitle:
-    dependency: "direct main"
-    description:
-      name: subtitle
-      sha256: "8d5030c5f481fb20fa60394edf83e87cc045d7b2912b19cbffa30b35d9dc23bd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0-beta.3"
   synchronized:
     dependency: transitive
     description:
@@ -681,10 +673,10 @@ packages:
     dependency: "direct main"
     description:
       name: universal_io
-      sha256: "79f78ddad839ee3aae3ec7c01eb4575faf0d5c860f8e5223bc9f9c17f7f03cef"
+      sha256: "06866290206d196064fd61df4c7aea1ffe9a4e7c4ccaa8fcded42dd41948005d"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.4"
+    version: "2.2.0"
   uri_parser:
     dependency: transitive
     description:

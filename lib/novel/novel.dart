@@ -169,33 +169,34 @@ class NovelReader extends StatelessWidget {
                   if (snapshot.hasData) {
                     final chapters = snapshot.data!.getChapters();
                     return ListView.builder(
-                        itemCount: chapters.length,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return Html(
-                            data: chapters[index],
-                            customRenders: {
-                              tagMatcher('img'): CustomRender.widget(
-                                widget: (context, buildChildren) {
-                                  final url = context
-                                      .tree.element!.attributes['src']!
-                                      .replaceAll('../', '');
-                                  return Image(
-                                    image: MemoryImage(
-                                      Uint8List.fromList(snapshot.data!.archive
-                                              .findFile(
-                                                  "${snapshot.data?.epub?.folder}/$url")
-                                              ?.content ??
-                                          snapshot.data?.archive
-                                              .findFile(url)
-                                              ?.content),
-                                    ),
-                                  );
-                                },
-                              )
-                            },
-                          );
-                        });
+                      itemCount: chapters.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Html(
+                          data: chapters[index],
+                          customRenders: {
+                            tagMatcher('img'): CustomRender.widget(
+                              widget: (context, buildChildren) {
+                                final url = context
+                                    .tree.element!.attributes['src']!
+                                    .replaceAll('../', '');
+                                return Image(
+                                  image: MemoryImage(
+                                    Uint8List.fromList(snapshot.data!.archive
+                                            .findFile(
+                                                "${snapshot.data?.epub?.folder}/$url")
+                                            ?.content ??
+                                        snapshot.data?.archive
+                                            .findFile(url)
+                                            ?.content),
+                                  ),
+                                );
+                              },
+                            )
+                          },
+                        );
+                      },
+                    );
                   }
                   return const Center(
                     child: CircularProgressIndicator(),

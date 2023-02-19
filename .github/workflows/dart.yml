@@ -135,4 +135,32 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: build/macos/Build/Products/Release/Release-${{github.ref_name}}-macos.zip
+
+  build-and-release-ipa:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Install project dependencies
+        run: flutter pub get
+      - name: Build artifacts
+        run: flutter build ios --no-codesign
+      - run: mkdir build/ios/iphoneos/Payload
+      - run: mv build/ios/iphoneos/Runner build/ios/iphoneos/Payload/Runner
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: Release-${{github.ref_name}}-ios.ipa
+          directory: build/ios/iphoneos/Payload
+      - name: macOS Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: build/macos/Build/Products/Release/Release-${{github.ref_name}}-ios.zip
       

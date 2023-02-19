@@ -15,8 +15,8 @@ dependencies:
   archive: 
   better_player:
     git:
-      url: https://github.com/sha3rawi33/betterplayer/
-      ref: new_fixes
+      url: https://github.com/femalemonkeyman/betterplayer
+      ref: master
   cached_network_image:
   dio: 
   file_picker: 
@@ -51,7 +51,6 @@ dependencies:
   universal_io: 
   xml: 
   audio_video_progress_bar: 
-  subtitle: 
   window_manager: 
   graphql:
   material_design_icons_flutter:
