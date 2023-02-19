@@ -149,7 +149,7 @@ jobs:
       - name: Build artifacts
         run: flutter build ios --no-codesign
       - run: mkdir build/ios/iphoneos/Payload
-      - run: mv build/ios/iphoneos/Runner build/ios/iphoneos/Payload/Runner
+      - run: mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload/Runner.app
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
