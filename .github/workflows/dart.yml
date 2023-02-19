@@ -156,11 +156,11 @@ jobs:
           type: 'zip'
           filename: Release-${{github.ref_name}}-ios.ipa
           directory: build/ios/iphoneos/Payload
-      - name: macOS Release
+      - name: IOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/macos/Build/Products/Release/Release-${{github.ref_name}}-ios.zip
+          files: build/ios/iphoneos/Release-${{github.ref_name}}-ios.ipa
       
