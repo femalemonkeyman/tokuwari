@@ -155,7 +155,7 @@ jobs:
         with:
           type: 'zip'
           filename: Release-${{github.ref_name}}-ios.ipa
-          directory: build/ios/iphoneos/Payload
+          directory: build/ios/iphoneos
       - name: IOS Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
