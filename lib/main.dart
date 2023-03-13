@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'anime/anime.dart';
 import 'manga/manga.dart';
@@ -7,8 +6,6 @@ import 'novel/novel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter("anisettings");
-  Hive.openBox("settings");
   runApp(
     MaterialApp(
       theme: ThemeData(
@@ -46,6 +43,7 @@ class AniNav extends StatelessWidget {
   @override
   Widget build(context) {
     return const Scaffold(
+      resizeToAvoidBottomInset: false,
       body: DefaultTabController(
         length: 4,
         child: SafeArea(
@@ -63,10 +61,11 @@ class AniNav extends StatelessWidget {
                 ),
               ),
               TabBar(
-                unselectedLabelStyle: TextStyle(fontSize: 0),
-                indicator: UnderlineTabIndicator(
-                  borderSide: BorderSide(width: 2, color: Colors.blue),
-                  insets: EdgeInsets.fromLTRB(50, 0, 50, 8),
+                indicator: BoxDecoration(
+                  color: Colors.deepPurple,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(15),
+                  ),
                 ),
                 tabs: [
                   Tab(
@@ -76,7 +75,6 @@ class AniNav extends StatelessWidget {
                         SizedBox(
                           width: 10,
                         ),
-                        Text("Anime"),
                       ],
                     ),
                   ),
@@ -87,7 +85,6 @@ class AniNav extends StatelessWidget {
                         SizedBox(
                           width: 10,
                         ),
-                        Text("Manga"),
                       ],
                     ),
                   ),
@@ -98,7 +95,6 @@ class AniNav extends StatelessWidget {
                         SizedBox(
                           width: 10,
                         ),
-                        Text("Novel"),
                       ],
                     ),
                   ),
@@ -109,7 +105,6 @@ class AniNav extends StatelessWidget {
                         SizedBox(
                           width: 10,
                         ),
-                        Text("Saved"),
                       ],
                     ),
                   ),

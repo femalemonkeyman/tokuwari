@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:universal_io/io.dart';
+import '../providers/info_models.dart';
+import 'block.dart';
 
 class Grid extends StatefulWidget {
-  final List data;
+  final List<AniData> data;
   const Grid({
     required this.data,
     Key? key,
@@ -21,18 +23,22 @@ class GridState extends State<Grid> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Padding(
-      padding: EdgeInsets.only(left: 15, right: 15),
+      padding: const EdgeInsets.only(left: 15, right: 15),
       child: GridView.builder(
         itemCount: widget.data.length,
         shrinkWrap: true,
         primary: false,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          mainAxisSpacing: 3,
-          childAspectRatio: 0.70,
-          crossAxisCount: Platform.isAndroid && !kIsWeb ? 2 : 4,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 0,
+          childAspectRatio: 0.69,
+          crossAxisCount:
+              Platform.isAndroid || Platform.isIOS && !kIsWeb ? 2 : 4,
         ),
         itemBuilder: (context, index) {
-          return widget.data[index];
+          return Block(
+            data: widget.data[index],
+          );
         },
       ),
     );

@@ -47,7 +47,6 @@ class MangaReader extends StatelessWidget {
                 children: [
                   RawKeyboardListener(
                     onKey: (event) {
-                      //print(event.isKeyPressed(LogicalKeyboardKey.arrowLeft));
                       if (event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
                         controller.jumpToPage(controller.page!.toInt() + 1);
                       } else if (event

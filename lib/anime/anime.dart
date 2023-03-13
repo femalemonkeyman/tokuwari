@@ -1,13 +1,45 @@
-import 'package:anicross/block.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '../providers/info_models.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:graphql/client.dart';
-import '../search_button.dart';
-import '../grid.dart';
+import '../widgets/search_button.dart';
+import '../widgets/grid.dart';
 import 'anime_videos.dart';
-import 'extra/anilist.dart';
+
+const base = """
+query (\$page: Int!, \$search: String, \$genre: [String])
+  {
+  Page(perPage: 50, page: \$page) {
+    pageInfo {
+      hasNextPage
+      lastPage
+      total
+      currentPage
+    },
+      media(sort: [TRENDING_DESC], type: ANIME, search: \$search, genre_in: \$genre) {
+        id
+        title {
+          romaji
+          english
+          native
+        }
+        type
+        chapters
+        averageScore
+        episodes
+        description(asHtml: false)
+        coverImage{
+          extraLarge
+        }
+        episodes
+        tags {
+          name
+        }
+      }
+  }
+}
+""";
 
 final client = GraphQLClient(
   cache: GraphQLCache(),
@@ -36,19 +68,6 @@ final genresList = [
   "Thriller"
 ];
 
-aniInfo(id) async {
-  String link = "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
-  var json = await Dio().get(link);
-  return json.data;
-}
-
-episodeInfo(name) async {
-  String link =
-      "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
-  var json = await Dio().get(link);
-  return json.data;
-}
-
 class AniPage extends StatefulWidget {
   const AniPage({Key? key}) : super(key: key);
 
@@ -58,11 +77,26 @@ class AniPage extends StatefulWidget {
 
 class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
   final TextEditingController textController = TextEditingController();
-  late Future queryVar = queryData();
   String? search;
   List<String> selectedGenres = [];
-  Map data = {};
   int page = 1;
+  Map pageInfo = {};
+  List<AniData> animeData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      await queryData();
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
 
   @override
   bool get wantKeepAlive => true;
@@ -79,26 +113,43 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
         },
       ),
     );
-    return query.data;
+    pageInfo = query.data!['Page']['pageInfo'];
+    animeData.addAll(
+      List.generate(
+        query.data!['Page']['media'].length,
+        (index) {
+          return AniData(
+            description:
+                (query.data!['Page']['media'][index]['description'] ?? "")
+                    .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
+            title: "${query.data!['Page']['media'][index]['title']['romaji']}",
+            image: query.data!['Page']['media'][index]['coverImage']
+                ['extraLarge'],
+            count: (query.data!['Page']['media'][index]['episodes'] ?? "n/a")
+                .toString(),
+            score: (query.data!['Page']['media'][index]['averageScore'])
+                .toString(),
+          );
+        },
+      ),
+    );
   }
 
-  Future updateData() async {
-    final query = await queryData();
-    data['Page']['pageInfo'].addAll(query['Page']['pageInfo']);
-    data['Page']['media'].addAll(query['Page']['media']);
+  Future<void> updateData() async {
+    await queryData();
   }
 
   Future searchData() async {
     page = 1;
+    animeData = [];
     if (textController.text.isNotEmpty) {
       selectedGenres = [];
       search = textController.text;
     } else {
       search = null;
     }
-    setState(() {
-      queryVar = queryData();
-    });
+    await queryData();
+    setState(() {});
   }
 
   Future updateGenre() async {
@@ -141,13 +192,13 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
           ),
         );
       },
-    ).then(
-      (value) => setState(
-        () {
-          queryVar = queryData();
-        },
-      ),
-    );
+    ).then((value) async {
+      animeData = [];
+      await queryData();
+      setState(
+        () {},
+      );
+    });
   }
 
   @override
@@ -155,12 +206,12 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
     super.build(context);
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification.metrics.extentAfter < 600) {
-          if (data['Page']['pageInfo']['hasNextPage'] &&
-              data['Page']['pageInfo']['currentPage'] + 1 != page) {
-            page = data['Page']['pageInfo']['currentPage'] + 1;
-            updateData().whenComplete(() => setState(() {}));
-          }
+        if (notification.metrics.extentAfter < 600 &&
+            pageInfo['hasNextPage'] &&
+            pageInfo['currentPage'] + 1 != page) {
+          page = pageInfo['currentPage'] + 1;
+          updateData();
+          setState(() {});
         }
         return true;
       },
@@ -189,47 +240,14 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
               ),
             ],
           ),
-          const Divider(),
-          FutureBuilder(
-            future: queryVar,
-            builder: (context, AsyncSnapshot snap) {
-              if (snap.hasData &&
-                  snap.connectionState == ConnectionState.done) {
-                data = snap.data;
-                return Grid(
-                  data: List.generate(
-                    data['Page']['media'].length,
-                    (index) {
-                      return Block(
-                        mediaList: AniEpisodes(
-                          id: data['Page']['media'][index]['id'].toString(),
-                        ),
-                        title:
-                            "${data['Page']['media'][index]['title']['romaji']}",
-                        image: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: CachedNetworkImage(
-                            fit: BoxFit.contain,
-                            imageUrl: data['Page']['media'][index]['coverImage']
-                                ['extraLarge'],
-                          ),
-                        ),
-                        count:
-                            (data['Page']['media'][index]['episodes'] ?? "n/a")
-                                .toString(),
-                        score: data['Page']['media'][index]['averageScore'],
-                        description:
-                            data['Page']['media'][index]['description'] ?? "",
-                      );
-                    },
-                  ), //data!['Page']['media'],
-                );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          )
+          const Divider(
+            height: 3,
+          ),
+          (animeData.isNotEmpty)
+              ? Grid(data: animeData)
+              : const Center(
+                  child: CircularProgressIndicator(),
+                ),
         ],
       ),
     );
@@ -242,6 +260,20 @@ class AniEpisodes extends StatelessWidget {
     this.id,
     super.key,
   });
+
+  aniInfo(id) async {
+    String link =
+        "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
+    var json = await Dio().get(link);
+    return json.data;
+  }
+
+  episodeInfo(name) async {
+    String link =
+        "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
+    var json = await Dio().get(link);
+    return json.data;
+  }
 
   @override
   Widget build(context) {

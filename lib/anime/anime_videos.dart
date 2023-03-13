@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path_provider/path_provider.dart';
-//import 'package:subtitle/subtitle.dart';
 import 'package:universal_io/io.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -28,6 +27,7 @@ class AniViewerState extends State<AniViewer> {
   Player? player;
   VideoController? controller;
   BetterPlayerController? phonePlayer;
+
   bool isPhone = Platform.isAndroid || Platform.isIOS;
 
   @override
@@ -47,7 +47,9 @@ class AniViewerState extends State<AniViewer> {
                   (widget.subtitles[index]['lang'] == "English") ? true : false,
               type: BetterPlayerSubtitlesSourceType.network,
               name: widget.subtitles[index]['lang'],
-              urls: [widget.subtitles[index]['url']],
+              urls: [
+                widget.subtitles[index]['url'],
+              ],
             );
           },
         ),
@@ -115,14 +117,13 @@ class AniViewerState extends State<AniViewer> {
 
   @override
   void dispose() {
+    super.dispose();
     if (!isPhone) {
       Future.microtask(() async {
-        debugPrint('Disposing [Player] and [VideoController]...');
         await controller!.dispose();
         await player!.dispose();
       });
     }
-    super.dispose();
   }
 }
 
@@ -136,18 +137,19 @@ class VideoControls extends StatefulWidget {
 
 class VideoControlsState extends State<VideoControls> {
   bool fullscreen = false;
+  bool show = false;
+  Timer? timer;
 
   @override
   void dispose() {
     timer!.cancel();
-    Future.microtask(
-      () => windowManager.setFullScreen(false),
-    );
+    Future.microtask(() async {
+      await windowManager.setFullScreen(false);
+      await widget.player.dispose();
+    });
     super.dispose();
   }
 
-  bool show = false;
-  Timer? timer;
   @override
   Widget build(context) {
     return GestureDetector(
@@ -252,64 +254,3 @@ class VideoControlsState extends State<VideoControls> {
     );
   }
 }
-
-// class AnimeSubtitles extends StatefulWidget {
-//   final String? url;
-//   final Player player;
-
-//   const AnimeSubtitles({required this.url, required this.player, super.key});
-//   @override
-//   State createState() => AnimeSubtitlesState();
-// }
-
-// class AnimeSubtitlesState extends State<AnimeSubtitles> {
-//   SubtitleController? controller;
-
-//   @override
-//   void initState() {
-//     if (widget.url != null) {
-//       controller = SubtitleController(
-//         provider: SubtitleProvider.fromNetwork(
-//           Uri.parse(widget.url!),
-//         ),
-//       );
-//       controller!.initial();
-//     }
-//     super.initState();
-//   }
-
-//   @override
-//   Widget build(context) {
-//     return StreamBuilder(
-//       stream: widget.player.streams.position,
-//       builder: (context, AsyncSnapshot<Duration> snapshot) {
-//         if (snapshot.hasData) {
-//           return (controller != null &&
-//                   controller!.durationSearch(snapshot.data!)?.data != null)
-//               ? ConstraintsTransformBox(
-//                   constraintsTransform:
-//                       ConstraintsTransformBox.maxHeightUnconstrained,
-//                   child: DecoratedBox(
-//                     decoration: const BoxDecoration(
-//                       color: Color.fromRGBO(0, 0, 0, 0.3),
-//                     ),
-//                     child: Text(
-//                       (controller != null)
-//                           ? controller!.durationSearch(snapshot.data!)!.data
-//                           : "",
-//                       textAlign: TextAlign.center,
-//                       textWidthBasis: TextWidthBasis.longestLine,
-//                       style: const TextStyle(
-//                         color: Colors.white,
-//                         fontSize: 32,
-//                       ),
-//                     ),
-//                   ),
-//                 )
-//               : const SizedBox.shrink();
-//         }
-//         return const SizedBox.shrink();
-//       },
-//     );
-//   }
-// }
