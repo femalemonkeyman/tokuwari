@@ -43,6 +43,11 @@ dependencies:
      url: https://github.com/alexmercerind/media_kit
      ref: main
      path: media_kit_libs_windows_video
+  media_kit_libs_macos:
+    git:
+     url: https://github.com/alexmercerind/media_kit
+     ref: main
+     path: media_kit_libs_macos
   path_provider: 
   permission_handler: 
   #preload_page_view: ^0.1.6
@@ -55,7 +60,7 @@ dependencies:
   infinite_scroll_pagination:
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
-  expandable_text: ^2.3.0
+  expandable_text: 
 
 dependency_overrides:
   web_socket_channel: 2.2.0

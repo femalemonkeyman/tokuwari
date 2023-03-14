@@ -108,8 +108,8 @@ class MangaReader extends StatelessWidget {
             ],
           );
         }
-        return Column(
-          children: const [
+        return const Column(
+          children: [
             Align(
               alignment: Alignment.topLeft,
               child: BackButton(),

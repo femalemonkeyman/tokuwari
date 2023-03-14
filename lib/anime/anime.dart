@@ -17,26 +17,24 @@ query (\$page: Int!, \$search: String, \$genre: [String])
       total
       currentPage
     },
-      media(sort: [TRENDING_DESC], type: ANIME, search: \$search, genre_in: \$genre) {
-        id
+    media(sort: [TRENDING_DESC], type: ANIME, search: \$search, genre_in: \$genre) {
+      id
         title {
           romaji
           english
           native
         }
-        type
-        chapters
+        status
         averageScore
-        episodes
         description(asHtml: false)
-        coverImage{
+        episodes
+        coverImage {
           extraLarge
         }
-        episodes
         tags {
           name
-        }
-      }
+       }
+    }
   }
 }
 """;
@@ -119,6 +117,8 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
         query.data!['Page']['media'].length,
         (index) {
           return AniData(
+            type: "anime",
+            mediaId: query.data!['Page']['media'][index]['id'].toString(),
             description:
                 (query.data!['Page']['media'][index]['description'] ?? "")
                     .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
@@ -129,6 +129,13 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
                 .toString(),
             score: (query.data!['Page']['media'][index]['averageScore'])
                 .toString(),
+            tags: List.generate(
+              query.data!['Page']['media'][index]['tags'].length,
+              (tagIndex) {
+                return query.data!['Page']['media'][index]['tags'][tagIndex]
+                    ['name'];
+              },
+            ),
           );
         },
       ),
@@ -288,7 +295,7 @@ class AniEpisodes extends StatelessWidget {
             itemBuilder: ((context, index) {
               return ListTile(
                 title: Text(
-                  "Episode: ${(snapshot.data["episodes"][index]["title"]) ?? snapshot.data['episodes'][index]['number']}",
+                  "Episode: ${index + 1} ${(snapshot.data["episodes"][index]["title"]) ?? snapshot.data['episodes'][index]['number']}",
                 ),
                 onTap: () => Navigator.push(
                   context,

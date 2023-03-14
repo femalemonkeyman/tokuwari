@@ -74,7 +74,7 @@ class EpubReader {
         }
       }
     } catch (e) {
-      print(e);
+      //print(e);
     }
 
     return chapters;

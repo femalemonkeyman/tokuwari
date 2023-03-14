@@ -76,7 +76,6 @@ class AniViewerState extends State<AniViewer> {
         Directory dir = await getTemporaryDirectory();
         String path = "";
         for (final i in widget.subtitles) {
-          print(i['lang']);
           await Dio().download(i['url'], "${dir.path}/${i['lang']}subs.vtt");
           if (i['lang'] == "English") {
             path = "${dir.path}/${i['lang']}subs.vtt";

@@ -84,6 +84,8 @@ class MangaPageState extends State<MangaPage> {
         json.data['data'].length,
         (index) {
           return AniData(
+            type: "manga",
+            mediaId: data[index]['id'],
             title: data[index]['attributes']['title'].values.first,
             image:
                 "https://uploads.mangadex.org/covers/${data[index]['id']}/${data[index]['relationships'][data[index]['relationships'].indexWhere((i) => i['type'] == "cover_art")]['attributes']['fileName']}.512.jpg",
@@ -95,6 +97,7 @@ class MangaPageState extends State<MangaPage> {
                     .isNotEmpty)
                 ? data[index]['attributes']['lastChapter']
                 : data[index]['attributes']['status'],
+            tags: [],
           );
         },
       ),

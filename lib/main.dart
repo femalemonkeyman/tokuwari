@@ -10,12 +10,10 @@ void main() async {
     MaterialApp(
       theme: ThemeData(
         dividerColor: Colors.transparent,
-        brightness: Brightness.dark,
-        primaryColor: Colors.purple,
         scaffoldBackgroundColor: const Color.fromARGB(200, 0, 0, 20),
-        colorScheme:
-            ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
-          background: Colors.blueAccent,
+        cardColor: Colors.deepPurple,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
           brightness: Brightness.dark,
         ),
         pageTransitionsTheme: const PageTransitionsTheme(
