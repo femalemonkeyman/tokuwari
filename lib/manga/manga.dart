@@ -97,7 +97,13 @@ class MangaPageState extends State<MangaPage> {
                     .isNotEmpty)
                 ? data[index]['attributes']['lastChapter']
                 : data[index]['attributes']['status'],
-            tags: [],
+            tags: List.generate(
+              data[index]['attributes']['tags'].length.clamp(0, 20),
+              (tagIndex) {
+                return data[index]['attributes']['tags'][tagIndex]['attributes']
+                    ['name']['en'];
+              },
+            ),
           );
         },
       ),
@@ -175,7 +181,9 @@ class MangaChapters extends StatelessWidget {
                 child: Container(
                   height: 40,
                   decoration: const BoxDecoration(
-                    border: Border(top: BorderSide(color: Colors.blueGrey)),
+                    border: Border(
+                      top: BorderSide(color: Colors.blueGrey),
+                    ),
                   ),
                   child: Text("Chapter: ${snapshot.data?[index]['chapter']}"),
                 ),

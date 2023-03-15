@@ -13,6 +13,7 @@ class AniData {
   final String? score;
   final String? count;
   final List<String> tags;
+  bool favourited;
   AniData({
     required this.type,
     required this.mediaId,
@@ -22,5 +23,6 @@ class AniData {
     this.count,
     this.score,
     required this.tags,
+    this.favourited = false,
   });
 }

@@ -127,8 +127,9 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
                 ['extraLarge'],
             count: (query.data!['Page']['media'][index]['episodes'] ?? "n/a")
                 .toString(),
-            score: (query.data!['Page']['media'][index]['averageScore'])
-                .toString(),
+            score:
+                (query.data!['Page']['media'][index]['averageScore'] ?? "n/a")
+                    .toString(),
             tags: List.generate(
               query.data!['Page']['media'][index]['tags'].length,
               (tagIndex) {
@@ -164,38 +165,41 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
       context: context,
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setState) => SimpleDialog(
-            children: [
-              SizedBox(
-                width: 200,
-                child: Wrap(
-                  spacing: 500,
-                  children: List.generate(
-                    genresList.length,
-                    (index) {
-                      return CheckboxListTile(
-                        value: selectedGenres.contains(
-                          genresList[index],
-                        ),
-                        title: Text(
-                          genresList[index],
-                        ),
-                        onChanged: (value) async {
-                          if (value!) {
-                            selectedGenres.add(genresList[index]);
-                          } else {
-                            selectedGenres.remove(genresList[index]);
-                          }
-                          setState(
-                            () {},
-                          );
-                        },
-                      );
-                    },
-                  ),
+          builder: (context, setState) => AlertDialog(
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width / 2,
+              child: Wrap(
+                spacing: 20,
+                runSpacing: 20,
+                children: List.generate(
+                  genresList.length,
+                  (index) {
+                    return FilterChip(
+                      showCheckmark: false,
+                      labelPadding: EdgeInsets.all(15),
+                      padding: const EdgeInsets.all(2),
+                      selected: selectedGenres.contains(
+                        genresList[index],
+                      ),
+                      label: Text(
+                        genresList[index],
+                      ),
+                      onSelected: (value) async {
+                        if (value) {
+                          selectedGenres.add(genresList[index]);
+                        } else {
+                          selectedGenres.remove(genresList[index]);
+                        }
+                        setState(
+                          () {},
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
-            ],
+            ),
+            actions: [],
           ),
         );
       },
@@ -262,20 +266,20 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
 }
 
 class AniEpisodes extends StatelessWidget {
-  final id;
+  final String id;
   const AniEpisodes({
-    this.id,
+    required this.id,
     super.key,
   });
 
-  aniInfo(id) async {
+  Future<Map> mediaList(id) async {
     String link =
         "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
     var json = await Dio().get(link);
     return json.data;
   }
 
-  episodeInfo(name) async {
+  mediaInfo(name) async {
     String link =
         "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
     var json = await Dio().get(link);
@@ -284,18 +288,18 @@ class AniEpisodes extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return FutureBuilder<dynamic>(
-      future: aniInfo(id),
+    return FutureBuilder<Map>(
+      future: mediaList(id),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
+        if (snapshot.hasData && snapshot.data != null) {
           return ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: snapshot.data['episodes'].length,
+            itemCount: snapshot.data?['episodes'].length,
             itemBuilder: ((context, index) {
               return ListTile(
                 title: Text(
-                  "Episode: ${index + 1} ${(snapshot.data["episodes"][index]["title"]) ?? snapshot.data['episodes'][index]['number']}",
+                  "Episode: ${index + 1} ${(snapshot.data?["episodes"][index]["title"]) ?? snapshot.data?['episodes'][index]['number']}",
                 ),
                 onTap: () => Navigator.push(
                   context,
@@ -311,8 +315,9 @@ class AniEpisodes extends StatelessWidget {
                             }
                           },
                           child: FutureBuilder<dynamic>(
-                            future: episodeInfo(
-                                snapshot.data['episodes'][index]['id']),
+                            future: mediaInfo(
+                              snapshot.data?['episodes'][index]['id'],
+                            ),
                             builder: (context, info) {
                               if (info.hasData) {
                                 return AniViewer(

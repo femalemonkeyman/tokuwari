@@ -27,33 +27,38 @@ const AniDataSchema = CollectionSchema(
       name: r'description',
       type: IsarType.string,
     ),
-    r'image': PropertySchema(
+    r'favourited': PropertySchema(
       id: 2,
+      name: r'favourited',
+      type: IsarType.bool,
+    ),
+    r'image': PropertySchema(
+      id: 3,
       name: r'image',
       type: IsarType.string,
     ),
     r'mediaId': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'mediaId',
       type: IsarType.string,
     ),
     r'score': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'score',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'title': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'title',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'type',
       type: IsarType.string,
     )
@@ -113,12 +118,13 @@ void _aniDataSerialize(
 ) {
   writer.writeString(offsets[0], object.count);
   writer.writeString(offsets[1], object.description);
-  writer.writeString(offsets[2], object.image);
-  writer.writeString(offsets[3], object.mediaId);
-  writer.writeString(offsets[4], object.score);
-  writer.writeStringList(offsets[5], object.tags);
-  writer.writeString(offsets[6], object.title);
-  writer.writeString(offsets[7], object.type);
+  writer.writeBool(offsets[2], object.favourited);
+  writer.writeString(offsets[3], object.image);
+  writer.writeString(offsets[4], object.mediaId);
+  writer.writeString(offsets[5], object.score);
+  writer.writeStringList(offsets[6], object.tags);
+  writer.writeString(offsets[7], object.title);
+  writer.writeString(offsets[8], object.type);
 }
 
 AniData _aniDataDeserialize(
@@ -130,12 +136,13 @@ AniData _aniDataDeserialize(
   final object = AniData(
     count: reader.readStringOrNull(offsets[0]),
     description: reader.readString(offsets[1]),
-    image: reader.readString(offsets[2]),
-    mediaId: reader.readString(offsets[3]),
-    score: reader.readStringOrNull(offsets[4]),
-    tags: reader.readStringList(offsets[5]) ?? [],
-    title: reader.readString(offsets[6]),
-    type: reader.readString(offsets[7]),
+    favourited: reader.readBoolOrNull(offsets[2]) ?? false,
+    image: reader.readString(offsets[3]),
+    mediaId: reader.readString(offsets[4]),
+    score: reader.readStringOrNull(offsets[5]),
+    tags: reader.readStringList(offsets[6]) ?? [],
+    title: reader.readString(offsets[7]),
+    type: reader.readString(offsets[8]),
   );
   return object;
 }
@@ -152,16 +159,18 @@ P _aniDataDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
-    case 5:
-      return (reader.readStringList(offset) ?? []) as P;
-    case 6:
       return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readStringOrNull(offset)) as P;
+    case 6:
+      return (reader.readStringList(offset) ?? []) as P;
     case 7:
+      return (reader.readString(offset)) as P;
+    case 8:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -528,6 +537,16 @@ extension AniDataQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'description',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> favouritedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'favourited',
+        value: value,
       ));
     });
   }
@@ -1497,6 +1516,18 @@ extension AniDataQuerySortBy on QueryBuilder<AniData, AniData, QSortBy> {
     });
   }
 
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByFavourited() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'favourited', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByFavouritedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'favourited', Sort.desc);
+    });
+  }
+
   QueryBuilder<AniData, AniData, QAfterSortBy> sortByImage() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'image', Sort.asc);
@@ -1581,6 +1612,18 @@ extension AniDataQuerySortThenBy
   QueryBuilder<AniData, AniData, QAfterSortBy> thenByDescriptionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByFavourited() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'favourited', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByFavouritedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'favourited', Sort.desc);
     });
   }
 
@@ -1673,6 +1716,12 @@ extension AniDataQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AniData, AniData, QDistinct> distinctByFavourited() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'favourited');
+    });
+  }
+
   QueryBuilder<AniData, AniData, QDistinct> distinctByImage(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1732,6 +1781,12 @@ extension AniDataQueryProperty
   QueryBuilder<AniData, String, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
+    });
+  }
+
+  QueryBuilder<AniData, bool, QQueryOperations> favouritedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'favourited');
     });
   }
 

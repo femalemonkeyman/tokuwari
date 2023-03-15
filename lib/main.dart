@@ -12,9 +12,14 @@ void main() async {
         dividerColor: Colors.transparent,
         scaffoldBackgroundColor: const Color.fromARGB(200, 0, 0, 20),
         cardColor: Colors.deepPurple,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
+        colorSchemeSeed: Colors.deepPurple,
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        dividerTheme: const DividerThemeData(
+          color: Colors.transparent,
+        ),
+        chipTheme: const ChipThemeData(
+          showCheckmark: false,
         ),
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
@@ -59,6 +64,7 @@ class AniNav extends StatelessWidget {
                 ),
               ),
               TabBar(
+                indicatorSize: TabBarIndicatorSize.tab,
                 indicator: BoxDecoration(
                   color: Colors.deepPurple,
                   borderRadius: BorderRadius.all(

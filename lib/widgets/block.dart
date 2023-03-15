@@ -25,43 +25,89 @@ class Block extends StatelessWidget {
           );
         }
       },
-      child: Column(
+      child: Stack(
         children: [
-          Expanded(
-            child: AniImage(image: data.image),
-          ),
-          const Divider(
-            height: 5,
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 15, right: 15),
-            child: Text(
-              "${data.title}\n",
-              maxLines: 2,
-              textWidthBasis: TextWidthBasis.longestLine,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Wrap(
-                  alignment: WrapAlignment.spaceEvenly,
-                  children: [
-                    if (data.count != null)
-                      Text(
-                        "Count: ${data.count}",
-                        textScaleFactor: 0.8,
-                      ),
-                    if (data.score != null)
-                      Text(
-                        "Score: ${data.score ?? "n/a"}",
-                        textScaleFactor: 0.8,
-                      ),
+          Positioned.fill(
+            child: DecoratedBox(
+              position: DecorationPosition.foreground,
+              decoration: BoxDecoration(
+                border: Border.all(strokeAlign: -0.050),
+                borderRadius: BorderRadius.circular(30),
+                gradient: const LinearGradient(
+                  tileMode: TileMode.repeated,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color.fromARGB(0, 0, 0, 0),
+                    Color.fromARGB(0, 0, 0, 0),
+                    Color.fromARGB(149, 0, 0, 0),
+                    Color.fromARGB(255, 0, 0, 0)
                   ],
                 ),
               ),
-            ],
+              child: AniImage(image: data.image),
+            ),
+          ),
+          Positioned(
+            bottom: 15,
+            right: 10,
+            left: 10,
+            child: Text(
+              data.title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (data.score != null)
+            Positioned(
+              right: 10,
+              top: 10,
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: const BoxDecoration(
+                  color: Colors.black, //Yes
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromARGB(94, 0, 0, 0),
+                      spreadRadius: 3,
+                      blurRadius: 3,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  "★ ${data.score ?? "n/a"}",
+                ),
+              ),
+            ),
+          Positioned(
+            left: 10,
+            top: 10,
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: const BoxDecoration(
+                color: Colors.white, // Ill swear in russian for real lol :D
+                borderRadius: BorderRadius.all(
+                  Radius.circular(30),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromARGB(94, 0, 0, 0),
+                    spreadRadius: 3,
+                    blurRadius: 3,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Text(
+                "# ${data.count ?? "n/a"}",
+                style: const TextStyle(color: Colors.black),
+              ),
+            ),
           ),
         ],
       ),
