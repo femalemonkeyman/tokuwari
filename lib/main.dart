@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'anime/anime.dart';
@@ -45,14 +46,14 @@ class AniNav extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return const Scaffold(
+    return Scaffold(
       resizeToAvoidBottomInset: false,
       body: DefaultTabController(
         length: 4,
         child: SafeArea(
           child: Column(
             children: [
-              Expanded(
+              const Expanded(
                 child: TabBarView(
                   physics: NeverScrollableScrollPhysics(),
                   children: [
@@ -63,56 +64,59 @@ class AniNav extends StatelessWidget {
                   ],
                 ),
               ),
-              TabBar(
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicator: BoxDecoration(
-                  color: Colors.deepPurple,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(15),
+              SizedBox(
+                width: clampDouble(MediaQuery.of(context).size.width, 0, 384),
+                child: const TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicator: BoxDecoration(
+                    color: Colors.deepPurple,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(15),
+                    ),
                   ),
+                  tabs: [
+                    Tab(
+                      child: Wrap(
+                        children: [
+                          Icon(MdiIcons.youtubeTv),
+                          SizedBox(
+                            width: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Tab(
+                      child: Wrap(
+                        children: [
+                          Icon(MdiIcons.bookOpenOutline),
+                          SizedBox(
+                            width: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Tab(
+                      child: Wrap(
+                        children: [
+                          Icon(MdiIcons.book),
+                          SizedBox(
+                            width: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Tab(
+                      child: Wrap(
+                        children: [
+                          Icon(MdiIcons.bookmark),
+                          SizedBox(
+                            width: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                tabs: [
-                  Tab(
-                    child: Wrap(
-                      children: [
-                        Icon(MdiIcons.youtubeTv),
-                        SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Wrap(
-                      children: [
-                        Icon(MdiIcons.bookOpenOutline),
-                        SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Wrap(
-                      children: [
-                        Icon(MdiIcons.book),
-                        SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Wrap(
-                      children: [
-                        Icon(MdiIcons.bookmark),
-                        SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ],
           ),

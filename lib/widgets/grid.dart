@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:universal_io/io.dart';
 import '../providers/info_models.dart';
 import 'block.dart';
 
@@ -30,11 +28,11 @@ class GridState extends State<Grid> with AutomaticKeepAliveClientMixin {
             itemCount: widget.data.length,
             shrinkWrap: true,
             primary: false,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               mainAxisSpacing: 20,
               crossAxisSpacing: 20,
               childAspectRatio: 4 / 6,
-              crossAxisCount: (MediaQuery.of(context).size.width / 300).ceil(),
+              maxCrossAxisExtent: 270,
             ),
             itemBuilder: (context, index) {
               return Block(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:anicross/providers/anime_providers.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:better_player/better_player.dart';
 import 'package:dio/dio.dart';
@@ -11,13 +12,10 @@ import 'package:universal_io/io.dart';
 import 'package:window_manager/window_manager.dart';
 
 class AniViewer extends StatefulWidget {
-  final List sources;
-  final List subtitles;
-  const AniViewer({
-    super.key,
-    required this.sources,
-    this.subtitles = const [],
-  });
+  final List episodes;
+  final Map episode;
+
+  const AniViewer({super.key, required this.episodes, required this.episode});
 
   @override
   State<StatefulWidget> createState() => AniViewerState();
@@ -27,91 +25,110 @@ class AniViewerState extends State<AniViewer> {
   Player? player;
   VideoController? controller;
   BetterPlayerController? phonePlayer;
+  int currentEpisode = 1;
+  List subtitles = [];
+  late Future<Map> getMediaInfo = mediaInfo(
+    widget.episode['id'],
+  );
 
   bool isPhone = Platform.isAndroid || Platform.isIOS;
 
   @override
   void initState() {
     super.initState();
-    if (isPhone) {
-      BetterPlayerDataSource source = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        widget.sources.first['url'],
-        headers: {"User-Agent": "Death"},
-        videoFormat: BetterPlayerVideoFormat.hls,
-        subtitles: List.generate(
-          widget.subtitles.length - 1,
-          (index) {
-            return BetterPlayerSubtitlesSource(
-              selectedByDefault:
-                  (widget.subtitles[index]['lang'] == "English") ? true : false,
-              type: BetterPlayerSubtitlesSourceType.network,
-              name: widget.subtitles[index]['lang'],
-              urls: [
-                widget.subtitles[index]['url'],
-              ],
-            );
-          },
-        ),
-      );
-      phonePlayer = BetterPlayerController(
-        const BetterPlayerConfiguration(
-          controlsConfiguration: BetterPlayerControlsConfiguration(),
-          deviceOrientationsOnFullScreen: [
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight,
-          ],
-          fullScreenByDefault: true,
-          autoPlay: true,
-          aspectRatio: 16 / 9,
-          allowedScreenSleep: false,
-          fit: BoxFit.contain,
-        ),
-        betterPlayerDataSource: source,
-      );
-    } else {
-      player = Player(configuration: const PlayerConfiguration());
-      Future.microtask(() async {
-        controller = await VideoController.create(player!.handle);
-        Directory dir = await getTemporaryDirectory();
-        String path = "";
-        for (final i in widget.subtitles) {
-          await Dio().download(i['url'], "${dir.path}/${i['lang']}subs.vtt");
-          if (i['lang'] == "English") {
-            path = "${dir.path}/${i['lang']}subs.vtt";
-          }
-        }
-        (player!.platform as libmpvPlayer).setProperty("sub-files", path);
-        setState(() {});
-      });
-      player!.open(
-        Playlist(
-          [
-            Media(
-              widget.sources.last['url'],
-            ),
-          ],
-        ),
-      );
+  }
+
+  Future desktopPlayer() async {
+    controller = await VideoController.create(player!.handle);
+    Directory dir = await getTemporaryDirectory();
+    String path = "";
+    for (final i in subtitles) {
+      await Dio().download(i['url'], "${dir.path}/${i['lang']}subs.vtt");
+      if (i['lang'] == "English") {
+        path = "${dir.path}/${i['lang']}subs.vtt";
+      }
+      (player!.platform as libmpvPlayer).setProperty("sub-files", path);
     }
   }
 
   @override
   Widget build(context) {
-    if (!isPhone) {
-      return Stack(
-        children: [
-          Video(controller: controller),
-          VideoControls(
-            player: player!,
-          ),
-        ],
-      );
-    } else {
-      return BetterPlayer(
-        controller: phonePlayer!,
-      );
-    }
+    return FutureBuilder<Map>(
+      future: getMediaInfo,
+      builder: (context, snap) {
+        print(snap.error);
+        if (snap.hasData && snap.connectionState == ConnectionState.done) {
+          subtitles = snap.data!['subtitles']!;
+          if (isPhone) {
+            BetterPlayerDataSource source = BetterPlayerDataSource(
+              BetterPlayerDataSourceType.network,
+              snap.data!['sources']!.first['url'],
+              headers: {"User-Agent": "Death"},
+              videoFormat: BetterPlayerVideoFormat.hls,
+              subtitles: List.generate(
+                subtitles.length - 1,
+                (index) {
+                  return BetterPlayerSubtitlesSource(
+                    selectedByDefault:
+                        (subtitles[index]['lang'] == "English") ? true : false,
+                    type: BetterPlayerSubtitlesSourceType.network,
+                    name: subtitles[index]['lang'],
+                    urls: [
+                      subtitles[index]['url'],
+                    ],
+                  );
+                },
+              ),
+            );
+            phonePlayer = BetterPlayerController(
+              const BetterPlayerConfiguration(
+                controlsConfiguration: BetterPlayerControlsConfiguration(),
+                deviceOrientationsOnFullScreen: [
+                  DeviceOrientation.landscapeLeft,
+                  DeviceOrientation.landscapeRight,
+                ],
+                fullScreenByDefault: true,
+                autoPlay: true,
+                aspectRatio: 16 / 9,
+                allowedScreenSleep: false,
+                fit: BoxFit.contain,
+              ),
+              betterPlayerDataSource: source,
+            );
+            return BetterPlayer(
+              controller: phonePlayer!,
+            );
+          } else {
+            player = Player(configuration: const PlayerConfiguration());
+            return FutureBuilder(
+              future: desktopPlayer(),
+              builder: (context, innerSnap) {
+                player!.open(
+                  Playlist(
+                    [
+                      Media(
+                        snap.data!['sources']!.last['url'],
+                      ),
+                    ],
+                  ),
+                );
+                return Stack(
+                  children: [
+                    Video(controller: controller),
+                    VideoControls(
+                      player: player!,
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
   }
 
   @override

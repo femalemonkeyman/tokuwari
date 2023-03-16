@@ -1,11 +1,8 @@
 import '../providers/info_models.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:graphql/client.dart';
 import '../widgets/search_button.dart';
 import '../widgets/grid.dart';
-import 'anime_videos.dart';
 
 const base = """
 query (\$page: Int!, \$search: String, \$genre: [String])
@@ -175,8 +172,7 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
                   genresList.length,
                   (index) {
                     return FilterChip(
-                      showCheckmark: false,
-                      labelPadding: EdgeInsets.all(15),
+                      labelPadding: const EdgeInsets.all(15),
                       padding: const EdgeInsets.all(2),
                       selected: selectedGenres.contains(
                         genresList[index],
@@ -261,86 +257,6 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
                 ),
         ],
       ),
-    );
-  }
-}
-
-class AniEpisodes extends StatelessWidget {
-  final String id;
-  const AniEpisodes({
-    required this.id,
-    super.key,
-  });
-
-  Future<Map> mediaList(id) async {
-    String link =
-        "https://api.consumet.org/meta/anilist/info/$id?provider=zoro";
-    var json = await Dio().get(link);
-    return json.data;
-  }
-
-  mediaInfo(name) async {
-    String link =
-        "https://api.consumet.org/meta/anilist/watch/$name?provider=zoro";
-    var json = await Dio().get(link);
-    return json.data;
-  }
-
-  @override
-  Widget build(context) {
-    return FutureBuilder<Map>(
-      future: mediaList(id),
-      builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data != null) {
-          return ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: snapshot.data?['episodes'].length,
-            itemBuilder: ((context, index) {
-              return ListTile(
-                title: Text(
-                  "Episode: ${index + 1} ${(snapshot.data?["episodes"][index]["title"]) ?? snapshot.data?['episodes'][index]['number']}",
-                ),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return Scaffold(
-                        body: RawKeyboardListener(
-                          autofocus: true,
-                          focusNode: FocusNode(),
-                          onKey: (value) {
-                            if (value.isKeyPressed(LogicalKeyboardKey.escape)) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: FutureBuilder<dynamic>(
-                            future: mediaInfo(
-                              snapshot.data?['episodes'][index]['id'],
-                            ),
-                            builder: (context, info) {
-                              if (info.hasData) {
-                                return AniViewer(
-                                  sources: info.data['sources'] ?? [],
-                                  subtitles: info.data['subtitles'] ?? [],
-                                );
-                              }
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            }),
-          );
-        }
-        return const CircularProgressIndicator();
-      },
     );
   }
 }

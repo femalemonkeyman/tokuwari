@@ -3,27 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../widgets/grid.dart';
 import '../widgets/search_button.dart';
-import 'manga_reader.dart';
 
 const mangadex = "https://api.mangadex.org/";
-
-dexReader(id) async {
-  List chapters = [];
-  var json = await Dio().get(
-    "${mangadex}manga/$id/aggregate?translatedLanguage[]=en",
-  );
-  for (var i in json.data['volumes'].values) {
-    if (i['chapters'] is List) {
-      i['chapters'] = {
-        i['chapters'][0]['chapter']: i['chapters'][0],
-      };
-    }
-    for (var j in i['chapters'].values) {
-      chapters.add(j);
-    }
-  }
-  return chapters;
-}
 
 class MangaPage extends StatefulWidget {
   const MangaPage({Key? key}) : super(key: key);
@@ -36,7 +17,6 @@ class MangaPageState extends State<MangaPage> {
   final TextEditingController textController = TextEditingController();
   late final tags = Dio().get("$mangadex/tag");
   List<AniData> mangaData = [];
-  List data = [];
   int offset = 0;
   String search = "";
 
@@ -116,7 +96,10 @@ class MangaPageState extends State<MangaPage> {
   Widget build(context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification.metrics.extentAfter < 600 && offset <= data.length) {
+        if (notification.metrics.extentAfter < 600 &&
+            offset <= mangaData.length) {
+          print(offset);
+          print(mangaData.length);
           offset += 101;
           updateData();
         }
@@ -145,56 +128,56 @@ class MangaPageState extends State<MangaPage> {
   }
 }
 
-class MangaChapters extends StatelessWidget {
-  final String id;
+// class MangaChapters extends StatelessWidget {
+//   final String id;
 
-  const MangaChapters({Key? key, required this.id}) : super(key: key);
-  @override
-  Widget build(context) {
-    return FutureBuilder<dynamic>(
-      future: dexReader(id),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: snapshot.data?.length,
-            itemBuilder: ((
-              context,
-              index,
-            ) {
-              return GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return Scaffold(
-                        body: MangaReader(
-                          current: snapshot.data[index]['id'],
-                          chapters: snapshot.data,
-                          index: index,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                child: Container(
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      top: BorderSide(color: Colors.blueGrey),
-                    ),
-                  ),
-                  child: Text("Chapter: ${snapshot.data?[index]['chapter']}"),
-                ),
-              );
-            }),
-          );
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
-  }
-}
+//   const MangaChapters({Key? key, required this.id}) : super(key: key);
+//   @override
+//   Widget build(context) {
+//     return FutureBuilder<dynamic>(
+//       future: dexReader(id),
+//       builder: (context, snapshot) {
+//         if (snapshot.hasData) {
+//           return ListView.builder(
+//             physics: const NeverScrollableScrollPhysics(),
+//             shrinkWrap: true,
+//             itemCount: snapshot.data?.length,
+//             itemBuilder: ((
+//               context,
+//               index,
+//             ) {
+//               return GestureDetector(
+//                 onTap: () => Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) {
+//                       return Scaffold(
+//                         body: MangaReader(
+//                           current: snapshot.data[index]['id'],
+//                           chapters: snapshot.data,
+//                           index: index,
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//                 child: Container(
+//                   height: 40,
+//                   decoration: const BoxDecoration(
+//                     border: Border(
+//                       top: BorderSide(color: Colors.blueGrey),
+//                     ),
+//                   ),
+//                   child: Text("Chapter: ${snapshot.data?[index]['chapter']}"),
+//                 ),
+//               );
+//             }),
+//           );
+//         }
+//         return const Center(
+//           child: CircularProgressIndicator(),
+//         );
+//       },
+//     );
+//   }
+// }
