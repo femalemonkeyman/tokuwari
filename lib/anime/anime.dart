@@ -195,7 +195,12 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
                 ),
               ),
             ),
-            actions: [],
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("Okay"),
+              ),
+            ],
           ),
         );
       },
@@ -211,21 +216,10 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(context) {
     super.build(context);
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (notification.metrics.extentAfter < 600 &&
-            pageInfo['hasNextPage'] &&
-            pageInfo['currentPage'] + 1 != page) {
-          page = pageInfo['currentPage'] + 1;
-          updateData();
-          setState(() {});
-        }
-        return true;
-      },
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          Center(
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Center(
             child: SearchButton(
               text: "Anilist",
               controller: textController,
@@ -235,7 +229,9 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
               },
             ),
           ),
-          Wrap(
+        ),
+        SliverToBoxAdapter(
+          child: Wrap(
             alignment: WrapAlignment.spaceAround,
             children: [
               TextButton(
@@ -247,16 +243,24 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
               ),
             ],
           ),
-          const Divider(
-            height: 3,
-          ),
-          (animeData.isNotEmpty)
-              ? Grid(data: animeData)
-              : const Center(
+        ),
+        (animeData.isNotEmpty)
+            ? Grid(
+                data: animeData,
+                paginate: () async {
+                  if (page != pageInfo['currentPage'] + 1) {
+                    page = pageInfo['currentPage'] + 1;
+                    await updateData();
+                    setState(() {});
+                  }
+                },
+              )
+            : const SliverToBoxAdapter(
+                child: Center(
                   child: CircularProgressIndicator(),
                 ),
-        ],
-      ),
+              ),
+      ],
     );
   }
 }

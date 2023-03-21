@@ -10,7 +10,7 @@ Future<List> mediaList(id) async {
       return {
         "id": json.data['episodes'][index]['id'],
         "title": json.data['episodes'][index]['title'],
-        "number": json.data['episodes'][index]['number'],
+        "number": "Episode: ${json.data['episodes'][index]['number']}",
         "description": json.data['episodes'][index]['description']
       };
     },

@@ -13,6 +13,7 @@ environment:
 
 dependencies:
   archive: 
+
   better_player:
     git:
       url: https://github.com/femalemonkeyman/betterplayer
@@ -61,7 +62,7 @@ dependencies:
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
   expandable_text: 
-
+  
 dependency_overrides:
   web_socket_channel: 2.2.0
 

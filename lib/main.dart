@@ -1,3 +1,4 @@
+import 'package:anicross/color_schemes.g.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -10,15 +11,11 @@ void main() async {
   runApp(
     MaterialApp(
       theme: ThemeData(
-        dividerColor: Colors.transparent,
-        scaffoldBackgroundColor: const Color.fromARGB(200, 0, 0, 20),
-        cardColor: Colors.deepPurple,
-        colorSchemeSeed: Colors.deepPurple,
-        useMaterial3: true,
-        brightness: Brightness.dark,
         dividerTheme: const DividerThemeData(
           color: Colors.transparent,
         ),
+        colorScheme: darkColorScheme,
+        useMaterial3: true,
         chipTheme: const ChipThemeData(
           showCheckmark: false,
         ),
@@ -59,8 +56,10 @@ class AniNav extends StatelessWidget {
                   children: [
                     AniPage(),
                     MangaPage(),
-                    NovelPage(),
-                    SizedBox.shrink(),
+                    //NovelPage(),
+                    Placeholder(),
+                    Placeholder(),
+                    //SizedBox.shrink(),
                   ],
                 ),
               ),
@@ -76,44 +75,16 @@ class AniNav extends StatelessWidget {
                   ),
                   tabs: [
                     Tab(
-                      child: Wrap(
-                        children: [
-                          Icon(MdiIcons.youtubeTv),
-                          SizedBox(
-                            width: 10,
-                          ),
-                        ],
-                      ),
+                      child: Icon(MdiIcons.youtubeTv),
                     ),
                     Tab(
-                      child: Wrap(
-                        children: [
-                          Icon(MdiIcons.bookOpenOutline),
-                          SizedBox(
-                            width: 10,
-                          ),
-                        ],
-                      ),
+                      child: Icon(MdiIcons.bookOpenOutline),
                     ),
                     Tab(
-                      child: Wrap(
-                        children: [
-                          Icon(MdiIcons.book),
-                          SizedBox(
-                            width: 10,
-                          ),
-                        ],
-                      ),
+                      child: Icon(MdiIcons.book),
                     ),
                     Tab(
-                      child: Wrap(
-                        children: [
-                          Icon(MdiIcons.bookmark),
-                          SizedBox(
-                            width: 10,
-                          ),
-                        ],
-                      ),
+                      child: Icon(MdiIcons.bookmark),
                     ),
                   ],
                 ),

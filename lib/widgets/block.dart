@@ -34,7 +34,6 @@ class Block extends StatelessWidget {
                 border: Border.all(strokeAlign: -0.050),
                 borderRadius: BorderRadius.circular(30),
                 gradient: const LinearGradient(
-                  tileMode: TileMode.repeated,
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [

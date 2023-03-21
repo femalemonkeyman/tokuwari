@@ -4,8 +4,10 @@ import 'block.dart';
 
 class Grid extends StatefulWidget {
   final List<AniData> data;
+  final Function paginate;
   const Grid({
     required this.data,
+    required this.paginate,
     Key? key,
   }) : super(key: key);
 
@@ -20,28 +22,26 @@ class GridState extends State<Grid> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15),
-          child: GridView.builder(
-            itemCount: widget.data.length,
-            shrinkWrap: true,
-            primary: false,
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
-              childAspectRatio: 4 / 6,
-              maxCrossAxisExtent: 270,
-            ),
-            itemBuilder: (context, index) {
-              return Block(
-                data: widget.data[index],
-              );
-            },
-          ),
-        );
-      },
+    return SliverGrid(
+      //primary: false,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        mainAxisSpacing: 20,
+        crossAxisSpacing: 20,
+        childAspectRatio: 4 / 6,
+        maxCrossAxisExtent: 270,
+      ),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          if (index <= widget.data.length - 5) {
+            return Block(
+              data: widget.data[index],
+            );
+          } else {
+            widget.paginate();
+          }
+          return null;
+        },
+      ),
     );
   }
 }
