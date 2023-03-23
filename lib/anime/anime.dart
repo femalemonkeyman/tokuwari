@@ -165,33 +165,35 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
           builder: (context, setState) => AlertDialog(
             content: SizedBox(
               width: MediaQuery.of(context).size.width / 2,
-              child: Wrap(
-                spacing: 20,
-                runSpacing: 20,
-                children: List.generate(
-                  genresList.length,
-                  (index) {
-                    return FilterChip(
-                      labelPadding: const EdgeInsets.all(15),
-                      padding: const EdgeInsets.all(2),
-                      selected: selectedGenres.contains(
-                        genresList[index],
-                      ),
-                      label: Text(
-                        genresList[index],
-                      ),
-                      onSelected: (value) async {
-                        if (value) {
-                          selectedGenres.add(genresList[index]);
-                        } else {
-                          selectedGenres.remove(genresList[index]);
-                        }
-                        setState(
-                          () {},
-                        );
-                      },
-                    );
-                  },
+              child: SingleChildScrollView(
+                child: Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  children: List.generate(
+                    genresList.length,
+                    (index) {
+                      return FilterChip(
+                        labelPadding: const EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(2),
+                        selected: selectedGenres.contains(
+                          genresList[index],
+                        ),
+                        label: Text(
+                          genresList[index],
+                        ),
+                        onSelected: (value) async {
+                          if (value) {
+                            selectedGenres.add(genresList[index]);
+                          } else {
+                            selectedGenres.remove(genresList[index]);
+                          }
+                          setState(
+                            () {},
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),

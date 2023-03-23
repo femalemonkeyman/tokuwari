@@ -25,16 +25,19 @@ class GridState extends State<Grid> with AutomaticKeepAliveClientMixin {
     return SliverGrid(
       //primary: false,
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        mainAxisSpacing: 20,
-        crossAxisSpacing: 20,
+        //mainAxisSpacing: 20,
+        //crossAxisSpacing: 20,
         childAspectRatio: 4 / 6,
-        maxCrossAxisExtent: 270,
+        maxCrossAxisExtent: 280,
       ),
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           if (index <= widget.data.length - 5) {
-            return Block(
-              data: widget.data[index],
+            return Padding(
+              padding: const EdgeInsets.all(10),
+              child: Block(
+                data: widget.data[index],
+              ),
             );
           } else {
             widget.paginate();

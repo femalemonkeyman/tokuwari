@@ -38,8 +38,13 @@ class AniViewerState extends State<AniViewer> {
     super.initState();
   }
 
-  Future desktopPlayer() async {
-    controller = await VideoController.create(player!.handle);
+  Future desktopPlayer(String url) async {
+    player = Player(
+      configuration: const PlayerConfiguration(),
+    );
+    controller = await VideoController.create(
+      player!.handle,
+    );
     Directory dir = await getTemporaryDirectory();
     String path = "";
     for (final i in subtitles) {
@@ -47,8 +52,17 @@ class AniViewerState extends State<AniViewer> {
       if (i['lang'] == "English") {
         path = "${dir.path}/${i['lang']}subs.vtt";
       }
-      (player!.platform as libmpvPlayer).setProperty("sub-files", path);
     }
+    await (player!.platform as libmpvPlayer).setProperty("sub-files", path);
+    await player!.open(
+      Playlist(
+        [
+          Media(
+            url,
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -56,7 +70,6 @@ class AniViewerState extends State<AniViewer> {
     return FutureBuilder<Map>(
       future: getMediaInfo,
       builder: (context, snap) {
-        print(snap.error);
         if (snap.hasData && snap.connectionState == ConnectionState.done) {
           subtitles = snap.data!['subtitles']!;
           if (isPhone) {
@@ -82,7 +95,10 @@ class AniViewerState extends State<AniViewer> {
             );
             phonePlayer = BetterPlayerController(
               const BetterPlayerConfiguration(
-                controlsConfiguration: BetterPlayerControlsConfiguration(),
+                useRootNavigator: true,
+                controlsConfiguration: BetterPlayerControlsConfiguration(
+                  playerTheme: BetterPlayerTheme.material,
+                ),
                 deviceOrientationsOnFullScreen: [
                   DeviceOrientation.landscapeLeft,
                   DeviceOrientation.landscapeRight,
@@ -99,26 +115,23 @@ class AniViewerState extends State<AniViewer> {
               controller: phonePlayer!,
             );
           } else {
-            player = Player(configuration: const PlayerConfiguration());
             return FutureBuilder(
-              future: desktopPlayer(),
+              future: desktopPlayer(
+                snap.data!['sources']!.last['url'],
+              ),
               builder: (context, innerSnap) {
-                player!.open(
-                  Playlist(
-                    [
-                      Media(
-                        snap.data!['sources']!.last['url'],
+                if (innerSnap.connectionState == ConnectionState.done) {
+                  return Stack(
+                    children: [
+                      Video(controller: controller),
+                      VideoControls(
+                        player: player!,
                       ),
                     ],
-                  ),
-                );
-                return Stack(
-                  children: [
-                    Video(controller: controller),
-                    VideoControls(
-                      player: player!,
-                    ),
-                  ],
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
               },
             );

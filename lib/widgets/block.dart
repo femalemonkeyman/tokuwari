@@ -1,6 +1,6 @@
 import 'package:anicross/providers/info_models.dart';
 import 'package:anicross/widgets/image.dart';
-import 'package:anicross/widgets/info_page.dart';
+import 'package:anicross/info_page.dart';
 import 'package:flutter/material.dart';
 
 class Block extends StatelessWidget {
@@ -39,7 +39,7 @@ class Block extends StatelessWidget {
                   colors: [
                     Color.fromARGB(0, 0, 0, 0),
                     Color.fromARGB(0, 0, 0, 0),
-                    Color.fromARGB(149, 0, 0, 0),
+                    Color.fromARGB(120, 0, 0, 0),
                     Color.fromARGB(255, 0, 0, 0)
                   ],
                 ),
