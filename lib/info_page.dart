@@ -24,7 +24,9 @@ class InfoPageState extends State<InfoPage> {
     Future.microtask(
       () async {
         content = (widget.data.type == "anime")
-            ? await mediaList(widget.data.mediaId)
+            ? await mediaList(widget.data.mediaId) ??
+                await haniList(widget.data.title) ??
+                []
             : await dexReader(widget.data.mediaId);
         setState(() {});
       },
@@ -136,75 +138,70 @@ class InfoPageState extends State<InfoPage> {
                   child: expands,
                 ),
               ),
-            (content.isNotEmpty)
-                ? SliverPadding(
-                    padding: const EdgeInsets.all(15),
-                    sliver: SliverGrid(
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 6,
-                        maxCrossAxisExtent: 400,
-                        mainAxisExtent: 100,
-                        //childAspectRatio: 4 / 1,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        childCount: content.length,
-                        (context, index) {
-                          return GestureDetector(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return Scaffold(
-                                    body: (widget.data.type == "anime")
-                                        ? AniViewer(
-                                            episodes: content,
-                                            episode: content[index],
-                                          )
-                                        : MangaReader(
-                                            chapter: content[index],
-                                            chapters: content,
-                                          ),
-                                  );
-                                },
-                              ),
-                            ),
-                            child: IntrinsicHeight(
-                              child: Card(
-                                elevation: 3,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Flexible(
-                                        child: Text(
-                                          content[index]['title'],
-                                          overflow: TextOverflow.visible,
-                                        ),
-                                      ),
-                                      Flexible(
-                                        child: Text(
-                                          content[index]['number'],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  )
-                : const SliverToBoxAdapter(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+            if (content.isNotEmpty)
+              SliverPadding(
+                padding: const EdgeInsets.all(15),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 6,
+                    maxCrossAxisExtent: 400,
+                    mainAxisExtent: 100,
+                    //childAspectRatio: 4 / 1,
                   ),
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: content.length,
+                    (context, index) {
+                      return GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return Scaffold(
+                                body: (widget.data.type == "anime")
+                                    ? AniViewer(
+                                        episodes: content,
+                                        episode: content[index],
+                                      )
+                                    : MangaReader(
+                                        chapter: content[index],
+                                        chapters: content,
+                                      ),
+                              );
+                            },
+                          ),
+                        ),
+                        child: IntrinsicHeight(
+                          child: Card(
+                            elevation: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      content[index]['title'],
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      content[index]['number'],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              )
           ],
         ),
       ),

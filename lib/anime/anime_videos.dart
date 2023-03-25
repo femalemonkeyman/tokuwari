@@ -27,15 +27,22 @@ class AniViewerState extends State<AniViewer> {
   BetterPlayerController? phonePlayer;
   int currentEpisode = 1;
   List subtitles = [];
-  late Future<Map> getMediaInfo = mediaInfo(
-    widget.episode['id'],
-  );
+  Map getMedia = {};
 
   bool isPhone = Platform.isAndroid || Platform.isIOS;
 
   @override
   void initState() {
     super.initState();
+    Future.microtask(
+      () async {
+        getMedia = await mediaInfo(
+              widget.episode['id'],
+            ) ??
+            widget.episode;
+        setState(() {});
+      },
+    );
   }
 
   Future desktopPlayer(String url) async {
@@ -45,15 +52,17 @@ class AniViewerState extends State<AniViewer> {
     controller = await VideoController.create(
       player!.handle,
     );
-    Directory dir = await getTemporaryDirectory();
-    String path = "";
-    for (final i in subtitles) {
-      await Dio().download(i['url'], "${dir.path}/${i['lang']}subs.vtt");
-      if (i['lang'] == "English") {
-        path = "${dir.path}/${i['lang']}subs.vtt";
+    if (getMedia['subtitles'] != null) {
+      Directory dir = await getTemporaryDirectory();
+      String path = "";
+      for (final i in getMedia['subtitles']) {
+        await Dio().download(i['url'], "${dir.path}/${i['lang']}subs.vtt");
+        if (i['lang'] == "English") {
+          path = "${dir.path}/${i['lang']}subs.vtt";
+        }
       }
+      await (player!.platform as libmpvPlayer).setProperty("sub-files", path);
     }
-    await (player!.platform as libmpvPlayer).setProperty("sub-files", path);
     await player!.open(
       Playlist(
         [
@@ -67,81 +76,88 @@ class AniViewerState extends State<AniViewer> {
 
   @override
   Widget build(context) {
-    return FutureBuilder<Map>(
-      future: getMediaInfo,
-      builder: (context, snap) {
-        if (snap.hasData && snap.connectionState == ConnectionState.done) {
-          subtitles = snap.data!['subtitles']!;
-          if (isPhone) {
-            BetterPlayerDataSource source = BetterPlayerDataSource(
-              BetterPlayerDataSourceType.network,
-              snap.data!['sources']!.first['url'],
-              headers: {"User-Agent": "Death"},
-              videoFormat: BetterPlayerVideoFormat.hls,
-              subtitles: List.generate(
-                subtitles.length - 1,
-                (index) {
-                  return BetterPlayerSubtitlesSource(
-                    selectedByDefault:
-                        (subtitles[index]['lang'] == "English") ? true : false,
-                    type: BetterPlayerSubtitlesSourceType.network,
-                    name: subtitles[index]['lang'],
-                    urls: [
-                      subtitles[index]['url'],
-                    ],
-                  );
-                },
-              ),
-            );
-            phonePlayer = BetterPlayerController(
-              const BetterPlayerConfiguration(
-                useRootNavigator: true,
-                controlsConfiguration: BetterPlayerControlsConfiguration(
-                  playerTheme: BetterPlayerTheme.material,
-                ),
-                deviceOrientationsOnFullScreen: [
-                  DeviceOrientation.landscapeLeft,
-                  DeviceOrientation.landscapeRight,
-                ],
-                fullScreenByDefault: true,
-                autoPlay: true,
-                aspectRatio: 16 / 9,
-                allowedScreenSleep: false,
-                fit: BoxFit.contain,
-              ),
-              betterPlayerDataSource: source,
-            );
-            return BetterPlayer(
-              controller: phonePlayer!,
-            );
-          } else {
-            return FutureBuilder(
-              future: desktopPlayer(
-                snap.data!['sources']!.last['url'],
-              ),
-              builder: (context, innerSnap) {
-                if (innerSnap.connectionState == ConnectionState.done) {
-                  return Stack(
-                    children: [
-                      Video(controller: controller),
-                      VideoControls(
-                        player: player!,
-                      ),
-                    ],
-                  );
-                }
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              },
-            );
-          }
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
+    if (getMedia.isNotEmpty) {
+      if (isPhone) {
+        BetterPlayerDataSource source = BetterPlayerDataSource(
+          BetterPlayerDataSourceType.network,
+          getMedia['sources']!.first['url'],
+          headers: {"User-Agent": "Death"},
+          videoFormat: BetterPlayerVideoFormat.hls,
+          subtitles: (subtitles.isNotEmpty)
+              ? List.generate(
+                  subtitles.length - 1,
+                  (index) {
+                    return BetterPlayerSubtitlesSource(
+                      selectedByDefault: (subtitles[index]['lang'] == "English")
+                          ? true
+                          : false,
+                      type: BetterPlayerSubtitlesSourceType.network,
+                      name: subtitles[index]['lang'],
+                      urls: [
+                        subtitles[index]['url'],
+                      ],
+                    );
+                  },
+                )
+              : null,
         );
-      },
-    );
+        phonePlayer = BetterPlayerController(
+          const BetterPlayerConfiguration(
+            useRootNavigator: true,
+            controlsConfiguration: BetterPlayerControlsConfiguration(
+              playerTheme: BetterPlayerTheme.material,
+            ),
+            deviceOrientationsOnFullScreen: [
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
+            ],
+            fullScreenByDefault: true,
+            autoPlay: true,
+            aspectRatio: 16 / 9,
+            allowedScreenSleep: false,
+            fit: BoxFit.contain,
+          ),
+          betterPlayerDataSource: source,
+        );
+        return BetterPlayer(
+          controller: phonePlayer!,
+        );
+      } else {
+        return FutureBuilder(
+          future: desktopPlayer(
+            getMedia['sources'].last['url'],
+          ),
+          builder: (context, innerSnap) {
+            if (innerSnap.connectionState == ConnectionState.done) {
+              return Stack(
+                children: [
+                  Video(controller: controller),
+                  VideoControls(
+                    player: player!,
+                  ),
+                ],
+              );
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
+      }
+    } else {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          TextButton(
+            onPressed: () => Navigator.maybePop(context),
+            child: const Text("Escape?"),
+          ),
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ],
+      );
+    }
   }
 
   @override

@@ -151,6 +151,7 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
       selectedGenres = [];
       search = textController.text;
     } else {
+      selectedGenres = [];
       search = null;
     }
     await queryData();
