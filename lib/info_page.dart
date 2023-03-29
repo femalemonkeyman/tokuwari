@@ -5,11 +5,13 @@ import 'package:anicross/providers/info_models.dart';
 import 'package:anicross/providers/manga_providers.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'widgets/image.dart';
 
 class InfoPage extends StatefulWidget {
   final AniData data;
+
   const InfoPage({required this.data, super.key});
 
   @override
@@ -18,6 +20,10 @@ class InfoPage extends StatefulWidget {
 
 class InfoPageState extends State<InfoPage> {
   List content = [];
+  final Isar isar = Isar.getInstance() ??
+      Isar.openSync(
+        [AniDataSchema],
+      );
 
   @override
   void initState() {
@@ -35,15 +41,29 @@ class InfoPageState extends State<InfoPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(context) {
     final expands = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         const Divider(),
+        ExpandableText(
+          widget.data.description,
+          expandText: "More",
+          collapseText: "Less",
+          maxLines: 8,
+        ),
+        const Divider(
+          height: 15,
+        ),
         Wrap(
-          spacing: 10,
-          runSpacing: 10,
+          spacing: 7,
+          runSpacing: 5,
           children: List.generate(
             widget.data.tags.length.clamp(0, 20),
             (index) {
@@ -54,15 +74,6 @@ class InfoPageState extends State<InfoPage> {
               );
             },
           ),
-        ),
-        const Divider(
-          height: 15,
-        ),
-        ExpandableText(
-          widget.data.description,
-          expandText: "More",
-          collapseText: "Less",
-          maxLines: 8,
         ),
       ],
     );
@@ -111,8 +122,31 @@ class InfoPageState extends State<InfoPage> {
                             height: 20,
                           ),
                           ActionChip(
-                            onPressed: () {},
-                            avatar: const Icon(MdiIcons.bookmark),
+                            onPressed: () => setState(
+                              () {
+                                QueryBuilder<AniData, AniData,
+                                        QAfterFilterCondition> media =
+                                    isar.aniDatas.filter().mediaIdMatches(
+                                          widget.data.mediaId,
+                                        );
+
+                                if (media.isEmptySync()) {
+                                  isar.writeTxnSync(
+                                    () => isar.aniDatas.putSync(widget.data),
+                                  );
+                                } else {
+                                  isar.writeTxnSync(
+                                    () => media.deleteAllSync(),
+                                  );
+                                }
+                              },
+                            ),
+                            avatar: (isar.aniDatas
+                                    .filter()
+                                    .mediaIdMatches(widget.data.mediaId)
+                                    .isEmptySync())
+                                ? const Icon(MdiIcons.bookmarkOutline)
+                                : const Icon(MdiIcons.bookmark),
                             label: const Text("Later"),
                           ),
                           if (MediaQuery.of(context).size.width /

@@ -5,18 +5,18 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: d74f051467a841ce893a50ebeb420b7a5695f985d2781e22b3927fbc849aea45
+      sha256: a36ec4843dc30ea6bf652bf25e3448db6c5e8bcf4aa55f063a5d1dad216d8214
       url: "https://pub.dev"
     source: hosted
-    version: "57.0.0"
+    version: "58.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
-      sha256: b665679cdccab0c754e65021f01087c6fab07a0b13659dd58827f765739b40f8
+      sha256: cc4242565347e98424ce9945c819c192ec0838cb9d1f6aa4a97cc96becbc5b27
       url: "https://pub.dev"
     source: hosted
-    version: "5.9.0"
+    version: "5.10.0"
   archive:
     dependency: "direct main"
     description:
@@ -58,6 +58,14 @@ packages:
       url: "https://github.com/femalemonkeyman/betterplayer"
     source: git
     version: "0.0.83"
+  boolean_selector:
+    dependency: transitive
+    description:
+      name: boolean_selector
+      sha256: "6cfb5af12253eaf2b368f07bacc5a80d1301a071c73360d746b7f2e32d762c66"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   build:
     dependency: transitive
     description:
@@ -544,10 +552,10 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: c94db23593b89766cda57aab9ac311e3616cf87c6fa4e9749df032f66f30dcb8
+      sha256: "6501fbd55da300384b768785b83e5ce66991266cec21af89ab9ae7f5ce1c4cbb"
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.14"
+    version: "0.12.15"
   material_color_utilities:
     dependency: transitive
     description:
@@ -569,16 +577,25 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: "2fdd64dd4f2855d6c12c57306c5ebf4a7c8db27a"
+      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.1"
+  media_kit_libs_ios_video:
+    dependency: "direct main"
+    description:
+      path: media_kit_libs_ios_video
+      ref: main
+      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
+      url: "https://github.com/alexmercerind/media_kit"
+    source: git
+    version: "1.0.0"
   media_kit_libs_linux:
     dependency: "direct main"
     description:
       path: media_kit_libs_linux
       ref: main
-      resolved-ref: "2fdd64dd4f2855d6c12c57306c5ebf4a7c8db27a"
+      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.0"
@@ -587,7 +604,7 @@ packages:
     description:
       path: media_kit_libs_macos_video
       ref: main
-      resolved-ref: "2fdd64dd4f2855d6c12c57306c5ebf4a7c8db27a"
+      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.0"
@@ -596,7 +613,7 @@ packages:
     description:
       path: media_kit_libs_windows_video
       ref: main
-      resolved-ref: "2fdd64dd4f2855d6c12c57306c5ebf4a7c8db27a"
+      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.0"
@@ -605,10 +622,10 @@ packages:
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: "2fdd64dd4f2855d6c12c57306c5ebf4a7c8db27a"
+      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
-    version: "0.0.1"
+    version: "0.0.2"
   meta:
     dependency: transitive
     description:
@@ -741,10 +758,10 @@ packages:
     dependency: transitive
     description:
       name: permission_handler_apple
-      sha256: "9c370ef6a18b1c4b2f7f35944d644a56aa23576f23abee654cf73968de93f163"
+      sha256: ee96ac32f5a8e6f80756e25b25b9f8e535816c8e6665a96b6d70681f8c4f7e85
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.7"
+    version: "9.0.8"
   permission_handler_platform_interface:
     dependency: transitive
     description:
@@ -797,10 +814,10 @@ packages:
     dependency: transitive
     description:
       name: pointycastle
-      sha256: ae73e842cdd27a3467a71d70cefd9b198538aab4fc7dde1d0e8c78c96225abf0
+      sha256: c3120a968135aead39699267f4c74bc9a08e4e909e86bc1b0af5bfd78691123c
       url: "https://pub.dev"
     source: hosted
-    version: "3.7.1"
+    version: "3.7.2"
   pool:
     dependency: transitive
     description:
@@ -966,6 +983,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
+  test_api:
+    dependency: transitive
+    description:
+      name: test_api
+      sha256: "6b12a91cd2febdb6f7e7d92c00d1d0c01d88bffc7fe36b1ed236f0cc37cb5ca4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   time:
     dependency: transitive
     description:

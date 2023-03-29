@@ -1,4 +1,5 @@
 import 'package:anicross/color_schemes.g.dart';
+import 'package:anicross/later_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -58,8 +59,7 @@ class AniNav extends StatelessWidget {
                     MangaPage(),
                     //NovelPage(),
                     Placeholder(),
-                    Placeholder(),
-                    //SizedBox.shrink(),
+                    LaterPage(),
                   ],
                 ),
               ),

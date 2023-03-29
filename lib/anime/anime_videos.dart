@@ -3,6 +3,7 @@ import 'package:anicross/providers/anime_providers.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:better_player/better_player.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
@@ -40,7 +41,9 @@ class AniViewerState extends State<AniViewer> {
               widget.episode['id'],
             ) ??
             widget.episode;
-        setState(() {});
+        setState(() {
+          subtitles = getMedia['subtitles'] ?? [];
+        });
       },
     );
   }
@@ -76,7 +79,7 @@ class AniViewerState extends State<AniViewer> {
 
   @override
   Widget build(context) {
-    if (getMedia.isNotEmpty) {
+    if (getMedia.isNotEmpty && !kIsWeb) {
       if (isPhone) {
         BetterPlayerDataSource source = BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
@@ -199,7 +202,7 @@ class VideoControlsState extends State<VideoControls> {
   Widget build(context) {
     return GestureDetector(
       onTap: () => setState(() {
-        (widget.player.state.isPlaying)
+        (widget.player.state.playing)
             ? widget.player.pause()
             : widget.player.play();
       }),

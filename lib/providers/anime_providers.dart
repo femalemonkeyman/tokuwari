@@ -36,16 +36,13 @@ Future<Map?> mediaInfo(id) async {
 
 //Begin Hanime
 Future<List?> haniList(String name) async {
-  //name.split(pattern).getRange(0, 3);
   Response json = await Dio().post(
     "https://search.htv-services.com/",
     data: jsonEncode(
       {
         "search_text": (name.split(" ").length > 3)
-            ? name.split(" ").getRange(0, 3).join(" ").replaceAll(":", "")
-            : name,
-        // "${name.split(" ")[0]} ${name.split(" ")[1]} ${name.split(" ")[2]}"
-        //     .replaceAll(":", ""),
+            ? name.split(" ").getRange(0, 3).join(" ")
+            : name.replaceAll("☆", " "),
         "tags": [],
         "tags-mode": "AND",
         "brands": [],
@@ -58,14 +55,16 @@ Future<List?> haniList(String name) async {
   );
   if (json.data['nbHits'] > 0) {
     final List results = jsonDecode(json.data['hits']);
-
     List videos = [];
-
-    for (var i in results) {
+    for (Map i in results) {
       Response v = await Dio().get(
         "https://hanime.tv/api/v8/video?id=${i['id']}",
       );
-      videos.add(v.data);
+      print(i['name'].toString().similarityTo(name));
+      if (i['name'].toString().similarityTo(name) > 0.2) {
+        print("yes");
+        videos.add(v.data);
+      }
     }
 
     return List.generate(

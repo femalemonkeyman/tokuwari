@@ -88,7 +88,13 @@ class MangaControls extends StatefulWidget {
 }
 
 class MangaControlsState extends State<MangaControls> {
-  bool show = true;
+  bool show = false;
+
+  @override
+  void dispose() {
+    widget.controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(context) {
@@ -100,6 +106,10 @@ class MangaControlsState extends State<MangaControls> {
             opacity: !show ? 0.0 : 1.0,
             child: Stack(
               children: [
+                Positioned(
+                    child: Text(
+                  widget.controller.page.toString(),
+                )),
                 Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
@@ -117,30 +127,40 @@ class MangaControlsState extends State<MangaControls> {
                     ),
                   ),
                 ),
-                Positioned.fill(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            widget.controller.jumpToPage(
-                              (widget.controller.page! + 1).toInt(),
-                            );
-                          },
-                        ),
-                      ),
-                      Flexible(
-                        child: GestureDetector(
-                          onTap: () {
-                            widget.controller.jumpToPage(
-                              (widget.controller.page! - 1).toInt(),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: GestureDetector(
+                    onTap: () {
+                      widget.controller.jumpToPage(
+                        (widget.controller.page! + 1).toInt(),
+                      );
+                    },
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: GestureDetector(
+                    onTap: () {
+                      widget.controller.jumpToPage(
+                        (widget.controller.page! - 1).toInt(),
+                      );
+                    },
+                  ),
+                ),
+                Positioned(
+                  height: MediaQuery.of(context).size.height / 5,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: GestureDetector(
+                    //behavior: HitTestBehavior.opaque,
+                    onTap: () => setState(
+                      () => (show) ? show = false : show = true,
+                    ),
                   ),
                 ),
                 const BackButton(),

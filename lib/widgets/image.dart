@@ -9,7 +9,7 @@ class AniImage extends StatelessWidget {
   @override
   Widget build(context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(30.0),
+      borderRadius: BorderRadius.circular(15.0),
       child: CachedNetworkImage(
         fit: BoxFit.cover,
         imageUrl: image,
