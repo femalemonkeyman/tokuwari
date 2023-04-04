@@ -1,7 +1,7 @@
 import 'package:anicross/anime/anime_videos.dart';
 import 'package:anicross/manga/manga_reader.dart';
 import 'package:anicross/providers/anime_providers.dart';
-import 'package:anicross/providers/info_models.dart';
+import 'package:anicross/models/info_models.dart';
 import 'package:anicross/providers/manga_providers.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +20,10 @@ class InfoPage extends StatefulWidget {
 
 class InfoPageState extends State<InfoPage> {
   List content = [];
-  final Isar isar = Isar.getInstance() ??
+  final Isar isar = Isar.getInstance('later') ??
       Isar.openSync(
         [AniDataSchema],
+        name: "later",
       );
 
   @override
@@ -53,7 +54,7 @@ class InfoPageState extends State<InfoPage> {
       children: [
         const Divider(),
         ExpandableText(
-          widget.data.description,
+          widget.data.description!,
           expandText: "More",
           collapseText: "Less",
           maxLines: 8,
@@ -65,11 +66,11 @@ class InfoPageState extends State<InfoPage> {
           spacing: 7,
           runSpacing: 5,
           children: List.generate(
-            widget.data.tags.length.clamp(0, 20),
+            widget.data.tags!.length.clamp(0, 20),
             (index) {
               return Chip(
                 label: Text(
-                  widget.data.tags[index],
+                  widget.data.tags![index],
                 ),
               );
             },
@@ -127,9 +128,8 @@ class InfoPageState extends State<InfoPage> {
                                 QueryBuilder<AniData, AniData,
                                         QAfterFilterCondition> media =
                                     isar.aniDatas.filter().mediaIdMatches(
-                                          widget.data.mediaId,
+                                          widget.data.mediaId!,
                                         );
-
                                 if (media.isEmptySync()) {
                                   isar.writeTxnSync(
                                     () => isar.aniDatas.putSync(widget.data),
@@ -143,7 +143,7 @@ class InfoPageState extends State<InfoPage> {
                             ),
                             avatar: (isar.aniDatas
                                     .filter()
-                                    .mediaIdMatches(widget.data.mediaId)
+                                    .mediaIdMatches(widget.data.mediaId!)
                                     .isEmptySync())
                                 ? const Icon(MdiIcons.bookmarkOutline)
                                 : const Icon(MdiIcons.bookmark),
@@ -235,7 +235,7 @@ class InfoPageState extends State<InfoPage> {
                     },
                   ),
                 ),
-              )
+              ),
           ],
         ),
       ),

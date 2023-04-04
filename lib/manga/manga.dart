@@ -1,4 +1,4 @@
-import '../providers/info_models.dart';
+import '../models/info_models.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../widgets/grid.dart';

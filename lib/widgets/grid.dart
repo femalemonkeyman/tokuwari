@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../providers/info_models.dart';
+import '../models/info_models.dart';
 import 'block.dart';
 
 class Grid extends StatefulWidget {

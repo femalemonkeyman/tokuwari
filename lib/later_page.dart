@@ -1,4 +1,4 @@
-import 'package:anicross/providers/info_models.dart';
+import 'package:anicross/models/info_models.dart';
 import 'package:anicross/widgets/grid.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
@@ -13,10 +13,8 @@ class LaterPage extends StatefulWidget {
 class LaterPageState extends State<LaterPage> {
   List<AniData> animeData = [];
   List<AniData> mangaData = [];
-  final Isar isar = Isar.getInstance() ??
-      Isar.openSync(
-        [AniDataSchema],
-      );
+  final Isar isar = Isar.getInstance('later') ??
+      Isar.openSync([AniDataSchema], name: 'later');
   late final dataChange = isar.aniDatas.watchLazy(fireImmediately: true);
 
   @override

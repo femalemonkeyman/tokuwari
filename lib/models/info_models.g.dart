@@ -27,38 +27,33 @@ const AniDataSchema = CollectionSchema(
       name: r'description',
       type: IsarType.string,
     ),
-    r'favourited': PropertySchema(
-      id: 2,
-      name: r'favourited',
-      type: IsarType.bool,
-    ),
     r'image': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'image',
       type: IsarType.string,
     ),
     r'mediaId': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'mediaId',
       type: IsarType.string,
     ),
     r'score': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'score',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'title': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'title',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 8,
+      id: 7,
       name: r'type',
       type: IsarType.string,
     )
@@ -89,20 +84,35 @@ int _aniDataEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.description.length * 3;
+  {
+    final value = object.description;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.image.length * 3;
-  bytesCount += 3 + object.mediaId.length * 3;
+  {
+    final value = object.mediaId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   {
     final value = object.score;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.tags.length * 3;
   {
-    for (var i = 0; i < object.tags.length; i++) {
-      final value = object.tags[i];
-      bytesCount += value.length * 3;
+    final list = object.tags;
+    if (list != null) {
+      bytesCount += 3 + list.length * 3;
+      {
+        for (var i = 0; i < list.length; i++) {
+          final value = list[i];
+          bytesCount += value.length * 3;
+        }
+      }
     }
   }
   bytesCount += 3 + object.title.length * 3;
@@ -118,13 +128,12 @@ void _aniDataSerialize(
 ) {
   writer.writeString(offsets[0], object.count);
   writer.writeString(offsets[1], object.description);
-  writer.writeBool(offsets[2], object.favourited);
-  writer.writeString(offsets[3], object.image);
-  writer.writeString(offsets[4], object.mediaId);
-  writer.writeString(offsets[5], object.score);
-  writer.writeStringList(offsets[6], object.tags);
-  writer.writeString(offsets[7], object.title);
-  writer.writeString(offsets[8], object.type);
+  writer.writeString(offsets[2], object.image);
+  writer.writeString(offsets[3], object.mediaId);
+  writer.writeString(offsets[4], object.score);
+  writer.writeStringList(offsets[5], object.tags);
+  writer.writeString(offsets[6], object.title);
+  writer.writeString(offsets[7], object.type);
 }
 
 AniData _aniDataDeserialize(
@@ -135,14 +144,13 @@ AniData _aniDataDeserialize(
 ) {
   final object = AniData(
     count: reader.readStringOrNull(offsets[0]),
-    description: reader.readString(offsets[1]),
-    favourited: reader.readBoolOrNull(offsets[2]) ?? false,
-    image: reader.readString(offsets[3]),
-    mediaId: reader.readString(offsets[4]),
-    score: reader.readStringOrNull(offsets[5]),
-    tags: reader.readStringList(offsets[6]) ?? [],
-    title: reader.readString(offsets[7]),
-    type: reader.readString(offsets[8]),
+    description: reader.readStringOrNull(offsets[1]),
+    image: reader.readString(offsets[2]),
+    mediaId: reader.readStringOrNull(offsets[3]),
+    score: reader.readStringOrNull(offsets[4]),
+    tags: reader.readStringList(offsets[5]),
+    title: reader.readString(offsets[6]),
+    type: reader.readString(offsets[7]),
   );
   return object;
 }
@@ -157,20 +165,18 @@ P _aniDataDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
-    case 2:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
-    case 3:
-      return (reader.readString(offset)) as P;
-    case 4:
-      return (reader.readString(offset)) as P;
-    case 5:
       return (reader.readStringOrNull(offset)) as P;
-    case 6:
-      return (reader.readStringList(offset) ?? []) as P;
-    case 7:
+    case 2:
       return (reader.readString(offset)) as P;
-    case 8:
+    case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readStringList(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -410,8 +416,24 @@ extension AniDataQueryFilter
     });
   }
 
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'description',
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'description',
+      ));
+    });
+  }
+
   QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -424,7 +446,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -439,7 +461,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -454,8 +476,8 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -537,16 +559,6 @@ extension AniDataQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'description',
         value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<AniData, AniData, QAfterFilterCondition> favouritedEqualTo(
-      bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'favourited',
-        value: value,
       ));
     });
   }
@@ -733,8 +745,24 @@ extension AniDataQueryFilter
     });
   }
 
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'mediaId',
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'mediaId',
+      ));
+    });
+  }
+
   QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -747,7 +775,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -762,7 +790,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -777,8 +805,8 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -1005,6 +1033,22 @@ extension AniDataQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'score',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> tagsIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'tags',
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> tagsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'tags',
       ));
     });
   }
@@ -1516,18 +1560,6 @@ extension AniDataQuerySortBy on QueryBuilder<AniData, AniData, QSortBy> {
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByFavourited() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'favourited', Sort.asc);
-    });
-  }
-
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByFavouritedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'favourited', Sort.desc);
-    });
-  }
-
   QueryBuilder<AniData, AniData, QAfterSortBy> sortByImage() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'image', Sort.asc);
@@ -1612,18 +1644,6 @@ extension AniDataQuerySortThenBy
   QueryBuilder<AniData, AniData, QAfterSortBy> thenByDescriptionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'description', Sort.desc);
-    });
-  }
-
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByFavourited() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'favourited', Sort.asc);
-    });
-  }
-
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByFavouritedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'favourited', Sort.desc);
     });
   }
 
@@ -1716,12 +1736,6 @@ extension AniDataQueryWhereDistinct
     });
   }
 
-  QueryBuilder<AniData, AniData, QDistinct> distinctByFavourited() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'favourited');
-    });
-  }
-
   QueryBuilder<AniData, AniData, QDistinct> distinctByImage(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1778,15 +1792,9 @@ extension AniDataQueryProperty
     });
   }
 
-  QueryBuilder<AniData, String, QQueryOperations> descriptionProperty() {
+  QueryBuilder<AniData, String?, QQueryOperations> descriptionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'description');
-    });
-  }
-
-  QueryBuilder<AniData, bool, QQueryOperations> favouritedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'favourited');
     });
   }
 
@@ -1796,7 +1804,7 @@ extension AniDataQueryProperty
     });
   }
 
-  QueryBuilder<AniData, String, QQueryOperations> mediaIdProperty() {
+  QueryBuilder<AniData, String?, QQueryOperations> mediaIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'mediaId');
     });
@@ -1808,7 +1816,7 @@ extension AniDataQueryProperty
     });
   }
 
-  QueryBuilder<AniData, List<String>, QQueryOperations> tagsProperty() {
+  QueryBuilder<AniData, List<String>?, QQueryOperations> tagsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'tags');
     });

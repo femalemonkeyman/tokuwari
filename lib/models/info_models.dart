@@ -6,23 +6,21 @@ part 'info_models.g.dart';
 class AniData {
   final Id id = Isar.autoIncrement;
   final String type;
-  final String mediaId;
+  final String? mediaId;
   final String title;
-  final String description;
+  final String? description;
   final String image;
   final String? score;
   final String? count;
-  final List<String> tags;
-  bool favourited;
+  final List<String>? tags;
   AniData({
     required this.type,
-    required this.mediaId,
+    this.mediaId,
     required this.title,
-    required this.description,
+    this.description,
     required this.image,
     this.count,
     this.score,
-    required this.tags,
-    this.favourited = false,
+    this.tags,
   });
 }

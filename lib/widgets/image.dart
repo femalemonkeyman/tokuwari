@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -10,10 +12,15 @@ class AniImage extends StatelessWidget {
   Widget build(context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15.0),
-      child: CachedNetworkImage(
-        fit: BoxFit.cover,
-        imageUrl: image,
-      ),
+      child: image.startsWith("/")
+          ? Image.file(
+              File(image),
+              fit: BoxFit.cover,
+            )
+          : CachedNetworkImage(
+              imageUrl: image,
+              fit: BoxFit.cover,
+            ),
     );
   }
 }

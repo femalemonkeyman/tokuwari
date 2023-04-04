@@ -14,8 +14,9 @@ dependencies:
   
   flutter:
     sdk: flutter
-  flutter_html: ^3.0.0-alpha.6
+  flutter_widget_from_html_core: 
   archive:
+  image:
   better_player:
     git:
       url: https://github.com/femalemonkeyman/betterplayer
@@ -57,7 +58,7 @@ dependencies:
   path_provider: 
   permission_handler: 
   universal_io: 
-  xml: 
+  xml2json:
   audio_video_progress_bar: 
   window_manager: 
   graphql:

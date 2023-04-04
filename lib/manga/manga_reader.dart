@@ -107,9 +107,11 @@ class MangaControlsState extends State<MangaControls> {
             child: Stack(
               children: [
                 Positioned(
-                    child: Text(
-                  widget.controller.page.toString(),
-                )),
+                  bottom: 0,
+                  child: Text(
+                    ((widget.controller.page?.toInt() ?? 0) + 1).toString(),
+                  ),
+                ),
                 Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
@@ -131,6 +133,7 @@ class MangaControlsState extends State<MangaControls> {
                   top: 0,
                   left: 0,
                   width: MediaQuery.of(context).size.width / 2,
+                  height: MediaQuery.of(context).size.height,
                   child: GestureDetector(
                     onTap: () {
                       widget.controller.jumpToPage(
@@ -143,6 +146,7 @@ class MangaControlsState extends State<MangaControls> {
                   top: 0,
                   right: 0,
                   width: MediaQuery.of(context).size.width / 2,
+                  height: MediaQuery.of(context).size.height,
                   child: GestureDetector(
                     onTap: () {
                       widget.controller.jumpToPage(

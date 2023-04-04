@@ -1,4 +1,5 @@
-import 'package:anicross/providers/info_models.dart';
+import 'package:anicross/models/info_models.dart';
+import 'package:anicross/novel/novel_reader.dart';
 import 'package:anicross/widgets/image.dart';
 import 'package:anicross/info_page.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,14 @@ class Block extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) {
-                return InfoPage(data: data);
+                if (data.type == "novel") {
+                  return NovelReader(
+                    data: data,
+                  );
+                }
+                return InfoPage(
+                  data: data,
+                );
               },
             ),
           );

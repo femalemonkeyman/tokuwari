@@ -246,10 +246,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: "3e5c4a94d112540d0c9a6b7f3969832e1604eb8cde0f88d0808382f9f632100b"
+      sha256: "0894a098594263fe1caaba3520e3016d8a855caeb010a882273189cca10f11e9"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.3"
+    version: "5.1.1"
   expandable_text:
     dependency: "direct main"
     description:
@@ -311,14 +311,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
-  flutter_html:
-    dependency: "direct main"
-    description:
-      name: flutter_html
-      sha256: "342c7908f0a67bcec62b6e0f7cf23e23bafe7f64693665dd35be98d5e783bdfd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0-alpha.6"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -341,7 +333,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_widget_from_html_core:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_widget_from_html_core
       sha256: e8f4f8b461a140ffb7c71f938bc76efc758893e7468843d9dbf70cb0b9e900cb
@@ -484,6 +476,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  image:
+    dependency: "direct main"
+    description:
+      name: image
+      sha256: "483a389d6ccb292b570c31b3a193779b1b0178e7eb571986d9a49904b6861227"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.15"
   io:
     dependency: transitive
     description:
@@ -577,16 +577,16 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
+      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
-    version: "0.0.1"
+    version: "0.0.2"
   media_kit_libs_ios_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_ios_video
       ref: main
-      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
+      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.0"
@@ -595,16 +595,16 @@ packages:
     description:
       path: media_kit_libs_linux
       ref: main
-      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
+      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.0"
+    version: "1.0.1"
   media_kit_libs_macos_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_macos_video
       ref: main
-      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
+      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.0"
@@ -613,16 +613,16 @@ packages:
     description:
       path: media_kit_libs_windows_video
       ref: main
-      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
+      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.0"
+    version: "1.0.1"
   media_kit_video:
     dependency: "direct main"
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: "03d8a702d5c0600e94548fd68a6b71c1485a0e49"
+      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.2"
@@ -650,14 +650,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
-  numerus:
-    dependency: transitive
-    description:
-      name: numerus
-      sha256: "436759d84f233b40107d0cc31cfa92d24e0960afeb2e506be70926d4cddffd9e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   octo_image:
     dependency: transitive
     description:
@@ -702,10 +694,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_foundation
-      sha256: "12eee51abdf4d34c590f043f45073adbb45514a108bd9db4491547a2fd891059"
+      sha256: "818b2dc38b0f178e0ea3f7cf3b28146faab11375985d815942a68eee11c2d0f7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.2.1"
   path_provider_linux:
     dependency: transitive
     description:
@@ -862,10 +854,10 @@ packages:
     dependency: transitive
     description:
       name: safe_local_storage
-      sha256: "7ca14be87040e6badfcdb9c71e963846c4e7d827dbc9f62cab7496497352f8d8"
+      sha256: ede4eb6cb7d88a116b3d3bf1df70790b9e2038bc37cb19112e381217c74d9440
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.2"
   screen_retriever:
     dependency: transitive
     description:
@@ -987,10 +979,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "6b12a91cd2febdb6f7e7d92c00d1d0c01d88bffc7fe36b1ed236f0cc37cb5ca4"
+      sha256: eb6ac1540b26de412b3403a163d919ba86f6a973fe6cc50ae3541b80092fdcfb
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.0"
+    version: "0.5.1"
   time:
     dependency: transitive
     description:
@@ -1027,10 +1019,10 @@ packages:
     dependency: transitive
     description:
       name: uri_parser
-      sha256: f47b97479d6c818f739135e3abdd64d629804ea4fff7a5e394a37ca6fe8dce0a
+      sha256: "6543c9fd86d2862fac55d800a43e67c0dcd1a41677cb69c2f8edfe73bbcf1835"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.2"
   uuid:
     dependency: transitive
     description:
@@ -1136,13 +1128,21 @@ packages:
     source: hosted
     version: "1.0.0"
   xml:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: xml
       sha256: "979ee37d622dec6365e2efa4d906c37470995871fe9ae080d967e192d88286b5"
       url: "https://pub.dev"
     source: hosted
     version: "6.2.2"
+  xml2json:
+    dependency: "direct main"
+    description:
+      name: xml2json
+      sha256: c8cb35b83cce879c2ea86951fd257f4e765b0030a0298b35cf94f2b3d0f32095
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.3.6"
   xxh3:
     dependency: transitive
     description:
@@ -1161,4 +1161,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=3.0.0-290.1.beta <4.0.0"
-  flutter: ">=3.3.0"
+  flutter: ">=3.7.0"
