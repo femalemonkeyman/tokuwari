@@ -167,10 +167,14 @@ class AniViewerState extends State<AniViewer> {
   void dispose() {
     super.dispose();
     if (!isPhone) {
-      Future.microtask(() async {
-        await controller!.dispose();
-        await player!.dispose();
-      });
+      Future.microtask(
+        () async {
+          await controller!.dispose();
+          await player!.dispose();
+        },
+      );
+    } else {
+      phonePlayer!.dispose();
     }
   }
 }

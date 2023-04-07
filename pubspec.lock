@@ -311,6 +311,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
+  flutter_html:
+    dependency: "direct main"
+    description:
+      name: flutter_html
+      sha256: "342c7908f0a67bcec62b6e0f7cf23e23bafe7f64693665dd35be98d5e783bdfd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0-alpha.6"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -333,13 +341,13 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_widget_from_html_core:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_widget_from_html_core
-      sha256: e8f4f8b461a140ffb7c71f938bc76efc758893e7468843d9dbf70cb0b9e900cb
+      sha256: "2ee1f47662f5ba34fe535915b034fae0450bc0a15ae6935ca4abcc7fa987e948"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.5+3"
+    version: "0.10.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -577,25 +585,25 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: c71d6725dafff4045ed66cd711b10a8f4069bf11
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
-    version: "0.0.2"
+    version: "0.0.3+3"
   media_kit_libs_ios_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_ios_video
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: c71d6725dafff4045ed66cd711b10a8f4069bf11
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.0"
+    version: "1.0.2"
   media_kit_libs_linux:
     dependency: "direct main"
     description:
       path: media_kit_libs_linux
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: c71d6725dafff4045ed66cd711b10a8f4069bf11
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.1"
@@ -604,16 +612,16 @@ packages:
     description:
       path: media_kit_libs_macos_video
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: c71d6725dafff4045ed66cd711b10a8f4069bf11
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.0"
+    version: "1.0.2"
   media_kit_libs_windows_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_windows_video
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: c71d6725dafff4045ed66cd711b10a8f4069bf11
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.1"
@@ -622,10 +630,10 @@ packages:
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: c71d6725dafff4045ed66cd711b10a8f4069bf11
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
-    version: "0.0.2"
+    version: "0.0.4"
   meta:
     dependency: transitive
     description:
@@ -650,6 +658,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
+  numerus:
+    dependency: transitive
+    description:
+      name: numerus
+      sha256: "436759d84f233b40107d0cc31cfa92d24e0960afeb2e506be70926d4cddffd9e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   octo_image:
     dependency: transitive
     description:
@@ -667,7 +683,7 @@ packages:
     source: hosted
     version: "2.1.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "8829d8a55c13fc0e37127c29fedf290c102f4e40ae94ada574091fe0ff96c917"

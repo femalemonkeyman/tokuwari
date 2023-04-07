@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
-import 'package:image/image.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:image/image.dart' as img;
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:xml2json/xml2json.dart';
 
@@ -66,21 +67,41 @@ class Novel {
     title = content?['metadata']?['dc\$title']?['\$t'];
   }
 
-  List<Widget> parseChapters() {
+  List<Widget> parseChapters(final String extract) {
+    extractArchiveToDisk(archive, extract);
+    Directory current = Directory(
+      p.normalize(
+        p.join(extract, root, '../'),
+      ),
+    );
     List<Widget> chapters = [];
     for (Map s in spine!['itemref']) {
       for (Map c in content!['manifest']['item']) {
         if (c.containsValue(s['idref'])) {
+          print(c);
+          print('${current.path}/${c['href']}');
           chapters.add(
-            HtmlWidget(
-              utf8.decode(
-                archive.findFile("OEBPS/${c['href']}")?.content,
-              ),
-              renderMode: const ListViewMode(
-                primary: false,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-              ),
+            Html(
+              data: File('${current.path}/${c['href']}').readAsStringSync(),
+              customRenders: {
+                (context) => context.tree.element?.localName == "img":
+                    CustomRender.widget(
+                  widget: (context, p1) {
+                    return Image.file(
+                      File(
+                        p.normalize(
+                          p.join(
+                            current.path,
+                            c['href'],
+                            "../",
+                            context.tree.element!.attributes['src']!,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              },
             ),
           );
         }
@@ -98,7 +119,7 @@ class Novel {
         imagePath =
             '${documents.path}/.anicross/$title-${i['href'].split('/').last}';
         //print(imagePath);
-        await (Command()
+        (img.Command()
               ..decodeImage(
                 (archive.findFile(
                           '${root?.split("/")[0]}/${i['href']}',

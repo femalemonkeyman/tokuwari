@@ -98,6 +98,8 @@ class MangaControlsState extends State<MangaControls> {
 
   @override
   Widget build(context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Stack(
         children: [
@@ -132,8 +134,8 @@ class MangaControlsState extends State<MangaControls> {
                 Positioned(
                   top: 0,
                   left: 0,
-                  width: MediaQuery.of(context).size.width / 2,
-                  height: MediaQuery.of(context).size.height,
+                  width: width / 2,
+                  height: height,
                   child: GestureDetector(
                     onTap: () {
                       widget.controller.jumpToPage(
@@ -145,8 +147,8 @@ class MangaControlsState extends State<MangaControls> {
                 Positioned(
                   top: 0,
                   right: 0,
-                  width: MediaQuery.of(context).size.width / 2,
-                  height: MediaQuery.of(context).size.height,
+                  width: width / 2,
+                  height: height,
                   child: GestureDetector(
                     onTap: () {
                       widget.controller.jumpToPage(
@@ -156,7 +158,7 @@ class MangaControlsState extends State<MangaControls> {
                   ),
                 ),
                 Positioned(
-                  height: MediaQuery.of(context).size.height / 5,
+                  height: height / 5,
                   left: 0,
                   right: 0,
                   bottom: 0,

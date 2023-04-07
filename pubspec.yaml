@@ -14,8 +14,9 @@ dependencies:
   
   flutter:
     sdk: flutter
-  flutter_widget_from_html_core: 
+  flutter_html:
   archive:
+  path:
   image:
   better_player:
     git:
