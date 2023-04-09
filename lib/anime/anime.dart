@@ -148,6 +148,7 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
     page = 1;
     animeData = [];
     if (textController.text.isNotEmpty) {
+      print(textController.text);
       selectedGenres = [];
       search = textController.text;
     } else {

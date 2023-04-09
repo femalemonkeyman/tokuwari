@@ -32,9 +32,9 @@ class GridState extends State<Grid> with AutomaticKeepAliveClientMixin {
         maxCrossAxisExtent: 280,
       ),
       delegate: SliverChildBuilderDelegate(
-        childCount: widget.length,
+        childCount: widget.data.length,
         (context, index) {
-          if (index >= widget.data.length - 5 && widget.length == null) {
+          if (index >= widget.data.length - 5 && widget.data.length >= 5) {
             widget.paginate();
           } else {
             return Padding(
