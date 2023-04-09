@@ -17,6 +17,7 @@ dependencies:
   flutter_widget_from_html_core: 
   archive:
   image:
+  path:
   better_player:
     git:
       url: https://github.com/femalemonkeyman/betterplayer
@@ -55,6 +56,11 @@ dependencies:
      url: https://github.com/alexmercerind/media_kit
      ref: main
      path: media_kit_libs_ios_video
+  media_kit_libs_android_video:
+    git:
+     url: https://github.com/alexmercerind/media_kit
+     ref: main
+     path: media_kit_libs_android_video
   path_provider: 
   permission_handler: 
   universal_io: 
@@ -64,6 +70,7 @@ dependencies:
   graphql:
   isar: ^3.0.5
   isar_flutter_libs: ^3.0.5
+  wakelock: 
   expandable_text:
   material_design_icons_flutter:
   string_similarity: 

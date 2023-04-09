@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:anicross/providers/anime_providers.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:better_player/better_player.dart';
 import 'package:dio/dio.dart';
+import 'package:path/path.dart' as p;
+import 'package:wakelock/wakelock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,130 +24,93 @@ class AniViewer extends StatefulWidget {
 }
 
 class AniViewerState extends State<AniViewer> {
-  Player? player;
+  final Player player = Player(
+    configuration: const PlayerConfiguration(),
+  );
   VideoController? controller;
-  BetterPlayerController? phonePlayer;
+  bool ready = false;
   int currentEpisode = 1;
-  List subtitles = [];
+  List subTracks = [];
   Map getMedia = {};
-
-  bool isPhone = Platform.isAndroid || Platform.isIOS;
 
   @override
   void initState() {
     super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
+    );
     Future.microtask(
       () async {
+        controller = await VideoController.create(
+          player,
+        );
+        await Wakelock.enable();
         getMedia = await mediaInfo(
               widget.episode['id'],
             ) ??
             widget.episode;
-        setState(() {
-          subtitles = getMedia['subtitles'] ?? [];
-        });
-      },
-    );
-  }
-
-  Future desktopPlayer(String url) async {
-    player = Player(
-      configuration: const PlayerConfiguration(),
-    );
-    controller = await VideoController.create(
-      player!.handle,
-    );
-    if (getMedia['subtitles'] != null) {
-      Directory dir = await getTemporaryDirectory();
-      String path = "";
-      for (final i in getMedia['subtitles']) {
-        await Dio().download(i['url'], "${dir.path}/${i['lang']}subs.vtt");
-        if (i['lang'] == "English") {
-          path = "${dir.path}/${i['lang']}subs.vtt";
+        if (getMedia.isNotEmpty) {
+          final Directory dir = Directory(
+            p.join(
+              (await getTemporaryDirectory()).path,
+              'anisubs',
+            ),
+          );
+          if (getMedia['subtitles'] != null) {
+            for (final i in getMedia['subtitles']) {
+              if (i['lang'] != 'Thumbnails') {
+                await Dio().download(
+                  i['url'],
+                  p.join(dir.path, "${i['lang']}.vtt"),
+                );
+              }
+            }
+            await (player.platform as libmpvPlayer)
+                .setProperty("sub-auto", 'all');
+            await (player.platform as libmpvPlayer)
+                .setProperty("sub-file-paths", dir.path);
+          }
+          await player.open(
+            Media(
+              getMedia['sources'].first['url'],
+            ),
+          );
+          setState(() {});
         }
-      }
-      await (player!.platform as libmpvPlayer).setProperty("sub-files", path);
-    }
-    await player!.open(
-      Playlist(
-        [
-          Media(
-            url,
-          ),
-        ],
-      ),
+      },
     );
   }
 
   @override
   Widget build(context) {
     if (getMedia.isNotEmpty && !kIsWeb) {
-      if (isPhone) {
-        BetterPlayerDataSource source = BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network,
-          getMedia['sources']!.first['url'],
-          headers: {"User-Agent": "Death"},
-          videoFormat: BetterPlayerVideoFormat.hls,
-          subtitles: (subtitles.isNotEmpty)
-              ? List.generate(
-                  subtitles.length - 1,
-                  (index) {
-                    return BetterPlayerSubtitlesSource(
-                      selectedByDefault: (subtitles[index]['lang'] == "English")
-                          ? true
-                          : false,
-                      type: BetterPlayerSubtitlesSourceType.network,
-                      name: subtitles[index]['lang'],
-                      urls: [
-                        subtitles[index]['url'],
-                      ],
-                    );
-                  },
-                )
-              : null,
-        );
-        phonePlayer = BetterPlayerController(
-          const BetterPlayerConfiguration(
-            useRootNavigator: true,
-            controlsConfiguration: BetterPlayerControlsConfiguration(
-              playerTheme: BetterPlayerTheme.material,
+      return WillPopScope(
+        onWillPop: () async {
+          SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+          SystemChrome.setPreferredOrientations([]);
+          await Wakelock.disable();
+          await controller?.dispose();
+          await player.dispose();
+          Directory(
+            p.join((await getTemporaryDirectory()).path, 'anisubs'),
+          ).deleteSync(
+            recursive: true,
+          );
+          return true;
+        },
+        child: Stack(
+          children: [
+            Video(controller: controller),
+            VideoControls(
+              player: player,
             ),
-            deviceOrientationsOnFullScreen: [
-              DeviceOrientation.landscapeLeft,
-              DeviceOrientation.landscapeRight,
-            ],
-            fullScreenByDefault: true,
-            autoPlay: true,
-            aspectRatio: 16 / 9,
-            allowedScreenSleep: false,
-            fit: BoxFit.contain,
-          ),
-          betterPlayerDataSource: source,
-        );
-        return BetterPlayer(
-          controller: phonePlayer!,
-        );
-      } else {
-        return FutureBuilder(
-          future: desktopPlayer(
-            getMedia['sources'].last['url'],
-          ),
-          builder: (context, innerSnap) {
-            if (innerSnap.connectionState == ConnectionState.done) {
-              return Stack(
-                children: [
-                  Video(controller: controller),
-                  VideoControls(
-                    player: player!,
-                  ),
-                ],
-              );
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        );
-      }
+          ],
+        ),
+      );
     } else {
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -160,17 +124,6 @@ class AniViewerState extends State<AniViewer> {
           ),
         ],
       );
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    if (!isPhone) {
-      Future.microtask(() async {
-        await controller!.dispose();
-        await player!.dispose();
-      });
     }
   }
 }
@@ -189,10 +142,20 @@ class VideoControlsState extends State<VideoControls> {
   Timer? timer;
 
   @override
+  initState() {
+    super.initState();
+    for (var i in widget.player.state.tracks.subtitle) {
+      print(i);
+    }
+  }
+
+  @override
   void dispose() {
-    timer!.cancel();
+    timer?.cancel();
     Future.microtask(() async {
-      await windowManager.setFullScreen(false);
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        await windowManager.setFullScreen(false);
+      }
       await widget.player.dispose();
     });
     super.dispose();
@@ -215,9 +178,11 @@ class VideoControlsState extends State<VideoControls> {
             show = true;
           });
           timer = Timer(const Duration(seconds: 3), () {
-            setState(() {
-              show = false;
-            });
+            setState(
+              () {
+                show = false;
+              },
+            );
           });
         },
         child: AnimatedOpacity(
@@ -242,57 +207,104 @@ class VideoControlsState extends State<VideoControls> {
                   ),
                 ),
               ),
-              const BackButton(),
+              Positioned(
+                top: 0,
+                right: 0,
+                left: 0,
+                child: Row(
+                  children: [
+                    const BackButton(),
+                    const Spacer(),
+                    PopupMenuButton(
+                      itemBuilder: (context) {
+                        return [
+                          PopupMenuItem(
+                            child: PopupMenuButton(
+                              child: const Text('Subtitles'),
+                              itemBuilder: (context) {
+                                return List.generate(
+                                  widget.player.state.tracks.subtitle.length,
+                                  (index) {
+                                    return PopupMenuItem(
+                                      onTap: () {
+                                        widget.player.setSubtitleTrack(
+                                          widget.player.state.tracks
+                                              .subtitle[index],
+                                        );
+                                      },
+                                      child: Text(
+                                        widget.player.state.tracks
+                                                .subtitle[index].title ??
+                                            widget.player.state.tracks
+                                                .subtitle[index].id,
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ];
+                      },
+                    )
+                  ],
+                ),
+              ),
               Positioned(
                 left: 0,
                 right: 0,
                 bottom: 0,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 60, right: 20, left: 20),
-                  child: StreamBuilder<Duration>(
-                    stream: widget.player.streams.position,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<Duration> snapshot) {
-                      if (snapshot.hasData) {
-                        return Theme(
-                          data: ThemeData.dark(),
-                          child: ProgressBar(
-                            progress: snapshot.data!,
-                            total: widget.player.state.duration,
-                            barHeight: 3,
-                            timeLabelLocation: TimeLabelLocation.sides,
-                            onSeek: (duration) {
-                              widget.player.seek(duration);
-                            },
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 20,
-                bottom: 0,
-                child: IconButton(
-                  iconSize: 50,
-                  onPressed: () async {
-                    if (fullscreen) {
-                      await windowManager.setFullScreen(false);
-                      fullscreen = false;
-                    } else {
-                      await windowManager.setFullScreen(true);
-                      fullscreen = true;
-                    }
-                    setState(() {});
-                  },
-                  icon: (fullscreen)
-                      ? const Icon(Icons.fullscreen_exit_outlined)
-                      : const Icon(
-                          Icons.fullscreen_outlined,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(bottom: 5, right: 20, left: 20),
+                      child: StreamBuilder<Duration>(
+                        stream: widget.player.streams.position,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Duration> snapshot) {
+                          if (snapshot.hasData) {
+                            return Theme(
+                              data: ThemeData.dark(),
+                              child: ProgressBar(
+                                progress: snapshot.data!,
+                                total: widget.player.state.duration,
+                                barHeight: 3,
+                                timeLabelLocation: TimeLabelLocation.sides,
+                                onSeek: (duration) {
+                                  widget.player.seek(duration);
+                                },
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        const Spacer(),
+                        IconButton(
+                          iconSize: 50,
+                          onPressed: () async {
+                            if (fullscreen) {
+                              await windowManager.setFullScreen(false);
+                              fullscreen = false;
+                            } else {
+                              await windowManager.setFullScreen(true);
+                              fullscreen = true;
+                            }
+                            setState(() {});
+                          },
+                          icon: (fullscreen)
+                              ? const Icon(Icons.fullscreen_exit_outlined)
+                              : const Icon(
+                                  Icons.fullscreen_outlined,
+                                ),
                         ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],

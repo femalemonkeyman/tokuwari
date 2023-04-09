@@ -278,10 +278,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: d8e9ca7e5d1983365c277f12c21b4362df6cf659c99af146ad4d04eb33033013
+      sha256: "0d923fb610d0abf67f2149c3a50ef85f78bebecfc4d645719ca70bcf4abc788f"
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.6"
+    version: "5.2.7"
   fixnum:
     dependency: transitive
     description:
@@ -577,25 +577,34 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
-    version: "0.0.2"
+    version: "0.0.4+1"
+  media_kit_libs_android_video:
+    dependency: "direct main"
+    description:
+      path: media_kit_libs_android_video
+      ref: main
+      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
+      url: "https://github.com/alexmercerind/media_kit"
+    source: git
+    version: "1.0.0"
   media_kit_libs_ios_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_ios_video
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.0"
+    version: "1.0.3"
   media_kit_libs_linux:
     dependency: "direct main"
     description:
       path: media_kit_libs_linux
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.1"
@@ -604,16 +613,16 @@ packages:
     description:
       path: media_kit_libs_macos_video
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.0"
+    version: "1.0.3"
   media_kit_libs_windows_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_windows_video
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.1"
@@ -622,18 +631,18 @@ packages:
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: b5b980e29b2f88f226a58c1c5eda416dcb19b598
+      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
-    version: "0.0.2"
+    version: "0.0.4"
   meta:
     dependency: transitive
     description:
       name: meta
-      sha256: "12307e7f0605ce3da64cf0db90e5fcab0869f3ca03f76be6bb2991ce0a55e82b"
+      sha256: "3c74dbf8763d36539f114c799d8a2d87343b5067e9d796ca22b5eb8437090ee3"
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.0"
+    version: "1.9.1"
   mime:
     dependency: transitive
     description:
@@ -667,7 +676,7 @@ packages:
     source: hosted
     version: "2.1.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "8829d8a55c13fc0e37127c29fedf290c102f4e40ae94ada574091fe0ff96c917"
@@ -899,10 +908,10 @@ packages:
     dependency: transitive
     description:
       name: source_span
-      sha256: dd904f795d4b4f3b870833847c461801f6750a9fa8e61ea5ac53f9422b31f250
+      sha256: "53e943d4206a5e30df338fd4c6e7a077e02254531b138a15aec3bd143c1a8b3c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.1"
+    version: "1.10.0"
   sqflite:
     dependency: transitive
     description:
@@ -1048,7 +1057,7 @@ packages:
     source: hosted
     version: "0.3.3"
   wakelock:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: wakelock
       sha256: "769ecf42eb2d07128407b50cb93d7c10bd2ee48f0276ef0119db1d25cc2f87db"
@@ -1107,18 +1116,18 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: c9ebe7ee4ab0c2194e65d3a07d8c54c5d00bb001b76081c4a04cdb8448b59e46
+      sha256: a6f0236dbda0f63aa9a25ad1ff9a9d8a4eaaa5012da0dc59d21afdb1dc361ca4
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.3"
+    version: "3.1.4"
   window_manager:
     dependency: "direct main"
     description:
       name: window_manager
-      sha256: "492806c69879f0d28e95472bbe5e8d5940ac8c6e99cc07052fe14946974555ba"
+      sha256: "2b2572442b2a5178642730442dc625ac088244f5827b1f0811371b1b7485eb62"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.1"
+    version: "0.3.2"
   xdg_directories:
     dependency: transitive
     description:
