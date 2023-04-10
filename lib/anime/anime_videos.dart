@@ -48,7 +48,9 @@ class AniViewerState extends State<AniViewer> {
         controller = await VideoController.create(
           player,
         );
-        await Wakelock.enable();
+        if (!Platform.isLinux) {
+          await Wakelock.enable();
+        }
         getMedia = await mediaInfo(
               widget.episode['id'],
             ) ??
@@ -60,12 +62,12 @@ class AniViewerState extends State<AniViewer> {
               'anisubs',
             ),
           );
-          if (getMedia['subtitles'] != null) {
-            for (final i in getMedia['subtitles']) {
-              if (i['lang'] != 'Thumbnails') {
+          if (getMedia['tracks'] != null) {
+            for (final i in getMedia['tracks']) {
+              if (i['kind'] == 'captions') {
                 await Dio().download(
-                  i['url'],
-                  p.join(dir.path, "${i['lang']}.vtt"),
+                  i['file'],
+                  p.join(dir.path, "${i['label']}.vtt"),
                 );
               }
             }
@@ -92,14 +94,18 @@ class AniViewerState extends State<AniViewer> {
         onWillPop: () async {
           SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
           SystemChrome.setPreferredOrientations([]);
-          await Wakelock.disable();
+          if (!Platform.isLinux) {
+            await Wakelock.disable();
+          }
           await controller?.dispose();
           await player.dispose();
-          Directory(
-            p.join((await getTemporaryDirectory()).path, 'anisubs'),
-          ).deleteSync(
-            recursive: true,
-          );
+          try {
+            Directory(
+              p.join((await getTemporaryDirectory()).path, 'anisubs'),
+            ).deleteSync(
+              recursive: true,
+            );
+          } catch (e) {}
           return true;
         },
         child: Stack(

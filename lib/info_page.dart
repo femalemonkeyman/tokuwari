@@ -31,7 +31,7 @@ class InfoPageState extends State<InfoPage> {
     Future.microtask(
       () async {
         content = (widget.data.type == "anime")
-            ? await mediaList(widget.data.mediaId) ??
+            ? await mediaList(widget.data.malid) ??
                 await haniList(widget.data.title) ??
                 []
             : await dexReader(widget.data.mediaId);

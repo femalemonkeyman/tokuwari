@@ -21,6 +21,7 @@ query (\$page: Int!, \$search: String, \$genre: [String])
           english
           native
         }
+        idMal
         status
         averageScore
         description(asHtml: false)
@@ -116,6 +117,7 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
           return AniData(
             type: "anime",
             mediaId: query.data!['Page']['media'][index]['id'].toString(),
+            malid: query.data!['Page']['media'][index]['idMal'].toString(),
             description:
                 (query.data!['Page']['media'][index]['description'] ?? "")
                     .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
