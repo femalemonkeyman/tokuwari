@@ -57,15 +57,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  better_player:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: "8355333efbb49b62edbeb3e68d4b4f1d7b472172"
-      url: "https://github.com/femalemonkeyman/betterplayer"
-    source: git
-    version: "0.0.83"
   boolean_selector:
     dependency: transitive
     description:
@@ -226,14 +217,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.17.2"
-  cupertino_icons:
-    dependency: transitive
-    description:
-      name: cupertino_icons
-      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   dart_style:
     dependency: transitive
     description:
@@ -294,10 +277,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: "0d923fb610d0abf67f2149c3a50ef85f78bebecfc4d645719ca70bcf4abc788f"
+      sha256: dcde5ad1a0cebcf3715ea3f24d0db1888bf77027a26c77d7779e8ef63b8ade62
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.7"
+    version: "5.2.9"
   fixnum:
     dependency: transitive
     description:
@@ -356,14 +339,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_widget_from_html_core:
-    dependency: transitive
-    description:
-      name: flutter_widget_from_html_core
-      sha256: e8f4f8b461a140ffb7c71f938bc76efc758893e7468843d9dbf70cb0b9e900cb
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.8.5+3"
   frontend_server_client:
     dependency: transitive
     description:
@@ -372,14 +347,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
-  fwfh_text_style:
-    dependency: transitive
-    description:
-      name: fwfh_text_style
-      sha256: "37806ee0222f79b6e8d4c698c322c897eae6a817258156f40aeece4e588fac60"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.22.08+1"
   glob:
     dependency: transitive
     description:
@@ -597,11 +564,11 @@ packages:
     source: hosted
     version: "6.0.7096"
   media_kit:
-    dependency: "direct main"
+    dependency: "direct overridden"
     description:
       path: media_kit
       ref: main
-      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
+      resolved-ref: "2f58dba1908bf7a8972eaa88e501619de16aba1e"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.4+1"
@@ -610,7 +577,7 @@ packages:
     description:
       path: media_kit_libs_android_video
       ref: main
-      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
+      resolved-ref: "2f58dba1908bf7a8972eaa88e501619de16aba1e"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.0"
@@ -619,43 +586,43 @@ packages:
     description:
       path: media_kit_libs_ios_video
       ref: main
-      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
+      resolved-ref: "2f58dba1908bf7a8972eaa88e501619de16aba1e"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.3"
+    version: "1.0.4"
   media_kit_libs_linux:
     dependency: "direct main"
     description:
       path: media_kit_libs_linux
       ref: main
-      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
+      resolved-ref: "2f58dba1908bf7a8972eaa88e501619de16aba1e"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.1"
+    version: "1.0.2"
   media_kit_libs_macos_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_macos_video
       ref: main
-      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
+      resolved-ref: "2f58dba1908bf7a8972eaa88e501619de16aba1e"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.3"
+    version: "1.0.4"
   media_kit_libs_windows_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_windows_video
       ref: main
-      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
+      resolved-ref: "2f58dba1908bf7a8972eaa88e501619de16aba1e"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.1"
+    version: "1.0.2"
   media_kit_video:
     dependency: "direct main"
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: "26b5eb57d2c88d3de4d175f0201cbe2d99e42fee"
+      resolved-ref: "2f58dba1908bf7a8972eaa88e501619de16aba1e"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.4"
@@ -727,18 +694,18 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: "019f18c9c10ae370b08dce1f3e3b73bc9f58e7f087bb5e921f06529438ac0ae7"
+      sha256: da97262be945a72270513700a92b39dd2f4a54dad55d061687e2e37a6390366a
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.24"
+    version: "2.0.25"
   path_provider_foundation:
     dependency: transitive
     description:
       name: path_provider_foundation
-      sha256: "818b2dc38b0f178e0ea3f7cf3b28146faab11375985d815942a68eee11c2d0f7"
+      sha256: ad4c4d011830462633f03eb34445a45345673dfd4faf1ab0b4735fbd93b19183
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "2.2.2"
   path_provider_linux:
     dependency: transitive
     description:
@@ -847,10 +814,10 @@ packages:
     dependency: transitive
     description:
       name: pointycastle
-      sha256: c3120a968135aead39699267f4c74bc9a08e4e909e86bc1b0af5bfd78691123c
+      sha256: "7c1e5f0d23c9016c5bbd8b1473d0d3fb3fc851b876046039509e18e0c7485f2c"
       url: "https://pub.dev"
     source: hosted
-    version: "3.7.2"
+    version: "3.7.3"
   pool:
     dependency: transitive
     description:
@@ -1080,14 +1047,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
-  visibility_detector:
-    dependency: transitive
-    description:
-      name: visibility_detector
-      sha256: "15c54a459ec2c17b4705450483f3d5a2858e733aee893dcee9d75fd04814940d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.3"
   wakelock:
     dependency: "direct main"
     description:

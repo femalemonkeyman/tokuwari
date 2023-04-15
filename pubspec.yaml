@@ -18,19 +18,10 @@ dependencies:
   archive:
   image:
   path:
-  better_player:
-    git:
-      url: https://github.com/femalemonkeyman/betterplayer
-      ref: master
   cached_network_image:
   dio: 
   file_picker: 
   photo_view: 
-  media_kit:
-    git:
-      url: https://github.com/alexmercerind/media_kit.git
-      ref: main
-      path: media_kit
   media_kit_video:
     git:
       url: https://github.com/alexmercerind/media_kit.git
@@ -78,6 +69,11 @@ dependencies:
   
 dependency_overrides:
   web_socket_channel: 2.2.0
+  media_kit:
+    git:
+      url: https://github.com/alexmercerind/media_kit.git
+      ref: main
+      path: media_kit
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

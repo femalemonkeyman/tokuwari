@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   isar_flutter_libs
+  media_kit_libs_windows_video
   media_kit_video
   permission_handler_windows
   screen_retriever
@@ -11,7 +12,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  media_kit_libs_windows_video
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
