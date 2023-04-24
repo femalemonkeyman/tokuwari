@@ -70,7 +70,6 @@ Future<Map?> mediaInfo(id) async {
     sources['sourcesBackup'] =
         jsonDecode(decryptAESCryptoJS(sources['sourcesBackup'], key));
   }
-  print(sources);
   sources['sources'] = List.generate(sources['sources'].length, (index) {
     return {'url': sources['sources'][index]['file']};
   });
@@ -104,13 +103,10 @@ Future<List?> haniList(String name) async {
       Response v = await Dio().get(
         "https://hanime.tv/api/v8/video?id=${i['id']}",
       );
-      print(i['name'].toString().similarityTo(name));
       if (i['name'].toString().similarityTo(name) > 0.2) {
-        print("yes");
         videos.add(v.data);
       }
     }
-
     return List.generate(
       videos.length,
       (index) {
@@ -171,7 +167,7 @@ String decryptAESCryptoJS(final String encrypted, final String passphrase) {
         encrypter.decrypt64(base64.encode(encryptedBytes), iv: iv);
     return decrypted;
   } catch (error) {
-    throw error;
+    rethrow;
   }
 }
 
@@ -182,10 +178,11 @@ List<Uint8List> deriveKeyAndIV(final String passphrase, final Uint8List salt) {
   Uint8List preHash = Uint8List(0);
 
   while (concatenatedHashes.length < 48) {
-    if (currentHash.length > 0)
+    if (currentHash.isNotEmpty) {
       preHash = Uint8List.fromList(currentHash + password + salt);
-    else
+    } else {
       preHash = Uint8List.fromList(password + salt);
+    }
     currentHash = Uint8List.fromList(md5.convert(preHash).bytes);
     concatenatedHashes = Uint8List.fromList(concatenatedHashes + currentHash);
   }

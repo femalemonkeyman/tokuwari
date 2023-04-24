@@ -20,11 +20,7 @@ class InfoPage extends StatefulWidget {
 
 class InfoPageState extends State<InfoPage> {
   List content = [];
-  final Isar isar = Isar.getInstance('later') ??
-      Isar.openSync(
-        [AniDataSchema],
-        name: "later",
-      );
+  final Isar isar = Isar.getInstance('later')!;
 
   @override
   void initState() {

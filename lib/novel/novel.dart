@@ -9,8 +9,6 @@ import 'package:isar/isar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
 
-enum Color { red, green, blue }
-
 class NovelPage extends StatefulWidget {
   const NovelPage({super.key});
 
@@ -19,8 +17,7 @@ class NovelPage extends StatefulWidget {
 }
 
 class NovelPageState extends State<NovelPage> {
-  Isar isar = Isar.getInstance('novels') ??
-      Isar.openSync([AniDataSchema], name: 'novels');
+  Isar isar = Isar.getInstance('novels')!;
   List<AniData> novels = [];
 
   @override

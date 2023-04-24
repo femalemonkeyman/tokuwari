@@ -1,7 +1,10 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:anicross/models/info_models.dart';
 import 'package:anicross/widgets/grid.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LaterPage extends StatefulWidget {
   const LaterPage({super.key});
@@ -13,8 +16,11 @@ class LaterPage extends StatefulWidget {
 class LaterPageState extends State<LaterPage> {
   List<AniData> animeData = [];
   List<AniData> mangaData = [];
-  final Isar isar = Isar.getInstance('later') ??
-      Isar.openSync([AniDataSchema], name: 'later');
+  Future<Directory> get dir async {
+    return await getApplicationDocumentsDirectory();
+  }
+
+  final Isar isar = Isar.getInstance('later')!;
   late final dataChange = isar.aniDatas.watchLazy(fireImmediately: true);
 
   @override

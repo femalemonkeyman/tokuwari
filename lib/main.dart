@@ -3,12 +3,28 @@ import 'package:anicross/later_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:isar/isar.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:path_provider/path_provider.dart';
 import 'anime/anime.dart';
 import 'manga/manga.dart';
+import 'models/info_models.dart';
 import 'novel/novel.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
+  final dir = await getApplicationDocumentsDirectory();
+  Isar.openSync(
+    [AniDataSchema],
+    name: "later",
+    directory: dir.path,
+  );
+  Isar.openSync(
+    [AniDataSchema],
+    name: "novels",
+    directory: dir.path,
+  );
   runApp(
     MaterialApp(
       theme: ThemeData(
