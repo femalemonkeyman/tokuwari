@@ -11,4 +11,4 @@ PRODUCT_NAME = anicross
 PRODUCT_BUNDLE_IDENTIFIER = com.universal.anime.anicross
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2022 com.universal.anime. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2023 com.universal.anime. All rights reserved.
