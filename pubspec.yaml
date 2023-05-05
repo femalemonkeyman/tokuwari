@@ -11,7 +11,6 @@ environment:
   sdk: ">=3.0.0"
 
 dependencies:
-  
   flutter:
     sdk: flutter
   flutter_html:
@@ -60,15 +59,16 @@ dependencies:
   window_manager: 
   graphql:
   encrypt: 
-  isar: ^3.1.0
-  isar_flutter_libs: ^3.1.0
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
+  web_socket_channel:
   wakelock: 
   expandable_text:
   material_design_icons_flutter:
   string_similarity: 
   
 dependency_overrides:
-  web_socket_channel: 2.2.0
+  #web_socket_channel: 2.2.0
   media_kit:
     git:
       url: https://github.com/alexmercerind/media_kit.git
@@ -87,4 +87,4 @@ flutter:
 dev_dependencies:
   build_runner: 
   flutter_lints: 
-  isar_generator: ^3.1.0
+  isar_generator: ^3.1.0+1

@@ -26,3 +26,20 @@ class AniData {
     this.tags,
   });
 }
+
+@collection
+class Media {
+  final Id id = Isar.autoIncrement;
+  final String name;
+  final String number;
+  final List<String> sources;
+  bool watched;
+  String? position;
+
+  Media({
+    required this.name,
+    required this.number,
+    required this.sources,
+    this.watched = false,
+  });
+}
