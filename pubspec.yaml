@@ -66,6 +66,8 @@ dependencies:
   expandable_text:
   material_design_icons_flutter:
   string_similarity: 
+  go_router: 
+  html:
   
 dependency_overrides:
   web_socket_channel: 2.2.0

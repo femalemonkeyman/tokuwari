@@ -150,9 +150,6 @@ class VideoControlsState extends State<VideoControls> {
   @override
   initState() {
     super.initState();
-    for (var i in widget.player.state.tracks.subtitle) {
-      print(i);
-    }
   }
 
   @override

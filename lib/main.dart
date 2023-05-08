@@ -2,6 +2,7 @@ import 'package:anicross/models/color_schemes.g.dart';
 import 'package:anicross/later_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
@@ -26,7 +27,7 @@ void main() async {
     directory: dir.path,
   );
   runApp(
-    MaterialApp(
+    MaterialApp.router(
       theme: ThemeData(
         dividerTheme: const DividerThemeData(
           color: Colors.transparent,
@@ -47,10 +48,15 @@ void main() async {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      routes: {
-        "Dashboard": (context) => const AniNav(),
-      },
-      initialRoute: 'Dashboard',
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(
+            name: 'Dashboard',
+            path: '/',
+            builder: (context, state) => const AniNav(),
+          ),
+        ],
+      ),
     ),
   );
 }

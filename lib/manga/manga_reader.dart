@@ -47,7 +47,6 @@ class MangaReader extends StatelessWidget {
                 pageController: controller,
                 reverse: true,
                 builder: (context, index) {
-                  print(index);
                   return PhotoViewGalleryPageOptions(
                     imageProvider: CachedNetworkImageProvider(
                       snapshot.data?[index],
