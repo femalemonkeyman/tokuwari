@@ -5,18 +5,18 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: a36ec4843dc30ea6bf652bf25e3448db6c5e8bcf4aa55f063a5d1dad216d8214
+      sha256: "8880b4cfe7b5b17d57c052a5a3a8cc1d4f546261c7cc8fbd717bd53f48db0568"
       url: "https://pub.dev"
     source: hosted
-    version: "58.0.0"
+    version: "59.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
-      sha256: cc4242565347e98424ce9945c819c192ec0838cb9d1f6aa4a97cc96becbc5b27
+      sha256: a89627f49b0e70e068130a36571409726b04dab12da7e5625941d2c8ec278b96
       url: "https://pub.dev"
     source: hosted
-    version: "5.10.0"
+    version: "5.11.1"
   archive:
     dependency: "direct main"
     description:
@@ -330,10 +330,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: c224ac897bed083dabf11f238dd11a239809b446740be0c2044608c50029ffdf
+      sha256: "8ffe990dac54a4a5492747added38571a5ab474c8e5d196809ea08849c69b1bb"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.9"
+    version: "2.0.13"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -423,10 +423,10 @@ packages:
     dependency: "direct main"
     description:
       name: graphql
-      sha256: b061201579040e9548cec2bae17bbdea0ab30666cb4e7ba48b9675f14d982199
+      sha256: "68bb34f7d239b7c9530c37de754ccb4b9e19927d838fd103da297444c11dad62"
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.3"
+    version: "5.1.2"
   graphs:
     dependency: transitive
     description:
@@ -479,10 +479,10 @@ packages:
     dependency: "direct main"
     description:
       name: image
-      sha256: "483a389d6ccb292b570c31b3a193779b1b0178e7eb571986d9a49904b6861227"
+      sha256: "73964e3609fb96e01e69b0924b939967c556e46c7ff05db2ea9e31019000f4ef"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.15"
+    version: "4.0.16"
   io:
     dependency: transitive
     description:
@@ -495,26 +495,26 @@ packages:
     dependency: "direct main"
     description:
       name: isar
-      sha256: aef9b9dd6ea4f5fca1f6fdc38e76010e4762cdb1400169d99a0b42e8f71e4f8a
+      sha256: "99165dadb2cf2329d3140198363a7e7bff9bbd441871898a87e26914d25cf1ea"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "3.1.0+1"
   isar_flutter_libs:
     dependency: "direct main"
     description:
       name: isar_flutter_libs
-      sha256: "8dcfb6889e68d9f0ad9980d77b3903782811645d848786e6ea6518ea6058e45d"
+      sha256: bc6768cc4b9c61aabff77152e7f33b4b17d2fc93134f7af1c3dd51500fe8d5e8
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "3.1.0+1"
   isar_generator:
     dependency: "direct dev"
     description:
       name: isar_generator
-      sha256: "3813ddc78bff4d8328a5026a1c7af80a8c688719bf6fba6ec4b56f8772c5b8bf"
+      sha256: "76c121e1295a30423604f2f819bc255bc79f852f3bc8743a24017df6068ad133"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "3.1.0+1"
   js:
     dependency: transitive
     description:
@@ -535,10 +535,10 @@ packages:
     dependency: transitive
     description:
       name: lints
-      sha256: "5e4a9cd06d447758280a8ac2405101e0e2094d2a1dbdd3756aec3fe7775ba593"
+      sha256: "6b0206b0bf4f04961fc5438198ccb3a885685cd67d4d4a32cc20ad7f8adbe015"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.1.0"
   logging:
     dependency: transitive
     description:
@@ -576,25 +576,25 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: a4e9fb6e444b79c0340ee3571d841c3c09a108fb
+      resolved-ref: "8b8d8592a5e08d21b55a43e63a83472d27f8ebaa"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
-    version: "0.0.5+2"
+    version: "0.0.7+1"
   media_kit_libs_android_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_android_video
       ref: main
-      resolved-ref: a4e9fb6e444b79c0340ee3571d841c3c09a108fb
+      resolved-ref: "8b8d8592a5e08d21b55a43e63a83472d27f8ebaa"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.0"
+    version: "1.0.3"
   media_kit_libs_ios_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_ios_video
       ref: main
-      resolved-ref: a4e9fb6e444b79c0340ee3571d841c3c09a108fb
+      resolved-ref: "8b8d8592a5e08d21b55a43e63a83472d27f8ebaa"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.4"
@@ -603,7 +603,7 @@ packages:
     description:
       path: media_kit_libs_linux
       ref: main
-      resolved-ref: a4e9fb6e444b79c0340ee3571d841c3c09a108fb
+      resolved-ref: "8b8d8592a5e08d21b55a43e63a83472d27f8ebaa"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.2"
@@ -612,16 +612,16 @@ packages:
     description:
       path: media_kit_libs_macos_video
       ref: main
-      resolved-ref: a4e9fb6e444b79c0340ee3571d841c3c09a108fb
+      resolved-ref: "8b8d8592a5e08d21b55a43e63a83472d27f8ebaa"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.4"
+    version: "1.0.5"
   media_kit_libs_windows_video:
     dependency: "direct main"
     description:
       path: media_kit_libs_windows_video
       ref: main
-      resolved-ref: a4e9fb6e444b79c0340ee3571d841c3c09a108fb
+      resolved-ref: "8b8d8592a5e08d21b55a43e63a83472d27f8ebaa"
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.2"
@@ -630,10 +630,10 @@ packages:
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: a4e9fb6e444b79c0340ee3571d841c3c09a108fb
+      resolved-ref: "8b8d8592a5e08d21b55a43e63a83472d27f8ebaa"
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
-    version: "0.0.7"
+    version: "0.0.9"
   meta:
     dependency: transitive
     description:
@@ -702,10 +702,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: da97262be945a72270513700a92b39dd2f4a54dad55d061687e2e37a6390366a
+      sha256: "2cec049d282c7f13c594b4a73976b0b4f2d7a1838a6dd5aaf7bd9719196bee86"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.25"
+    version: "2.0.27"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -734,10 +734,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_windows
-      sha256: f53720498d5a543f9607db4b0e997c4b5438884de25b0f73098cc2671a51b130
+      sha256: d3f80b32e83ec208ac95253e0cd4d298e104fbc63cb29c5c69edaed43b0c69d6
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.5"
+    version: "2.1.6"
   pedantic:
     dependency: transitive
     description:
@@ -923,18 +923,18 @@ packages:
     dependency: transitive
     description:
       name: sqflite
-      sha256: e7dfb6482d5d02b661d0b2399efa72b98909e5aa7b8336e1fb37e226264ade00
+      sha256: "8453780d1f703ead201a39673deb93decf85d543f359f750e2afc4908b55533f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.7"
+    version: "2.2.8"
   sqflite_common:
     dependency: transitive
     description:
       name: sqflite_common
-      sha256: "220831bf0bd5333ff2445eee35ec131553b804e6b5d47a4a37ca6f5eb66e282c"
+      sha256: e77abf6ff961d69dfef41daccbb66b51e9983cdd5cb35bf30733598057401555
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.4"
+    version: "2.4.5"
   stack_trace:
     dependency: transitive
     description:
@@ -1104,13 +1104,13 @@ packages:
     source: hosted
     version: "1.0.2"
   web_socket_channel:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: web_socket_channel
-      sha256: "3a969ddcc204a3e34e863d204b29c0752716f78b6f9cc8235083208d268a4ccd"
+      sha256: d88238e5eac9a42bb43ca4e721edba3c08c6354d4a53063afaa568516217621b
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.4.0"
   win32:
     dependency: transitive
     description:

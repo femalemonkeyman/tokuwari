@@ -150,7 +150,6 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
     page = 1;
     animeData = [];
     if (textController.text.isNotEmpty) {
-      print(textController.text);
       selectedGenres = [];
       search = textController.text;
     } else {
@@ -185,16 +184,15 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
                         label: Text(
                           genresList[index],
                         ),
-                        onSelected: (value) async {
-                          if (value) {
-                            selectedGenres.add(genresList[index]);
-                          } else {
-                            selectedGenres.remove(genresList[index]);
-                          }
-                          setState(
-                            () {},
-                          );
-                        },
+                        onSelected: (value) => setState(
+                          () {
+                            if (value) {
+                              selectedGenres.add(genresList[index]);
+                            } else {
+                              selectedGenres.remove(genresList[index]);
+                            }
+                          },
+                        ),
                       );
                     },
                   ),

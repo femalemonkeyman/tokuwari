@@ -17,14 +17,14 @@ void main() async {
   MediaKit.ensureInitialized();
   final dir = await getApplicationDocumentsDirectory();
   Isar.openSync(
-    [AniDataSchema],
+    [AniDataSchema, MediaSchema],
     name: "later",
-    directory: dir.path,
+    directory: '${dir.path}/.anicross',
   );
   Isar.openSync(
     [AniDataSchema],
     name: "novels",
-    directory: dir.path,
+    directory: '${dir.path}/.anicross',
   );
   runApp(
     MaterialApp.router(
