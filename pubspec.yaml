@@ -57,10 +57,10 @@ dependencies:
   xml2json:
   audio_video_progress_bar: 
   window_manager: 
-  graphql:
+  #graphql: ^5.2.0-beta.2
   encrypt: 
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
+  isar: ^3.1.0
+  isar_flutter_libs: ^3.1.0
   web_socket_channel:
   wakelock: 
   expandable_text:
@@ -70,7 +70,7 @@ dependencies:
   html:
   
 dependency_overrides:
-  #web_socket_channel: 2.2.0
+  graphql: ^5.2.0-beta.2
   media_kit:
     git:
       url: https://github.com/alexmercerind/media_kit.git

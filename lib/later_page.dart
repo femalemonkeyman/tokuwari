@@ -43,13 +43,11 @@ class LaterPageState extends State<LaterPage> {
           slivers: [
             Grid(
               data: animeData,
-              paginate: () {},
               keep: false,
               length: animeData.length,
             ),
             Grid(
               data: mangaData,
-              paginate: () {},
               keep: false,
               length: mangaData.length,
             ),

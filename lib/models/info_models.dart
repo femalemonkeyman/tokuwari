@@ -28,18 +28,23 @@ class AniData {
 }
 
 @collection
-class Media {
+class MediaProv {
   final Id id = Isar.autoIncrement;
-  final String name;
+  final String provider;
+  final String provId;
+  final String title;
   final String number;
-  final List<String> sources;
+  @ignore
+  final Function? call;
   bool watched;
   String? position;
 
-  Media({
-    required this.name,
+  MediaProv({
+    required this.provider,
+    required this.provId,
+    required this.title,
     required this.number,
-    required this.sources,
+    this.call,
     this.watched = false,
   });
 }

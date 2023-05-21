@@ -5,7 +5,7 @@ import '../widgets/search_button.dart';
 import '../widgets/grid.dart';
 
 const base = """
-query (\$page: Int!, \$search: String, \$genre: [String])
+query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre: [String])
   {
   Page(perPage: 50, page: \$page) {
     pageInfo {
@@ -14,7 +14,7 @@ query (\$page: Int!, \$search: String, \$genre: [String])
       total
       currentPage
     },
-    media(sort: [TRENDING_DESC], type: ANIME, search: \$search, genre_in: \$genre) {
+    media(sort: [TRENDING_DESC], type: \$type, search: \$search, genre_in: \$genre, tag: \$tag) {
       id
         title {
           romaji
@@ -42,7 +42,7 @@ final client = GraphQLClient(
   link: HttpLink("https://graphql.anilist.co/"),
 );
 
-final genresList = [
+const genresList = [
   "Action",
   "Adventure",
   "Comedy",
@@ -65,7 +65,9 @@ final genresList = [
 ];
 
 class AniPage extends StatefulWidget {
-  const AniPage({Key? key}) : super(key: key);
+  final String? tag;
+  final String type;
+  const AniPage({Key? key, required this.type, this.tag}) : super(key: key);
 
   @override
   State createState() => AniPageState();
@@ -74,8 +76,9 @@ class AniPage extends StatefulWidget {
 class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
   final TextEditingController textController = TextEditingController();
   String? search;
+  bool loading = false;
   List<String> selectedGenres = [];
-  int page = 1;
+  late final String? tag = widget.tag;
   Map pageInfo = {};
   List<AniData> animeData = [];
 
@@ -103,9 +106,11 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
         fetchPolicy: FetchPolicy.networkOnly,
         document: gql(base),
         variables: {
-          "page": page,
+          "page": (pageInfo.isEmpty) ? 1 : pageInfo['currentPage'] + 1,
+          'type': widget.type.toUpperCase(),
           'search': search,
           "genre": (selectedGenres.isNotEmpty) ? selectedGenres : null,
+          "tag": tag,
         },
       ),
     );
@@ -115,9 +120,8 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
         query.data!['Page']['media'].length,
         (index) {
           return AniData(
-            type: "anime",
+            type: widget.type,
             mediaId: query.data!['Page']['media'][index]['id'].toString(),
-            malid: query.data!['Page']['media'][index]['idMal'].toString(),
             description:
                 (query.data!['Page']['media'][index]['description'] ?? "")
                     .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
@@ -140,6 +144,7 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
         },
       ),
     );
+    loading = false;
   }
 
   Future<void> updateData() async {
@@ -147,7 +152,7 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
   }
 
   Future searchData() async {
-    page = 1;
+    pageInfo['currentPage'] = 0;
     animeData = [];
     if (textController.text.isNotEmpty) {
       selectedGenres = [];
@@ -209,6 +214,7 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
         );
       },
     ).then((value) async {
+      pageInfo = {};
       animeData = [];
       await queryData();
       setState(
@@ -220,51 +226,61 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(context) {
     super.build(context);
-    return CustomScrollView(
-      slivers: [
-        SliverToBoxAdapter(
-          child: Center(
-            child: SearchButton(
-              text: "Anilist",
-              controller: textController,
-              search: () async {
-                await searchData();
-                setState(() {});
-              },
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification.metrics.pixels ==
+                notification.metrics.maxScrollExtent &&
+            pageInfo['lastPage'] != pageInfo['currentPage'] &&
+            !loading) {
+          loading = true;
+          Future.microtask(
+            () async {
+              await updateData();
+              setState(() {});
+            },
+          );
+        }
+        return true;
+      },
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Center(
+              child: SearchButton(
+                text: "Anilist",
+                controller: textController,
+                search: () async {
+                  await searchData();
+                  setState(() {});
+                },
+              ),
             ),
           ),
-        ),
-        SliverToBoxAdapter(
-          child: Wrap(
-            alignment: WrapAlignment.spaceAround,
-            children: [
-              TextButton(
-                onPressed: () => updateGenre(),
-                child: const Text(
-                  "Filter by genre",
-                  style: TextStyle(color: Colors.white),
+          SliverToBoxAdapter(
+            child: Wrap(
+              alignment: WrapAlignment.spaceAround,
+              children: [
+                TextButton(
+                  onPressed: () => updateGenre(),
+                  child: const Text(
+                    "Filter by genre",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        (animeData.isNotEmpty)
-            ? Grid(
-                data: animeData,
-                paginate: () async {
-                  if (page != pageInfo['currentPage'] + 1) {
-                    page = pageInfo['currentPage'] + 1;
-                    await updateData();
-                    setState(() {});
-                  }
-                },
-              )
-            : const SliverToBoxAdapter(
-                child: Center(
-                  child: CircularProgressIndicator(),
+          (animeData.isNotEmpty)
+              ? Grid(
+                  data: animeData,
+                )
+              : const SliverToBoxAdapter(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
-              ),
-      ],
+        ],
+      ),
     );
   }
 }

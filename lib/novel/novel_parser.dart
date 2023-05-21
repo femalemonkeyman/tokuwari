@@ -83,10 +83,10 @@ class Novel {
           chapters.add(
             Html(
               data: File('${current.path}/${c['href']}').readAsStringSync(),
-              customRenders: {
-                (context) => context.tree.element?.localName == "img":
-                    CustomRender.widget(
-                  widget: (context, p1) {
+              extensions: [
+                TagExtension(
+                  tagsToExtend: {'img'},
+                  builder: (context) {
                     return Image.file(
                       File(
                         p.normalize(
@@ -94,14 +94,14 @@ class Novel {
                             current.path,
                             c['href'],
                             "../",
-                            context.tree.element!.attributes['src']!,
+                            context.element!.attributes['src']!,
                           ),
                         ),
                       ),
                     );
                   },
                 ),
-              },
+              ],
             ),
           );
         }

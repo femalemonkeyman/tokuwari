@@ -1,10 +1,9 @@
-import 'package:anicross/anime/anime_videos.dart';
-import 'package:anicross/manga/manga_reader.dart';
-import 'package:anicross/providers/anime_providers.dart';
+import 'package:anicross/media/providers/anime_providers.dart';
 import 'package:anicross/models/info_models.dart';
-import 'package:anicross/providers/manga_providers.dart';
+import 'package:anicross/media/providers/manga_providers.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'widgets/image.dart';
@@ -19,19 +18,24 @@ class InfoPage extends StatefulWidget {
 }
 
 class InfoPageState extends State<InfoPage> {
-  List content = [];
+  final List<MediaProv> content = [];
   final Isar isar = Isar.getInstance('later')!;
 
   @override
   void initState() {
     Future.microtask(
       () async {
-        content = (widget.data.type == "anime")
-            ? await mediaList(widget.data.malid) ??
-                await haniList(widget.data.title) ??
-                []
-            : await dexReader(widget.data.mediaId);
-        setState(() {});
+        content.addAll(
+          switch (widget.data.type) {
+            'anime' => await zoroList(widget.data.mediaId),
+            'manga' => await dexReader(widget.data.mediaId),
+            _ => [],
+          },
+        );
+
+        if (mounted) {
+          setState(() {});
+        }
       },
     );
     super.initState();
@@ -59,15 +63,31 @@ class InfoPageState extends State<InfoPage> {
           height: 15,
         ),
         Wrap(
-          spacing: 7,
-          runSpacing: 5,
+          spacing: 3,
+          runSpacing: 7,
           children: List.generate(
-            widget.data.tags!.length.clamp(0, 20),
+            widget.data.tags!.length.clamp(0, 15),
             (index) {
-              return Chip(
+              return ActionChip(
+                backgroundColor: Colors.blueGrey[800],
+                side: BorderSide.none,
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 label: Text(
                   widget.data.tags![index],
                 ),
+                onPressed: () => switch (widget.data.type) {
+                  'anime' => context.go(
+                      '/media/anime',
+                      extra: widget.data.tags![index],
+                    ),
+                  'manga' => context.go(
+                      '/media/manga',
+                      extra: widget.data.tags![index],
+                    ),
+                  _ => '',
+                },
               );
             },
           ),
@@ -177,29 +197,21 @@ class InfoPageState extends State<InfoPage> {
                     crossAxisSpacing: 6,
                     maxCrossAxisExtent: 400,
                     mainAxisExtent: 100,
-                    //childAspectRatio: 4 / 1,
                   ),
                   delegate: SliverChildBuilderDelegate(
                     childCount: content.length,
                     (context, index) {
                       return GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return Scaffold(
-                                body: (widget.data.type == "anime")
-                                    ? AniViewer(
-                                        episodes: content,
-                                        episode: content[index],
-                                      )
-                                    : MangaReader(
-                                        chapter: content[index],
-                                        chapters: content,
-                                      ),
-                              );
-                            },
-                          ),
+                        onTap: () => context.push(
+                          switch (widget.data.type) {
+                            'anime' => '/media/anime/info/viewer',
+                            'manga' => '/media/manga/info/viewer',
+                            _ => '',
+                          },
+                          extra: {
+                            'content': content[index],
+                            'contents': content,
+                          },
                         ),
                         child: IntrinsicHeight(
                           child: Card(
@@ -212,14 +224,14 @@ class InfoPageState extends State<InfoPage> {
                                 children: [
                                   Flexible(
                                     child: Text(
-                                      content[index]['title'],
+                                      content[index].title,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   Flexible(
                                     child: Text(
-                                      content[index]['number'],
+                                      content[index].number,
                                     ),
                                   ),
                                 ],

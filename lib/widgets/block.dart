@@ -1,8 +1,7 @@
 import 'package:anicross/models/info_models.dart';
-import 'package:anicross/novel/novel_reader.dart';
 import 'package:anicross/widgets/image.dart';
-import 'package:anicross/info_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Block extends StatelessWidget {
   final AniData data;
@@ -15,22 +14,20 @@ class Block extends StatelessWidget {
   Widget build(context) {
     return GestureDetector(
       onTap: () {
-        {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                if (data.type == "novel") {
-                  return NovelReader(
-                    data: data,
-                  );
-                }
-                return InfoPage(
-                  data: data,
-                );
-              },
-            ),
-          );
+        final route = GoRouter.of(context).location;
+        switch (route) {
+          case '/media/anime':
+            {
+              context.push('/media/anime/info', extra: data);
+            }
+          case '/media/manga':
+            {
+              context.push('/media/manga/info', extra: data);
+            }
+          case '/later':
+            {
+              context.push('/later/info', extra: data);
+            }
         }
       },
       child: Stack(
@@ -81,7 +78,6 @@ class Block extends StatelessWidget {
                     BoxShadow(
                       color: Color.fromARGB(94, 0, 0, 0),
                       spreadRadius: 3,
-                      blurRadius: 3,
                       offset: Offset(0, 3),
                     ),
                   ],

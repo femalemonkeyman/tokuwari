@@ -2036,61 +2036,65 @@ extension AniDataQueryProperty
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetMediaCollection on Isar {
-  IsarCollection<Media> get medias => this.collection();
+extension GetMediaProvCollection on Isar {
+  IsarCollection<MediaProv> get mediaProvs => this.collection();
 }
 
-const MediaSchema = CollectionSchema(
-  name: r'Media',
-  id: 6434281596432674333,
+const MediaProvSchema = CollectionSchema(
+  name: r'MediaProv',
+  id: 5282315883212320621,
   properties: {
-    r'name': PropertySchema(
-      id: 0,
-      name: r'name',
-      type: IsarType.string,
-    ),
     r'number': PropertySchema(
-      id: 1,
+      id: 0,
       name: r'number',
       type: IsarType.string,
     ),
     r'position': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'position',
       type: IsarType.string,
     ),
-    r'sources': PropertySchema(
+    r'provId': PropertySchema(
+      id: 2,
+      name: r'provId',
+      type: IsarType.string,
+    ),
+    r'provider': PropertySchema(
       id: 3,
-      name: r'sources',
-      type: IsarType.stringList,
+      name: r'provider',
+      type: IsarType.string,
+    ),
+    r'title': PropertySchema(
+      id: 4,
+      name: r'title',
+      type: IsarType.string,
     ),
     r'watched': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'watched',
       type: IsarType.bool,
     )
   },
-  estimateSize: _mediaEstimateSize,
-  serialize: _mediaSerialize,
-  deserialize: _mediaDeserialize,
-  deserializeProp: _mediaDeserializeProp,
+  estimateSize: _mediaProvEstimateSize,
+  serialize: _mediaProvSerialize,
+  deserialize: _mediaProvDeserialize,
+  deserializeProp: _mediaProvDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {},
   embeddedSchemas: {},
-  getId: _mediaGetId,
-  getLinks: _mediaGetLinks,
-  attach: _mediaAttach,
+  getId: _mediaProvGetId,
+  getLinks: _mediaProvGetLinks,
+  attach: _mediaProvAttach,
   version: '3.1.0+1',
 );
 
-int _mediaEstimateSize(
-  Media object,
+int _mediaProvEstimateSize(
+  MediaProv object,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.number.length * 3;
   {
     final value = object.position;
@@ -2098,46 +2102,44 @@ int _mediaEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.sources.length * 3;
-  {
-    for (var i = 0; i < object.sources.length; i++) {
-      final value = object.sources[i];
-      bytesCount += value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.provId.length * 3;
+  bytesCount += 3 + object.provider.length * 3;
+  bytesCount += 3 + object.title.length * 3;
   return bytesCount;
 }
 
-void _mediaSerialize(
-  Media object,
+void _mediaProvSerialize(
+  MediaProv object,
   IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.name);
-  writer.writeString(offsets[1], object.number);
-  writer.writeString(offsets[2], object.position);
-  writer.writeStringList(offsets[3], object.sources);
-  writer.writeBool(offsets[4], object.watched);
+  writer.writeString(offsets[0], object.number);
+  writer.writeString(offsets[1], object.position);
+  writer.writeString(offsets[2], object.provId);
+  writer.writeString(offsets[3], object.provider);
+  writer.writeString(offsets[4], object.title);
+  writer.writeBool(offsets[5], object.watched);
 }
 
-Media _mediaDeserialize(
+MediaProv _mediaProvDeserialize(
   Id id,
   IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Media(
-    name: reader.readString(offsets[0]),
-    number: reader.readString(offsets[1]),
-    sources: reader.readStringList(offsets[3]) ?? [],
-    watched: reader.readBoolOrNull(offsets[4]) ?? false,
+  final object = MediaProv(
+    number: reader.readString(offsets[0]),
+    provId: reader.readString(offsets[2]),
+    provider: reader.readString(offsets[3]),
+    title: reader.readString(offsets[4]),
+    watched: reader.readBoolOrNull(offsets[5]) ?? false,
   );
-  object.position = reader.readStringOrNull(offsets[2]);
+  object.position = reader.readStringOrNull(offsets[1]);
   return object;
 }
 
-P _mediaDeserializeProp<P>(
+P _mediaProvDeserializeProp<P>(
   IsarReader reader,
   int propertyId,
   int offset,
@@ -2147,38 +2149,42 @@ P _mediaDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
-    case 2:
       return (reader.readStringOrNull(offset)) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
     case 3:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (reader.readString(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readBoolOrNull(offset) ?? false) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-Id _mediaGetId(Media object) {
+Id _mediaProvGetId(MediaProv object) {
   return object.id;
 }
 
-List<IsarLinkBase<dynamic>> _mediaGetLinks(Media object) {
+List<IsarLinkBase<dynamic>> _mediaProvGetLinks(MediaProv object) {
   return [];
 }
 
-void _mediaAttach(IsarCollection<dynamic> col, Id id, Media object) {}
+void _mediaProvAttach(IsarCollection<dynamic> col, Id id, MediaProv object) {}
 
-extension MediaQueryWhereSort on QueryBuilder<Media, Media, QWhere> {
-  QueryBuilder<Media, Media, QAfterWhere> anyId() {
+extension MediaProvQueryWhereSort
+    on QueryBuilder<MediaProv, MediaProv, QWhere> {
+  QueryBuilder<MediaProv, MediaProv, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension MediaQueryWhere on QueryBuilder<Media, Media, QWhereClause> {
-  QueryBuilder<Media, Media, QAfterWhereClause> idEqualTo(Id id) {
+extension MediaProvQueryWhere
+    on QueryBuilder<MediaProv, MediaProv, QWhereClause> {
+  QueryBuilder<MediaProv, MediaProv, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -2187,7 +2193,7 @@ extension MediaQueryWhere on QueryBuilder<Media, Media, QWhereClause> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterWhereClause> idNotEqualTo(Id id) {
+  QueryBuilder<MediaProv, MediaProv, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -2209,7 +2215,7 @@ extension MediaQueryWhere on QueryBuilder<Media, Media, QWhereClause> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<MediaProv, MediaProv, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -2218,7 +2224,7 @@ extension MediaQueryWhere on QueryBuilder<Media, Media, QWhereClause> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<MediaProv, MediaProv, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -2227,7 +2233,7 @@ extension MediaQueryWhere on QueryBuilder<Media, Media, QWhereClause> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterWhereClause> idBetween(
+  QueryBuilder<MediaProv, MediaProv, QAfterWhereClause> idBetween(
     Id lowerId,
     Id upperId, {
     bool includeLower = true,
@@ -2244,8 +2250,10 @@ extension MediaQueryWhere on QueryBuilder<Media, Media, QWhereClause> {
   }
 }
 
-extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
-  QueryBuilder<Media, Media, QAfterFilterCondition> idEqualTo(Id value) {
+extension MediaProvQueryFilter
+    on QueryBuilder<MediaProv, MediaProv, QFilterCondition> {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> idEqualTo(
+      Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -2254,7 +2262,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> idGreaterThan(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> idGreaterThan(
     Id value, {
     bool include = false,
   }) {
@@ -2267,7 +2275,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> idLessThan(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> idLessThan(
     Id value, {
     bool include = false,
   }) {
@@ -2280,7 +2288,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> idBetween(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> idBetween(
     Id lower,
     Id upper, {
     bool includeLower = true,
@@ -2297,135 +2305,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'name',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameMatches(String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'name',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> nameIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'name',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberEqualTo(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -2438,7 +2318,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberGreaterThan(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2453,7 +2333,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberLessThan(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2468,7 +2348,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberBetween(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -2487,7 +2367,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberStartsWith(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -2500,7 +2380,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberEndsWith(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -2513,7 +2393,8 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberContains(String value,
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberContains(
+      String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
@@ -2524,7 +2405,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberMatches(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -2536,7 +2417,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberIsEmpty() {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'number',
@@ -2545,7 +2426,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> numberIsNotEmpty() {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> numberIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'number',
@@ -2554,7 +2435,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionIsNull() {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'position',
@@ -2562,7 +2443,8 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionIsNotNull() {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition>
+      positionIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'position',
@@ -2570,7 +2452,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionEqualTo(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionEqualTo(
     String? value, {
     bool caseSensitive = true,
   }) {
@@ -2583,7 +2465,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionGreaterThan(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2598,7 +2480,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionLessThan(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2613,7 +2495,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionBetween(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionBetween(
     String? lower,
     String? upper, {
     bool includeLower = true,
@@ -2632,7 +2514,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionStartsWith(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -2645,7 +2527,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionEndsWith(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -2658,7 +2540,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionContains(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -2670,7 +2552,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionMatches(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -2682,7 +2564,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionIsEmpty() {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> positionIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'position',
@@ -2691,7 +2573,8 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> positionIsNotEmpty() {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition>
+      positionIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'position',
@@ -2700,20 +2583,20 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementEqualTo(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sources',
+        property: r'provId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementGreaterThan(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2721,14 +2604,14 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'sources',
+        property: r'provId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementLessThan(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2736,14 +2619,14 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'sources',
+        property: r'provId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementBetween(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -2752,7 +2635,7 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'sources',
+        property: r'provId',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -2762,159 +2645,337 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementStartsWith(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'sources',
+        property: r'provId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementEndsWith(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'sources',
+        property: r'provId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementContains(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdContains(
       String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'sources',
+        property: r'provId',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementMatches(
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'sources',
+        property: r'provId',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementIsEmpty() {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sources',
+        property: r'provId',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesElementIsNotEmpty() {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> provIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'sources',
+        property: r'provId',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesLengthEqualTo(
-      int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'sources',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'sources',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'sources',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesLengthLessThan(
-    int length, {
-    bool include = false,
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerEqualTo(
+    String value, {
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'sources',
-        0,
-        true,
-        length,
-        include,
-      );
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'provider',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesLengthGreaterThan(
-    int length, {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerGreaterThan(
+    String value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'sources',
-        length,
-        include,
-        999999,
-        true,
-      );
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'provider',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> sourcesLengthBetween(
-    int lower,
-    int upper, {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'provider',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerBetween(
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'sources',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'provider',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
     });
   }
 
-  QueryBuilder<Media, Media, QAfterFilterCondition> watchedEqualTo(bool value) {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'provider',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'provider',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'provider',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'provider',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> providerIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'provider',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition>
+      providerIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'provider',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'title',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'title',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'title',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> titleIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'title',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> watchedEqualTo(
+      bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'watched',
@@ -2924,189 +2985,256 @@ extension MediaQueryFilter on QueryBuilder<Media, Media, QFilterCondition> {
   }
 }
 
-extension MediaQueryObject on QueryBuilder<Media, Media, QFilterCondition> {}
+extension MediaProvQueryObject
+    on QueryBuilder<MediaProv, MediaProv, QFilterCondition> {}
 
-extension MediaQueryLinks on QueryBuilder<Media, Media, QFilterCondition> {}
+extension MediaProvQueryLinks
+    on QueryBuilder<MediaProv, MediaProv, QFilterCondition> {}
 
-extension MediaQuerySortBy on QueryBuilder<Media, Media, QSortBy> {
-  QueryBuilder<Media, Media, QAfterSortBy> sortByName() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterSortBy> sortByNameDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterSortBy> sortByNumber() {
+extension MediaProvQuerySortBy on QueryBuilder<MediaProv, MediaProv, QSortBy> {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByNumber() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'number', Sort.asc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> sortByNumberDesc() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByNumberDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'number', Sort.desc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> sortByPosition() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByPosition() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'position', Sort.asc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> sortByPositionDesc() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByPositionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'position', Sort.desc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> sortByWatched() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByProvId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'provId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByProvIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'provId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByProvider() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'provider', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByProviderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'provider', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByTitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByTitleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByWatched() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'watched', Sort.asc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> sortByWatchedDesc() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByWatchedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'watched', Sort.desc);
     });
   }
 }
 
-extension MediaQuerySortThenBy on QueryBuilder<Media, Media, QSortThenBy> {
-  QueryBuilder<Media, Media, QAfterSortBy> thenById() {
+extension MediaProvQuerySortThenBy
+    on QueryBuilder<MediaProv, MediaProv, QSortThenBy> {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> thenByName() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterSortBy> thenByNameDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Media, Media, QAfterSortBy> thenByNumber() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByNumber() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'number', Sort.asc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> thenByNumberDesc() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByNumberDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'number', Sort.desc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> thenByPosition() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByPosition() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'position', Sort.asc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> thenByPositionDesc() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByPositionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'position', Sort.desc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> thenByWatched() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByProvId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'provId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByProvIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'provId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByProvider() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'provider', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByProviderDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'provider', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByTitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByTitleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByWatched() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'watched', Sort.asc);
     });
   }
 
-  QueryBuilder<Media, Media, QAfterSortBy> thenByWatchedDesc() {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByWatchedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'watched', Sort.desc);
     });
   }
 }
 
-extension MediaQueryWhereDistinct on QueryBuilder<Media, Media, QDistinct> {
-  QueryBuilder<Media, Media, QDistinct> distinctByName(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Media, Media, QDistinct> distinctByNumber(
+extension MediaProvQueryWhereDistinct
+    on QueryBuilder<MediaProv, MediaProv, QDistinct> {
+  QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByNumber(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'number', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Media, Media, QDistinct> distinctByPosition(
+  QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByPosition(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'position', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Media, Media, QDistinct> distinctBySources() {
+  QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByProvId(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'sources');
+      return query.addDistinctBy(r'provId', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Media, Media, QDistinct> distinctByWatched() {
+  QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByProvider(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'provider', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByTitle(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByWatched() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'watched');
     });
   }
 }
 
-extension MediaQueryProperty on QueryBuilder<Media, Media, QQueryProperty> {
-  QueryBuilder<Media, int, QQueryOperations> idProperty() {
+extension MediaProvQueryProperty
+    on QueryBuilder<MediaProv, MediaProv, QQueryProperty> {
+  QueryBuilder<MediaProv, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<Media, String, QQueryOperations> nameProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'name');
-    });
-  }
-
-  QueryBuilder<Media, String, QQueryOperations> numberProperty() {
+  QueryBuilder<MediaProv, String, QQueryOperations> numberProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'number');
     });
   }
 
-  QueryBuilder<Media, String?, QQueryOperations> positionProperty() {
+  QueryBuilder<MediaProv, String?, QQueryOperations> positionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'position');
     });
   }
 
-  QueryBuilder<Media, List<String>, QQueryOperations> sourcesProperty() {
+  QueryBuilder<MediaProv, String, QQueryOperations> provIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'sources');
+      return query.addPropertyName(r'provId');
     });
   }
 
-  QueryBuilder<Media, bool, QQueryOperations> watchedProperty() {
+  QueryBuilder<MediaProv, String, QQueryOperations> providerProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'provider');
+    });
+  }
+
+  QueryBuilder<MediaProv, String, QQueryOperations> titleProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'title');
+    });
+  }
+
+  QueryBuilder<MediaProv, bool, QQueryOperations> watchedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'watched');
     });

@@ -15,7 +15,7 @@ class NovelReader extends StatefulWidget {
 class NovelReaderState extends State<NovelReader> {
   late final Novel novel = Novel(path: widget.data.mediaId!);
   late final String extract;
-  List<Widget> chapters = [];
+  final List<Widget> chapters = [];
 
   @override
   void initState() {
@@ -25,7 +25,7 @@ class NovelReaderState extends State<NovelReader> {
         extract = '${(await getTemporaryDirectory()).path}/anicross-epub';
         await novel.parse();
         setState(() {
-          chapters = novel.parseChapters(extract);
+          chapters.addAll(novel.parseChapters(extract));
         });
       },
     );
@@ -61,7 +61,7 @@ class NovelReaderState extends State<NovelReader> {
                   semanticChildCount: chapters.length,
                   children: chapters,
                 ),
-                NovelControls(),
+                const NovelControls(),
               ],
             ),
     );

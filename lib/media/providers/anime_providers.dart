@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:anicross/models/info_models.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:dio/dio.dart';
@@ -8,35 +9,43 @@ import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:string_similarity/string_similarity.dart';
 
-//Consumet
-Future<List?> mediaList(id) async {
+//Zoro
+Future<List<MediaProv>> zoroList(id) async {
   const String zoro = "https://zoro.to/";
-
-  final Map syncResponse = (await Dio().get(
-    "https://api.malsync.moe/mal/anime/$id",
-  ))
-      .data;
-  final Response html = await Dio().get(
-    '${zoro}ajax/v2/episode/list/${syncResponse['Sites']['Zoro'].keys.first}',
-    options: Options(
-      responseType: ResponseType.plain,
-    ),
-  );
-  final Document episodeList = parse(jsonDecode(html.data)['html']);
-  List episodes = [];
-  for (Element i in episodeList.getElementsByClassName('ssl-item  ep-item')) {
-    episodes.add(
-      {
-        "number": i.attributes['data-number'],
-        "title": i.attributes['title'],
-        'id': i.attributes['data-id'],
-      },
+  try {
+    final Map syncResponse = jsonDecode(
+      (await Dio().get(
+        'https://raw.githubusercontent.com/MALSync/MAL-Sync-Backup/master/data/anilist/anime/$id.json',
+      ))
+          .data,
     );
+    final Response html = await Dio().get(
+      '${zoro}ajax/v2/episode/list/${syncResponse['Pages']['Zoro'].keys.first}',
+      options: Options(
+        responseType: ResponseType.plain,
+      ),
+    );
+    final Document episodeList = parse(jsonDecode(html.data)['html']);
+    List<MediaProv> episodes = [];
+    for (Element i in episodeList.getElementsByClassName('ssl-item  ep-item')) {
+      episodes.add(
+        MediaProv(
+          provider: 'zoro',
+          provId: i.attributes['data-id']!,
+          title: i.attributes['title']!,
+          number: i.attributes['data-number']!,
+          call: () => zoroInfo(i.attributes['data-id']),
+        ),
+      );
+    }
+    return episodes;
+  } catch (e) {
+    print(e);
+    return [];
   }
-  return episodes;
 }
 
-Future<Map?> mediaInfo(id) async {
+Future<Map> zoroInfo(id) async {
   final Options options = Options(responseType: ResponseType.plain);
   final Response servers = await Dio().get(
     'https://zoro.to/ajax/v2/episode/servers?episodeId=$id',
@@ -50,32 +59,38 @@ Future<Map?> mediaInfo(id) async {
   Element server = html
       .getElementsByClassName("item server-item")
       .firstWhere((element) => element.text.contains('Vid'));
-  final Map link = jsonDecode((await Dio().get(
-    'https://zoro.to/ajax/v2/episode/sources?id=${server.attributes['data-id']}',
-    options: options,
-  ))
-      .data);
-  Map<String, dynamic> sources = jsonDecode(
-    (await Dio().get(
-            'https://rapid-cloud.co/ajax/embed-6/getSources?id=${link['link'].split('6/')[1].split('?')[0]}',
-            options: options))
-        .data,
-  );
-  final String key = (await Dio()
-          .get('https://raw.githubusercontent.com/enimax-anime/key/e6/key.txt'))
-      .data;
-  if (sources['encrypted']) {
-    sources['sources'] =
-        jsonDecode(decryptAESCryptoJS(sources['sources'], key));
-    sources['sourcesBackup'] =
-        jsonDecode(decryptAESCryptoJS(sources['sourcesBackup'], key));
+  try {
+    final Map link = jsonDecode(
+      (await Dio().get(
+        'https://zoro.to/ajax/v2/episode/sources?id=${server.attributes['data-id']}',
+        options: options,
+      ))
+          .data,
+    );
+    Map<String, dynamic> sources = jsonDecode(
+      (await Dio().get(
+              'https://rapid-cloud.co/ajax/embed-6/getSources?id=${link['link'].split('6/')[1].split('?')[0]}',
+              options: options))
+          .data,
+    );
+    final String key = (await Dio().get(
+            'https://raw.githubusercontent.com/enimax-anime/key/e6/key.txt'))
+        .data;
+    if (sources['encrypted']) {
+      sources['sources'] =
+          jsonDecode(decryptAESCryptoJS(sources['sources'], key));
+      sources['sourcesBackup'] =
+          jsonDecode(decryptAESCryptoJS(sources['sourcesBackup'], key));
+    }
+    sources['sources'] = List.generate(sources['sources'].length, (index) {
+      return {'url': sources['sources'][index]['file']};
+    });
+    return sources;
+  } catch (e) {
+    return {};
   }
-  sources['sources'] = List.generate(sources['sources'].length, (index) {
-    return {'url': sources['sources'][index]['file']};
-  });
-  return sources;
 }
-// End Consumet
+// End Zoro
 
 //Begin Hanime
 Future<List?> haniList(String name) async {
@@ -125,6 +140,7 @@ Future<List?> haniList(String name) async {
   }
   return null;
 }
+//End hanime
 
 // Response json = await Dio().get(
 //   "https://api.consumet.org/meta/anilist/info/$id?provider=zoro",

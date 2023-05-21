@@ -17,14 +17,13 @@ class NovelPage extends StatefulWidget {
 }
 
 class NovelPageState extends State<NovelPage> {
-  Isar isar = Isar.getInstance('novels')!;
+  Isar isar = Isar.getInstance('later')!;
   List<AniData> novels = [];
 
   @override
   void initState() {
     super.initState();
     novels = isar.aniDatas.filter().typeEqualTo("novel").findAllSync();
-    print(novels.length);
   }
 
   importNovel() async {
@@ -112,7 +111,6 @@ class NovelPageState extends State<NovelPage> {
               Grid(
                 data: novels,
                 length: novels.length,
-                paginate: () {},
               ),
             ],
           );

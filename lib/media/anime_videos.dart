@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:anicross/providers/anime_providers.dart';
+import 'package:anicross/models/info_models.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as p;
@@ -14,8 +14,8 @@ import 'package:universal_io/io.dart';
 import 'package:window_manager/window_manager.dart';
 
 class AniViewer extends StatefulWidget {
-  final List episodes;
-  final Map episode;
+  final List<MediaProv> episodes;
+  final MediaProv episode;
 
   const AniViewer({super.key, required this.episodes, required this.episode});
 
@@ -24,10 +24,8 @@ class AniViewer extends StatefulWidget {
 }
 
 class AniViewerState extends State<AniViewer> {
-  final Player player = Player(
-    configuration: const PlayerConfiguration(),
-  );
-  VideoController? controller;
+  final Player player = Player();
+  late VideoController controller = VideoController(player);
   bool ready = false;
   int currentEpisode = 1;
   List subTracks = [];
@@ -45,16 +43,10 @@ class AniViewerState extends State<AniViewer> {
     );
     Future.microtask(
       () async {
-        controller = await VideoController.create(
-          player,
-        );
         if (!Platform.isLinux) {
           await Wakelock.enable();
         }
-        getMedia = await mediaInfo(
-              widget.episode['id'],
-            ) ??
-            widget.episode;
+        getMedia = await widget.episode.call!();
         if (getMedia.isNotEmpty) {
           final Directory dir = Directory(
             p.join(
@@ -88,49 +80,49 @@ class AniViewerState extends State<AniViewer> {
   }
 
   @override
+  void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setPreferredOrientations([]);
+    Future.microtask(() async {
+      if (!Platform.isLinux) {
+        await Wakelock.disable();
+      }
+      try {
+        Directory(
+          p.join((await getTemporaryDirectory()).path, 'anisubs'),
+        ).deleteSync(
+          recursive: true,
+        );
+      } catch (e) {}
+    });
+    super.dispose();
+  }
+
+  @override
   Widget build(context) {
-    if (getMedia.isNotEmpty && !kIsWeb) {
-      return WillPopScope(
-        onWillPop: () async {
-          SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-          SystemChrome.setPreferredOrientations([]);
-          if (!Platform.isLinux) {
-            await Wakelock.disable();
-          }
-          await controller?.dispose();
-          await player.dispose();
-          try {
-            Directory(
-              p.join((await getTemporaryDirectory()).path, 'anisubs'),
-            ).deleteSync(
-              recursive: true,
-            );
-          } catch (e) {}
-          return true;
-        },
-        child: Stack(
-          children: [
-            Video(controller: controller),
-            VideoControls(
-              player: player,
+    return Scaffold(
+      body: (getMedia.isNotEmpty && !kIsWeb)
+          ? Stack(
+              children: [
+                Video(controller: controller),
+                VideoControls(
+                  player: player,
+                ),
+              ],
+            )
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.maybePop(context),
+                  child: const Text("Escape?"),
+                ),
+                const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          TextButton(
-            onPressed: () => Navigator.maybePop(context),
-            child: const Text("Escape?"),
-          ),
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
-        ],
-      );
-    }
+    );
   }
 }
 
