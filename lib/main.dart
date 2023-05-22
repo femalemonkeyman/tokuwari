@@ -57,6 +57,11 @@ void main() async {
             navigatorKey: _shellkey,
             builder: (context, state, child) => Scaffold(
               body: child,
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  PrimaryScrollController.of(context).jumpTo(0);
+                },
+              ),
               bottomNavigationBar: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

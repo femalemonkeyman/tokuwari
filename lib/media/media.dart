@@ -239,6 +239,7 @@ class AniPageState extends State<AniPage> {
         return true;
       },
       child: CustomScrollView(
+        primary: true,
         slivers: [
           SliverToBoxAdapter(
             child: Center(

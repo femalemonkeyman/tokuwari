@@ -29,15 +29,17 @@ class GridState extends State<Grid> with AutomaticKeepAliveClientMixin {
         childAspectRatio: 4 / 6,
         maxCrossAxisExtent: 280,
       ),
-      delegate: SliverChildBuilderDelegate(childCount: widget.data.length,
-          (context, index) {
-        return Padding(
-          padding: const EdgeInsets.all(10),
-          child: Block(
-            data: widget.data[index],
-          ),
-        );
-      }),
+      delegate: SliverChildBuilderDelegate(
+        childCount: widget.data.length,
+        (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(10),
+            child: Block(
+              data: widget.data[index],
+            ),
+          );
+        },
+      ),
     );
   }
 }

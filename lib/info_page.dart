@@ -105,14 +105,10 @@ class InfoPageState extends State<InfoPage> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            const SliverPadding(
-              padding: EdgeInsets.only(left: 15, top: 15),
-              sliver: SliverToBoxAdapter(
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: BackButton(),
-                ),
-              ),
+            SliverAppBar(
+              floating: true,
+              title: Text(widget.data.title),
+              //leading: BackButton(),
             ),
             SliverPadding(
               padding: const EdgeInsets.all(15),
