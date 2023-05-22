@@ -93,7 +93,7 @@ Future<Map> zoroInfo(id) async {
 // End Zoro
 
 //Begin Hanime
-Future<List?> haniList(String name) async {
+Future<List<MediaProv>> haniList(String name) async {
   Response json = await Dio().post(
     "https://search.htv-services.com/",
     data: jsonEncode(
@@ -125,20 +125,26 @@ Future<List?> haniList(String name) async {
     return List.generate(
       videos.length,
       (index) {
-        return {
-          "title": (videos[index])['hentai_video']['name'],
-          "number": "Episode: ${index + 1}",
-          "sources": [
-            {
-              "url": videos[index]['videos_manifest']['servers'][0]['streams']
-                  [1]['url']
-            },
-          ],
-        };
+        return MediaProv(
+          provider: 'hanime',
+          provId: '',
+          title: (videos[index])['hentai_video']['name'],
+          number: "Episode: ${index + 1}",
+          call: () {
+            return {
+              "sources": [
+                {
+                  "url": videos[index]['videos_manifest']['servers'][0]
+                      ['streams'][1]['url']
+                },
+              ],
+            };
+          },
+        );
       },
     );
   }
-  return null;
+  return [];
 }
 //End hanime
 

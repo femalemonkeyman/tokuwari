@@ -73,7 +73,7 @@ class AniPage extends StatefulWidget {
   State createState() => AniPageState();
 }
 
-class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
+class AniPageState extends State<AniPage> {
   final TextEditingController textController = TextEditingController();
   String? search;
   bool loading = false;
@@ -96,9 +96,6 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
     textController.dispose();
     super.dispose();
   }
-
-  @override
-  bool get wantKeepAlive => true;
 
   Future queryData() async {
     QueryResult query = await client.query(
@@ -225,7 +222,6 @@ class AniPageState extends State<AniPage> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(context) {
-    super.build(context);
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification.metrics.pixels ==

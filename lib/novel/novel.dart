@@ -106,13 +106,15 @@ class NovelPageState extends State<NovelPage> {
               },
             ),
           )
-        : CustomScrollView(
-            slivers: [
-              Grid(
-                data: novels,
-                length: novels.length,
-              ),
-            ],
+        : SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                Grid(
+                  data: novels,
+                  length: novels.length,
+                ),
+              ],
+            ),
           );
   }
 }

@@ -32,7 +32,9 @@ class InfoPageState extends State<InfoPage> {
             _ => [],
           },
         );
-
+        if (content.isEmpty) {
+          content.addAll(await haniList(widget.data.title));
+        }
         if (mounted) {
           setState(() {});
         }
@@ -77,16 +79,21 @@ class InfoPageState extends State<InfoPage> {
                 label: Text(
                   widget.data.tags![index],
                 ),
-                onPressed: () => switch (widget.data.type) {
-                  'anime' => context.go(
-                      '/media/anime',
-                      extra: widget.data.tags![index],
-                    ),
-                  'manga' => context.go(
-                      '/media/manga',
-                      extra: widget.data.tags![index],
-                    ),
-                  _ => '',
+                onPressed: () {
+                  switch (widget.data.type) {
+                    case 'anime':
+                      {
+                        context.go(
+                          '/anime?tag=${widget.data.tags![index]}',
+                        );
+                      }
+                    case 'manga':
+                      {
+                        context.go(
+                          '/manga?tag=${widget.data.tags![index]}',
+                        );
+                      }
+                  }
                 },
               );
             },
@@ -204,8 +211,8 @@ class InfoPageState extends State<InfoPage> {
                       return GestureDetector(
                         onTap: () => context.push(
                           switch (widget.data.type) {
-                            'anime' => '/media/anime/info/viewer',
-                            'manga' => '/media/manga/info/viewer',
+                            'anime' => '/anime/info/viewer',
+                            'manga' => '/manga/info/viewer',
                             _ => '',
                           },
                           extra: {
@@ -213,29 +220,27 @@ class InfoPageState extends State<InfoPage> {
                             'contents': content,
                           },
                         ),
-                        child: IntrinsicHeight(
-                          child: Card(
-                            elevation: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      content[index].title,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                        child: Card(
+                          elevation: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    content[index].title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  Flexible(
-                                    child: Text(
-                                      content[index].number,
-                                    ),
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    content[index].number,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

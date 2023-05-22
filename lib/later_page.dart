@@ -39,19 +39,21 @@ class LaterPageState extends State<LaterPage> {
       stream: dataChange,
       builder: (context, snap) {
         updateData();
-        return CustomScrollView(
-          slivers: [
-            Grid(
-              data: animeData,
-              keep: false,
-              length: animeData.length,
-            ),
-            Grid(
-              data: mangaData,
-              keep: false,
-              length: mangaData.length,
-            ),
-          ],
+        return SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              Grid(
+                data: animeData,
+                keep: false,
+                length: animeData.length,
+              ),
+              Grid(
+                data: mangaData,
+                keep: false,
+                length: mangaData.length,
+              ),
+            ],
+          ),
         );
       },
     );

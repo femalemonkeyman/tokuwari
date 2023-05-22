@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:anicross/media/anime_videos.dart';
 import 'package:anicross/media/manga_reader.dart';
-import 'package:anicross/models/color_schemes.g.dart';
 import 'package:anicross/later_page.dart';
+import 'package:anicross/novel/novel_reader.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -37,7 +37,7 @@ void main() async {
         dividerTheme: const DividerThemeData(
           color: Colors.transparent,
         ),
-        colorScheme: darkColorScheme,
+        colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
         chipTheme: const ChipThemeData(
           showCheckmark: false,
@@ -51,104 +51,135 @@ void main() async {
       debugShowCheckedModeBanner: false,
       routerConfig: GoRouter(
         navigatorKey: _rootKey,
-        initialLocation: '/media/anime',
+        initialLocation: '/anime',
         routes: [
           ShellRoute(
             navigatorKey: _shellkey,
             builder: (context, state, child) => Scaffold(
               body: child,
-              bottomNavigationBar: SizedBox(
-                width: clampDouble(MediaQuery.of(context).size.width, 0, 384),
-                child: BottomNavigationBar(
-                  useLegacyColorScheme: false,
-                  showSelectedLabels: false,
-                  showUnselectedLabels: false,
-                  currentIndex: index,
-                  onTap: (value) {
-                    switch (value) {
-                      case 0:
-                        {
-                          index = 0;
-                          context.go('/media/anime');
+              bottomNavigationBar: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width:
+                        clampDouble(MediaQuery.of(context).size.width, 0, 384),
+                    child: BottomNavigationBar(
+                      elevation: 0,
+                      useLegacyColorScheme: false,
+                      showUnselectedLabels: false,
+                      currentIndex: index,
+                      onTap: (value) {
+                        switch (value) {
+                          case 0:
+                            {
+                              index = 0;
+                              context.go('/anime');
+                            }
+                          case 1:
+                            {
+                              index = 1;
+                              context.go('/manga');
+                            }
+                          case 2:
+                            {
+                              index = 2;
+                              context.go('/novel');
+                            }
+                          case 3:
+                            {
+                              index = 3;
+                              context.go('/later');
+                            }
                         }
-                      case 1:
-                        {
-                          index = 1;
-                          context.go('/media/manga');
-                        }
-                      case 2:
-                        {
-                          index = 2;
-                          context.go('/novel');
-                        }
-                      case 3:
-                        {
-                          index = 3;
-                          context.go('/later');
-                        }
-                    }
-                  },
-                  items: const [
-                    BottomNavigationBarItem(
-                      icon: Icon(MdiIcons.youtubeTv),
-                      label: 'Anime',
+                      },
+                      items: const [
+                        BottomNavigationBarItem(
+                          icon: Icon(MdiIcons.youtubeTv),
+                          label: 'Anime',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(MdiIcons.bookOpenOutline),
+                          label: 'Manga',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(MdiIcons.book),
+                          label: 'Novels',
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(MdiIcons.bookmark),
+                          label: 'Later',
+                        )
+                      ],
                     ),
-                    BottomNavigationBarItem(
-                      icon: Icon(MdiIcons.bookOpenOutline),
-                      label: 'Manga',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(MdiIcons.book),
-                      label: 'Novels',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(MdiIcons.bookmark),
-                      label: 'Later',
-                    )
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             routes: [
               GoRoute(
                 parentNavigatorKey: _shellkey,
-                path: '/media/:type',
+                name: 'anime',
+                path: '/anime',
                 builder: (context, state) {
-                  index = (state.pathParameters['type']! == 'anime') ? 0 : 1;
+                  index = 0;
                   return AniPage(
-                    key: UniqueKey(),
-                    type: state.pathParameters['type']!,
-                    tag: state.extra as String?,
+                    key: (state.queryParameters.isEmpty)
+                        ? null
+                        : Key(state.queryParameters['tag']!),
+                    type: 'anime',
+                    tag: state.queryParameters['tag'],
                   );
                 },
                 routes: [
                   GoRoute(
                     parentNavigatorKey: _rootKey,
                     path: 'info',
-                    builder: (context, state) {
-                      print(state.pathParameters['type']);
-                      return InfoPage(
-                        data: state.extra as AniData,
-                      );
-                    },
+                    builder: (context, state) => InfoPage(
+                      data: state.extra as AniData,
+                    ),
                     routes: [
                       GoRoute(
-                          parentNavigatorKey: _rootKey,
-                          path: 'viewer',
-                          builder: (context, state) {
-                            print(state.location);
-                            return switch (state.location) {
-                              '/media/anime/info/viewer' => AniViewer(
-                                  episodes: (state.extra as Map)['contents'],
-                                  episode: (state.extra as Map)['content'],
-                                ),
-                              '/media/manga/info/viewer' => MangaReader(
-                                  chapter: (state.extra as Map)['content'],
-                                  chapters: (state.extra as Map)['contents'],
-                                ),
-                              _ => Placeholder(),
-                            };
-                          }),
+                        parentNavigatorKey: _rootKey,
+                        path: 'viewer',
+                        builder: (context, state) => AniViewer(
+                          episodes: (state.extra as Map)['contents'],
+                          episode: (state.extra as Map)['content'],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              GoRoute(
+                parentNavigatorKey: _shellkey,
+                name: 'manga',
+                path: '/manga',
+                builder: (context, state) {
+                  index = 1;
+                  return AniPage(
+                    key: (state.queryParameters.isEmpty)
+                        ? null
+                        : Key(state.queryParameters['tag']!),
+                    type: 'manga',
+                    tag: state.queryParameters['tag'],
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: _rootKey,
+                    path: 'info',
+                    builder: (context, state) => InfoPage(
+                      data: state.extra as AniData,
+                    ),
+                    routes: [
+                      GoRoute(
+                        parentNavigatorKey: _rootKey,
+                        path: 'viewer',
+                        builder: (context, state) => MangaReader(
+                          chapter: (state.extra as Map)['content'],
+                          chapters: (state.extra as Map)['contents'],
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -156,29 +187,21 @@ void main() async {
               GoRoute(
                 name: 'novel',
                 path: '/novel',
-                builder: (context, state) {
-                  return const NovelPage();
-                },
+                builder: (context, state) => const NovelPage(),
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: _rootKey,
+                    path: 'viewer',
+                    builder: (context, state) => NovelReader(
+                      data: state.extra as AniData,
+                    ),
+                  ),
+                ],
               ),
               GoRoute(
                 name: 'later',
                 path: '/later',
-                builder: (context, state) {
-                  return const LaterPage();
-                },
-                routes: [
-                  GoRoute(
-                    parentNavigatorKey: _rootKey,
-                    path: 'info',
-                    builder: (context, state) {
-                      index =
-                          ((state.extra as AniData).type == 'anime') ? 0 : 1;
-                      return InfoPage(
-                        data: state.extra as AniData,
-                      );
-                    },
-                  ),
-                ],
+                builder: (context, state) => const LaterPage(),
               ),
             ],
           ),

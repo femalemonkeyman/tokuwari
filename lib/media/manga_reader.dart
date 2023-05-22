@@ -48,27 +48,29 @@ class MangaReader extends StatelessWidget {
       future: dexPages(chapter, reverse),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Stack(
-            children: [
-              PhotoViewGallery.builder(
-                itemCount: snapshot.data!.length,
-                allowImplicitScrolling: true,
-                scrollPhysics: const NeverScrollableScrollPhysics(),
-                pageController: controller,
-                reverse: true,
-                builder: (context, index) {
-                  return PhotoViewGalleryPageOptions(
-                    imageProvider: CachedNetworkImageProvider(
-                      snapshot.data?[index],
-                      cacheManager: cache,
-                    ),
-                  );
-                },
-              ),
-              MangaControls(
-                controller: controller,
-              ),
-            ],
+          return Scaffold(
+            body: Stack(
+              children: [
+                PhotoViewGallery.builder(
+                  itemCount: snapshot.data!.length,
+                  allowImplicitScrolling: true,
+                  scrollPhysics: const NeverScrollableScrollPhysics(),
+                  pageController: controller,
+                  reverse: true,
+                  builder: (context, index) {
+                    return PhotoViewGalleryPageOptions(
+                      imageProvider: CachedNetworkImageProvider(
+                        snapshot.data?[index],
+                        cacheManager: cache,
+                      ),
+                    );
+                  },
+                ),
+                MangaControls(
+                  controller: controller,
+                ),
+              ],
+            ),
           );
         }
         return const Column(
@@ -175,7 +177,7 @@ class MangaControlsState extends State<MangaControls> {
                   child: GestureDetector(
                     //behavior: HitTestBehavior.opaque,
                     onTap: () => setState(
-                      () => (show) ? show = false : show = true,
+                      () => (show = !show),
                     ),
                   ),
                 ),

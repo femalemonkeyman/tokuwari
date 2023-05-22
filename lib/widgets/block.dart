@@ -14,19 +14,18 @@ class Block extends StatelessWidget {
   Widget build(context) {
     return GestureDetector(
       onTap: () {
-        final route = GoRouter.of(context).location;
-        switch (route) {
-          case '/media/anime':
+        switch (data.type) {
+          case 'anime':
             {
-              context.push('/media/anime/info', extra: data);
+              context.push('/anime/info', extra: data);
             }
-          case '/media/manga':
+          case 'manga':
             {
-              context.push('/media/manga/info', extra: data);
+              context.push('/manga/info', extra: data);
             }
-          case '/later':
+          case 'novel':
             {
-              context.push('/later/info', extra: data);
+              context.push('/novel/viewer', extra: data);
             }
         }
       },
