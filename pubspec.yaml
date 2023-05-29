@@ -1,4 +1,4 @@
-name: anicross
+name: tokuwari
 description: Something I guess
 
 # The following line prevents the package from being accidentally published to
@@ -18,6 +18,7 @@ dependencies:
   image:
   path:
   cached_network_image:
+  flutter_adaptive_scaffold: 
   dio: 
   file_picker: 
   photo_view: 

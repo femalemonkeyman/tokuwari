@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/info_models.dart';
 import 'block.dart';
 
 class Grid extends StatefulWidget {
-  final List<AniData> data;
+  final List data;
   final bool keep;
   final int? length;
   const Grid({

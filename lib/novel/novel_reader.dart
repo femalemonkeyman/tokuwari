@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:anicross/models/info_models.dart';
-import 'package:anicross/novel/novel_parser.dart';
+import '/models/info_models.dart';
+import '/novel/novel_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class NovelReader extends StatefulWidget {
-  final AniData data;
+  final NovData data;
   const NovelReader({required this.data, super.key});
 
   @override
@@ -13,7 +13,7 @@ class NovelReader extends StatefulWidget {
 }
 
 class NovelReaderState extends State<NovelReader> {
-  late final Novel novel = Novel(path: widget.data.mediaId!);
+  late final Novel novel = Novel(path: widget.data.path);
   late final String extract;
   final List<Widget> chapters = [];
 

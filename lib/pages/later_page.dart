@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:anicross/models/info_models.dart';
-import 'package:anicross/widgets/grid.dart';
+import '/models/info_models.dart';
+import '/widgets/grid.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -42,10 +42,50 @@ class LaterPageState extends State<LaterPage> {
         return SafeArea(
           child: CustomScrollView(
             slivers: [
+              const SliverToBoxAdapter(
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Divider(),
+                    ),
+                    Spacer(),
+                    Text(
+                      'Anime',
+                      textScaleFactor: 1.2,
+                    ),
+                    Spacer(),
+                    Expanded(
+                      flex: 200,
+                      child: Divider(),
+                    ),
+                  ],
+                ),
+              ),
               Grid(
                 data: animeData,
                 keep: false,
                 length: animeData.length,
+              ),
+              const SliverToBoxAdapter(
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Divider(),
+                    ),
+                    Spacer(),
+                    Text(
+                      'Manga',
+                      textScaleFactor: 1.2,
+                    ),
+                    Spacer(),
+                    Expanded(
+                      flex: 200,
+                      child: Divider(),
+                    ),
+                  ],
+                ),
               ),
               Grid(
                 data: mangaData,

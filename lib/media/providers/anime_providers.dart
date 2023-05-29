@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
-import 'package:anicross/models/info_models.dart';
+import '/models/info_models.dart';
 import 'package:html/parser.dart';
 import 'package:html/dom.dart';
 import 'package:dio/dio.dart';
@@ -26,7 +25,7 @@ Future<List<MediaProv>> zoroList(id) async {
       ),
     );
     final Document episodeList = parse(jsonDecode(html.data)['html']);
-    List<MediaProv> episodes = [];
+    final List<MediaProv> episodes = [];
     for (Element i in episodeList.getElementsByClassName('ssl-item  ep-item')) {
       episodes.add(
         MediaProv(
@@ -40,7 +39,6 @@ Future<List<MediaProv>> zoroList(id) async {
     }
     return episodes;
   } catch (e) {
-    print(e);
     return [];
   }
 }
@@ -113,9 +111,9 @@ Future<List<MediaProv>> haniList(String name) async {
   );
   if (json.data['nbHits'] > 0) {
     final List results = jsonDecode(json.data['hits']);
-    List videos = [];
+    final List videos = [];
     for (Map i in results) {
-      Response v = await Dio().get(
+      final Response v = await Dio().get(
         "https://hanime.tv/api/v8/video?id=${i['id']}",
       );
       if (i['name'].toString().similarityTo(name) > 0.2) {
@@ -148,32 +146,6 @@ Future<List<MediaProv>> haniList(String name) async {
 }
 //End hanime
 
-// Response json = await Dio().get(
-//   "https://api.consumet.org/meta/anilist/info/$id?provider=zoro",
-// );
-// return (json.data['episodes'].isEmpty)
-//     ? null
-//     : List.generate(
-//         json.data['episodes'].length,
-//         (index) {
-//           return {
-//             "id": json.data['episodes'][index]['id'],
-//             "title": json.data['episodes'][index]['title'],
-//             "number": "Episode: ${json.data['episodes'][index]['number']}",
-//             "description": json.data['episodes'][index]['description']
-//           };
-//         },
-//       );
-
-// try {
-//   Response json = await Dio().get(
-//     "https://api.consumet.org/meta/anilist/watch/$id?provider=zoro",
-//   );
-//   return json.data;
-// } catch (e) {
-//   return null;
-// }
-
 String decryptAESCryptoJS(final String encrypted, final String passphrase) {
   try {
     Uint8List encryptedBytesWithSalt = base64.decode(encrypted);
@@ -194,7 +166,7 @@ String decryptAESCryptoJS(final String encrypted, final String passphrase) {
 }
 
 List<Uint8List> deriveKeyAndIV(final String passphrase, final Uint8List salt) {
-  var password = createUint8ListFromString(passphrase);
+  Uint8List password = Uint8List.fromList(passphrase.codeUnits);
   Uint8List concatenatedHashes = Uint8List(0);
   Uint8List currentHash = Uint8List(0);
   Uint8List preHash = Uint8List(0);
@@ -212,22 +184,4 @@ List<Uint8List> deriveKeyAndIV(final String passphrase, final Uint8List salt) {
     concatenatedHashes.sublist(0, 32),
     concatenatedHashes.sublist(32, 48),
   ];
-}
-
-Uint8List createUint8ListFromString(final String s) {
-  Uint8List ret = Uint8List(s.length);
-  for (var i = 0; i < s.length; i++) {
-    ret[i] = s.codeUnitAt(i);
-  }
-  return ret;
-}
-
-Uint8List genRandomWithNonZero(final int seedLength) {
-  final Random random = Random.secure();
-  const int randomMax = 245;
-  final Uint8List uint8list = Uint8List(seedLength);
-  for (int i = 0; i < seedLength; i++) {
-    uint8list[i] = random.nextInt(randomMax) + 1;
-  }
-  return uint8list;
 }

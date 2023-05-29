@@ -1,3 +1,4 @@
+import 'dart:ui';
 import '../models/info_models.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
@@ -61,7 +62,7 @@ const genresList = [
   "Slice of Life",
   "Sports",
   "Supernatural",
-  "Thriller"
+  "Thriller",
 ];
 
 class AniPage extends StatefulWidget {
@@ -78,7 +79,7 @@ class AniPageState extends State<AniPage> {
   String? search;
   bool loading = false;
   List<String> selectedGenres = [];
-  late final String? tag = widget.tag;
+  late String? tag = widget.tag;
   Map pageInfo = {};
   List<AniData> animeData = [];
 
@@ -98,54 +99,36 @@ class AniPageState extends State<AniPage> {
   }
 
   Future queryData() async {
-    QueryResult query = await client.query(
-      QueryOptions(
-        fetchPolicy: FetchPolicy.networkOnly,
-        document: gql(base),
-        variables: {
-          "page": (pageInfo.isEmpty) ? 1 : pageInfo['currentPage'] + 1,
-          'type': widget.type.toUpperCase(),
-          'search': search,
-          "genre": (selectedGenres.isNotEmpty) ? selectedGenres : null,
-          "tag": tag,
-        },
-      ),
-    );
-    pageInfo = query.data!['Page']['pageInfo'];
-    animeData.addAll(
-      List.generate(
-        query.data!['Page']['media'].length,
-        (index) {
-          return AniData(
-            type: widget.type,
-            mediaId: query.data!['Page']['media'][index]['id'].toString(),
-            description:
-                (query.data!['Page']['media'][index]['description'] ?? "")
-                    .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
-            title: "${query.data!['Page']['media'][index]['title']['romaji']}",
-            image: query.data!['Page']['media'][index]['coverImage']
-                ['extraLarge'],
-            count: (query.data!['Page']['media'][index]['episodes'] ?? "n/a")
-                .toString(),
-            score:
-                (query.data!['Page']['media'][index]['averageScore'] ?? "n/a")
-                    .toString(),
-            tags: List.generate(
-              query.data!['Page']['media'][index]['tags'].length,
-              (tagIndex) {
-                return query.data!['Page']['media'][index]['tags'][tagIndex]
-                    ['name'];
-              },
-            ),
-          );
-        },
-      ),
-    );
-    loading = false;
-  }
-
-  Future<void> updateData() async {
-    await queryData();
+    try {
+      QueryResult query = await client.query(
+        QueryOptions(
+          fetchPolicy: FetchPolicy.networkOnly,
+          document: gql(base),
+          variables: {
+            "page": (pageInfo.isEmpty) ? 1 : pageInfo['currentPage'] + 1,
+            'type': widget.type.toUpperCase(),
+            'search': search,
+            "genre": (selectedGenres.isNotEmpty) ? selectedGenres : null,
+            "tag": tag,
+          },
+        ),
+      );
+      pageInfo = query.data!['Page']['pageInfo'];
+      animeData.addAll(
+        List.generate(
+          query.data!['Page']['media'].length,
+          (index) {
+            return AniData.fromJson(
+              query.data!['Page']['media'][index],
+              widget.type,
+            );
+          },
+        ),
+      );
+      loading = false;
+    } catch (e) {
+      animeData.addAll([]);
+    }
   }
 
   Future searchData() async {
@@ -155,6 +138,7 @@ class AniPageState extends State<AniPage> {
       selectedGenres = [];
       search = textController.text;
     } else {
+      tag = null;
       selectedGenres = [];
       search = null;
     }
@@ -163,61 +147,57 @@ class AniPageState extends State<AniPage> {
   }
 
   Future updateGenre() async {
-    await showDialog(
+    await showModalBottomSheet(
+      constraints: BoxConstraints.tightFor(
+          width: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
       context: context,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) => AlertDialog(
-            content: SizedBox(
-              width: MediaQuery.of(context).size.width / 2,
-              child: SingleChildScrollView(
-                child: Wrap(
-                  spacing: 20,
-                  runSpacing: 20,
-                  children: List.generate(
-                    genresList.length,
-                    (index) {
-                      return FilterChip(
-                        labelPadding: const EdgeInsets.all(15),
-                        padding: const EdgeInsets.all(2),
-                        selected: selectedGenres.contains(
-                          genresList[index],
-                        ),
-                        label: Text(
-                          genresList[index],
-                        ),
-                        onSelected: (value) => setState(
-                          () {
-                            if (value) {
-                              selectedGenres.add(genresList[index]);
-                            } else {
-                              selectedGenres.remove(genresList[index]);
-                            }
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
+        return Padding(
+          padding: const EdgeInsets.all(15),
+          child: StatefulBuilder(
+            builder: (context, setState) => Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
+              children: List.generate(
+                genresList.length,
+                (index) {
+                  return FilterChip(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                    labelPadding: const EdgeInsets.all(0),
+                    selected: selectedGenres.contains(
+                      genresList[index],
+                    ),
+                    label: Text(
+                      genresList[index],
+                    ),
+                    onSelected: (value) => setState(
+                      () {
+                        if (value) {
+                          selectedGenres.add(genresList[index]);
+                        } else {
+                          selectedGenres.remove(genresList[index]);
+                        }
+                      },
+                    ),
+                  );
+                },
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Okay"),
-              ),
-            ],
           ),
         );
       },
-    ).then((value) async {
-      pageInfo = {};
-      animeData = [];
-      await queryData();
-      setState(
-        () {},
-      );
-    });
+    ).then(
+      (value) async {
+        pageInfo = {};
+        animeData = [];
+        await queryData();
+        setState(
+          () {},
+        );
+      },
+    );
   }
 
   @override
@@ -231,52 +211,61 @@ class AniPageState extends State<AniPage> {
           loading = true;
           Future.microtask(
             () async {
-              await updateData();
+              await queryData();
               setState(() {});
             },
           );
         }
-        return true;
+        return false;
       },
-      child: CustomScrollView(
-        primary: true,
-        slivers: [
-          SliverToBoxAdapter(
-            child: Center(
-              child: SearchButton(
-                text: "Anilist",
-                controller: textController,
-                search: () async {
-                  await searchData();
-                  setState(() {});
-                },
+      child: RefreshIndicator(
+        edgeOffset: 100,
+        onRefresh: () => Future.microtask(
+          () async {
+            await queryData();
+            setState(() {});
+          },
+        ),
+        child: CustomScrollView(
+          primary: true,
+          slivers: [
+            SliverToBoxAdapter(
+              child: Center(
+                child: SearchButton(
+                  text: "Anilist",
+                  controller: textController,
+                  search: () async {
+                    await searchData();
+                    setState(() {});
+                  },
+                ),
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Wrap(
-              alignment: WrapAlignment.spaceAround,
-              children: [
-                TextButton(
-                  onPressed: () => updateGenre(),
-                  child: const Text(
-                    "Filter by genre",
-                    style: TextStyle(color: Colors.white),
+            SliverToBoxAdapter(
+              child: Wrap(
+                alignment: WrapAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    onPressed: () => updateGenre(),
+                    child: const Text(
+                      "Filter by genre",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          (animeData.isNotEmpty)
-              ? Grid(
-                  data: animeData,
-                )
-              : const SliverToBoxAdapter(
-                  child: Center(
-                    child: CircularProgressIndicator(),
+            (animeData.isNotEmpty)
+                ? Grid(
+                    data: animeData,
+                  )
+                : const SliverToBoxAdapter(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   ),
-                ),
-        ],
+          ],
+        ),
       ),
     );
   }

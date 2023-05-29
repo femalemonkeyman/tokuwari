@@ -69,9 +69,6 @@ jobs:
         with:
           files: build/windows/runner/Release/Release-${{github.ref_name}}-windows.zip
 
-
-
-
   build-and-release-android:
     runs-on: ubuntu-latest
 
@@ -89,7 +86,12 @@ jobs:
           channel: 'master'
 
       - name: Install dependencies
-        run: flutter pub get   
+        run: flutter pub get
+      - name: Decode android/neumodore_key.jks
+        run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > .key/keystore.jks
+
+      - name: Decode android/key.properties
+        run: echo "${{ secrets.KEY_PROPERTIES }}" | base64 --decode > .key/key.properties
        
       - run: flutter build apk --release --split-debug-info=''
       - uses: actions/upload-artifact@v3

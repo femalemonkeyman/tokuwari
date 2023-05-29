@@ -1,15 +1,15 @@
-import 'package:anicross/models/info_models.dart';
-import 'package:anicross/widgets/image.dart';
+import '/widgets/image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class Block extends StatelessWidget {
-  final AniData data;
+  final dynamic data;
 
   const Block({
     Key? key,
     required this.data,
   }) : super(key: key);
+
   @override
   Widget build(context) {
     return GestureDetector(
@@ -62,12 +62,13 @@ class Block extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (data.score != null)
+          if (data.type != 'novel')
             Positioned(
               right: 10,
               top: 10,
               child: Container(
-                padding: const EdgeInsets.all(8.0),
+                padding:
+                    const EdgeInsets.only(left: 7, right: 7, top: 5, bottom: 5),
                 decoration: const BoxDecoration(
                   color: Colors.black, //Yes
                   borderRadius: BorderRadius.all(
@@ -82,35 +83,37 @@ class Block extends StatelessWidget {
                   ],
                 ),
                 child: Text(
-                  "★ ${data.score ?? "n/a"}",
+                  "★ ${data.score}",
                 ),
               ),
             ),
-          Positioned(
-            left: 10,
-            top: 10,
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: const BoxDecoration(
-                color: Colors.white, // Ill swear in russian for real lol :D
-                borderRadius: BorderRadius.all(
-                  Radius.circular(30),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(94, 0, 0, 0),
-                    spreadRadius: 3,
-                    blurRadius: 3,
-                    offset: Offset(0, 3),
+          if (data.type != 'novel')
+            Positioned(
+              left: 10,
+              top: 10,
+              child: Container(
+                padding:
+                    const EdgeInsets.only(left: 7, right: 7, top: 5, bottom: 5),
+                decoration: const BoxDecoration(
+                  color: Colors.white, // Ill swear in russian for real lol :D
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30),
                   ),
-                ],
-              ),
-              child: Text(
-                "# ${data.count ?? "n/a"}",
-                style: const TextStyle(color: Colors.black),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color.fromARGB(94, 0, 0, 0),
+                      spreadRadius: 3,
+                      blurRadius: 3,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Text(
+                  "# ${data.count}",
+                  style: const TextStyle(color: Colors.black),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );

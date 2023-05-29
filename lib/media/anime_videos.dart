@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:anicross/models/info_models.dart';
+import '/models/info_models.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as p;

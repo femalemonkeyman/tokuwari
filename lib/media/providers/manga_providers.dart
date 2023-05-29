@@ -17,11 +17,11 @@ Future<List<MediaProv>> dexReader(id) async {
     json['data'].length,
     (index) {
       return MediaProv(
-          provider: 'mangadex',
-          provId: json['data'][index]['id'],
-          title: json['data'][index]['attributes']['title'] ?? "",
-          number:
-              "${(json['data'][index]['attributes']['volume'] != null) ? "Vol: ${json['data'][index]['attributes']['volume']}" : ""} Ch: ${json['data'][index]['attributes']['chapter']}");
+        provider: 'mangadex',
+        provId: json['data'][index]['id'],
+        title: json['data'][index]['attributes']['title'] ?? "",
+        number: json['data'][index]['attributes']['chapter'],
+      );
     },
   );
 }

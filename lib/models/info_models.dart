@@ -6,24 +6,55 @@ part 'info_models.g.dart';
 class AniData {
   final Id id = Isar.autoIncrement;
   final String type;
-  final String? mediaId;
-  final String? malid;
+  final String mediaId;
+  final int? malid;
   final String title;
-  final String? description;
+  final String description;
   final String image;
-  final String? score;
-  final String? count;
-  final List<String>? tags;
+  final String score;
+  final String count;
+  final List<String> tags;
   AniData({
     required this.type,
-    this.mediaId,
-    this.malid,
+    required this.mediaId,
+    required this.malid,
     required this.title,
-    this.description,
+    required this.description,
     required this.image,
-    this.count,
-    this.score,
-    this.tags,
+    required this.count,
+    required this.score,
+    required this.tags,
+  });
+
+  AniData.fromJson(Map<String, dynamic> json, this.type)
+      : malid = json['idMal'],
+        mediaId = json['id'].toString(),
+        description = (json['description'] ?? "")
+            .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
+        title = "${json['title']['romaji']}",
+        image = json['coverImage']['extraLarge'],
+        count = (json['episodes'] ?? "n/a").toString(),
+        score = (json['averageScore'] ?? "n/a").toString(),
+        tags = List.generate(
+          json['tags'].length,
+          (tagIndex) {
+            return json['tags'][tagIndex]['name'];
+          },
+        );
+}
+
+@collection
+class NovData {
+  final Id id = Isar.autoIncrement;
+  final String type;
+  final String title;
+  final String image;
+  final String path;
+  NovData({
+    required this.type,
+    required this.title,
+    required this.image,
+    required this.path,
   });
 }
 

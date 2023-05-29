@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:anicross/novel/novel_parser.dart';
-import 'package:anicross/widgets/grid.dart';
-import 'package:anicross/models/info_models.dart';
+import '/novel/novel_parser.dart';
+import '/widgets/grid.dart';
+import '/models/info_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,12 +18,12 @@ class NovelPage extends StatefulWidget {
 
 class NovelPageState extends State<NovelPage> {
   Isar isar = Isar.getInstance('later')!;
-  List<AniData> novels = [];
+  List<NovData> novels = [];
 
   @override
   void initState() {
     super.initState();
-    novels = isar.aniDatas.filter().typeEqualTo("novel").findAllSync();
+    novels = isar.novDatas.filter().typeEqualTo("novel").findAllSync();
   }
 
   importNovel() async {
@@ -48,7 +48,7 @@ class NovelPageState extends State<NovelPage> {
               ..retainWhere(
                 (element) => element.path.endsWith(".epub"),
               );
-            List<AniData> data = [];
+            List<NovData> data = [];
             for (File i in epubs) {
               print(i);
               final Novel novel = Novel(path: i.path);
@@ -56,11 +56,11 @@ class NovelPageState extends State<NovelPage> {
               await novel.writeCover();
               novel.close();
               data.add(
-                AniData(
+                NovData(
                   type: "novel",
                   title: novel.title!,
                   image: novel.cover!,
-                  mediaId: i.path,
+                  path: i.path,
                 ),
               );
             }
@@ -79,7 +79,7 @@ class NovelPageState extends State<NovelPage> {
 
   void updateIsar() {
     isar.writeTxnSync(
-      () => isar.aniDatas.putAllSync(novels),
+      () => isar.novDatas.putAllSync(novels),
     );
   }
 

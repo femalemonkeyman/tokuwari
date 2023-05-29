@@ -1,8 +1,8 @@
 import 'dart:ui';
-import 'package:anicross/media/anime_videos.dart';
-import 'package:anicross/media/manga_reader.dart';
-import 'package:anicross/later_page.dart';
-import 'package:anicross/novel/novel_reader.dart';
+import '/media/anime_videos.dart';
+import '/media/manga_reader.dart';
+import 'pages/later_page.dart';
+import '/novel/novel_reader.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -13,18 +13,16 @@ import 'dart:io';
 import 'media/media.dart';
 import 'models/info_models.dart';
 import 'novel/novel.dart';
-import 'info_page.dart';
+import 'pages/info_page.dart';
 
 final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _shellkey =
-    GlobalKey<NavigatorState>(debugLabel: 'shell');
+final GlobalKey<NavigatorState> _shellkey = GlobalKey<NavigatorState>();
 
 void main() async {
-  int index = 0;
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   Isar.openSync(
-    [AniDataSchema, MediaProvSchema],
+    [AniDataSchema, MediaProvSchema, NovDataSchema],
     name: "later",
     directory: (await Directory(
                 '${(await getApplicationDocumentsDirectory()).path}/.anicross')
@@ -34,9 +32,6 @@ void main() async {
   runApp(
     MaterialApp.router(
       theme: ThemeData(
-        dividerTheme: const DividerThemeData(
-          color: Colors.transparent,
-        ),
         colorScheme: const ColorScheme.dark(),
         useMaterial3: true,
         chipTheme: const ChipThemeData(
@@ -53,15 +48,9 @@ void main() async {
         navigatorKey: _rootKey,
         initialLocation: '/anime',
         routes: [
-          ShellRoute(
-            navigatorKey: _shellkey,
-            builder: (context, state, child) => Scaffold(
-              body: child,
-              floatingActionButton: FloatingActionButton(
-                onPressed: () {
-                  PrimaryScrollController.of(context).jumpTo(0);
-                },
-              ),
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, shell) => Scaffold(
+              body: shell,
               bottomNavigationBar: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -72,31 +61,8 @@ void main() async {
                       elevation: 0,
                       useLegacyColorScheme: false,
                       showUnselectedLabels: false,
-                      currentIndex: index,
-                      onTap: (value) {
-                        switch (value) {
-                          case 0:
-                            {
-                              index = 0;
-                              context.go('/anime');
-                            }
-                          case 1:
-                            {
-                              index = 1;
-                              context.go('/manga');
-                            }
-                          case 2:
-                            {
-                              index = 2;
-                              context.go('/novel');
-                            }
-                          case 3:
-                            {
-                              index = 3;
-                              context.go('/later');
-                            }
-                        }
-                      },
+                      currentIndex: shell.currentIndex,
+                      onTap: (value) => shell.goBranch(value),
                       items: const [
                         BottomNavigationBarItem(
                           icon: Icon(MdiIcons.youtubeTv),
@@ -120,93 +86,109 @@ void main() async {
                 ],
               ),
             ),
-            routes: [
-              GoRoute(
-                parentNavigatorKey: _shellkey,
-                name: 'anime',
-                path: '/anime',
-                builder: (context, state) {
-                  index = 0;
-                  return AniPage(
-                    key: (state.queryParameters.isEmpty)
-                        ? null
-                        : Key(state.queryParameters['tag']!),
-                    type: 'anime',
-                    tag: state.queryParameters['tag'],
-                  );
-                },
+            branches: [
+              StatefulShellBranch(
+                navigatorKey: _shellkey,
                 routes: [
                   GoRoute(
-                    parentNavigatorKey: _rootKey,
-                    path: 'info',
-                    builder: (context, state) => InfoPage(
-                      data: state.extra as AniData,
-                    ),
+                    name: 'anime',
+                    path: '/anime',
+                    builder: (context, state) {
+                      return AniPage(
+                        key: (state.queryParameters.isEmpty)
+                            ? null
+                            : Key(state.queryParameters['tag']!),
+                        type: 'anime',
+                        tag: state.queryParameters['tag'],
+                      );
+                    },
+                    routes: [
+                      GoRoute(
+                        parentNavigatorKey: _rootKey,
+                        path: 'info',
+                        builder: (context, state) => InfoPage(
+                          data: state.extra as AniData,
+                        ),
+                        routes: [
+                          GoRoute(
+                            parentNavigatorKey: _rootKey,
+                            path: 'viewer',
+                            builder: (context, state) => AniViewer(
+                              episodes: (state.extra as Map)['contents'],
+                              episode: (state.extra as Map)['content'],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                //navigatorKey: _shellkey,
+                routes: [
+                  GoRoute(
+                    name: 'manga',
+                    path: '/manga',
+                    builder: (context, state) {
+                      return AniPage(
+                        key: (state.queryParameters.isEmpty)
+                            ? null
+                            : Key(state.queryParameters['tag']!),
+                        type: 'manga',
+                        tag: state.queryParameters['tag'],
+                      );
+                    },
+                    routes: [
+                      GoRoute(
+                        parentNavigatorKey: _rootKey,
+                        path: 'info',
+                        builder: (context, state) => InfoPage(
+                          data: state.extra as AniData,
+                        ),
+                        routes: [
+                          GoRoute(
+                            parentNavigatorKey: _rootKey,
+                            path: 'viewer',
+                            builder: (context, state) => MangaReader(
+                              chapter: (state.extra as Map)['content'],
+                              chapters: (state.extra as Map)['contents'],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              StatefulShellBranch(
+                //navigatorKey: _shellkey,
+                routes: [
+                  GoRoute(
+                    name: 'novel',
+                    path: '/novel',
+                    builder: (context, state) => const NovelPage(),
                     routes: [
                       GoRoute(
                         parentNavigatorKey: _rootKey,
                         path: 'viewer',
-                        builder: (context, state) => AniViewer(
-                          episodes: (state.extra as Map)['contents'],
-                          episode: (state.extra as Map)['content'],
+                        builder: (context, state) => NovelReader(
+                          data: state.extra as NovData,
                         ),
                       ),
                     ],
                   ),
                 ],
               ),
-              GoRoute(
-                parentNavigatorKey: _shellkey,
-                name: 'manga',
-                path: '/manga',
-                builder: (context, state) {
-                  index = 1;
-                  return AniPage(
-                    key: (state.queryParameters.isEmpty)
-                        ? null
-                        : Key(state.queryParameters['tag']!),
-                    type: 'manga',
-                    tag: state.queryParameters['tag'],
-                  );
-                },
+              StatefulShellBranch(
+                //navigatorKey: _shellkey,
                 routes: [
                   GoRoute(
-                    parentNavigatorKey: _rootKey,
-                    path: 'info',
-                    builder: (context, state) => InfoPage(
-                      data: state.extra as AniData,
-                    ),
-                    routes: [
-                      GoRoute(
-                        parentNavigatorKey: _rootKey,
-                        path: 'viewer',
-                        builder: (context, state) => MangaReader(
-                          chapter: (state.extra as Map)['content'],
-                          chapters: (state.extra as Map)['contents'],
-                        ),
-                      ),
-                    ],
+                    name: 'later',
+                    path: '/later',
+                    builder: (context, state) => const LaterPage(),
                   ),
                 ],
-              ),
-              GoRoute(
-                name: 'novel',
-                path: '/novel',
-                builder: (context, state) => const NovelPage(),
-                routes: [
-                  GoRoute(
-                    parentNavigatorKey: _rootKey,
-                    path: 'viewer',
-                    builder: (context, state) => NovelReader(
-                      data: state.extra as AniData,
-                    ),
-                  ),
-                ],
-              ),
-              GoRoute(
-                name: 'later',
-                path: '/later',
-                builder: (context, state) => const LaterPage(),
               ),
             ],
           ),
