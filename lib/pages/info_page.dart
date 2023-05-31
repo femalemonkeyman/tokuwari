@@ -1,5 +1,3 @@
-import 'dart:ui';
-import 'package:cached_network_image/cached_network_image.dart';
 import '/media/providers/anime_providers.dart';
 import '/models/info_models.dart';
 import '/media/providers/manga_providers.dart';
@@ -133,146 +131,124 @@ class InfoPageState extends State<InfoPage> {
         ),
       ],
     );
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color.fromARGB(100, 0, 0, 0),
-            Color.fromARGB(120, 0, 0, 0),
-            Color.fromARGB(255, 0, 0, 0)
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        image: DecorationImage(
-          fit: BoxFit.cover,
-          image: CachedNetworkImageProvider(widget.data.image),
-        ),
-      ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  backgroundColor: Colors.transparent,
-                  floating: true,
-                  title: Text(widget.data.title),
-                ),
-                SliverPadding(
-                  padding: const EdgeInsets.all(15),
-                  sliver: SliverToBoxAdapter(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          flex: 2,
-                          fit: FlexFit.loose,
-                          child: AniImage(
-                            image: widget.data.image,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Flexible(
-                          flex: 4,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.data.title,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              if (MediaQuery.of(context).size.width /
-                                      MediaQuery.of(context).size.height >
-                                  1.2)
-                                expands,
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (MediaQuery.of(context).size.width /
-                        MediaQuery.of(context).size.height <
-                    1.2)
-                  SliverPadding(
-                    padding: const EdgeInsets.only(
-                      left: 15,
-                      right: 15,
-                    ),
-                    sliver: SliverToBoxAdapter(
-                      child: expands,
-                    ),
-                  ),
-                if (content.isNotEmpty)
-                  SliverPadding(
-                    padding: const EdgeInsets.all(15),
-                    sliver: SliverGrid(
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 6,
-                        maxCrossAxisExtent: 400,
-                        mainAxisExtent: 100,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        childCount: content.length,
-                        (context, index) {
-                          return GestureDetector(
-                            onTap: () => context.push(
-                              switch (widget.data.type) {
-                                'anime' => '/anime/info/viewer',
-                                'manga' => '/manga/info/viewer',
-                                _ => '',
-                              },
-                              extra: {
-                                'content': content[index],
-                                'contents': content,
-                              },
-                            ),
-                            child: Card(
-                              elevation: 3,
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        content[index].title,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: Text(
-                                        '${(widget.data.type == 'anime') ? 'Episode:' : 'Chapter:'} ${content[index].number}',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-              ],
+    return Scaffold(
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              backgroundColor: Colors.transparent,
+              floating: true,
+              title: Text(widget.data.title),
             ),
-          ),
+            SliverPadding(
+              padding: const EdgeInsets.all(15),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      flex: 2,
+                      fit: FlexFit.loose,
+                      child: AniImage(
+                        image: widget.data.image,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Flexible(
+                      flex: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.data.title,
+                            style: const TextStyle(
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          if (MediaQuery.of(context).size.width /
+                                  MediaQuery.of(context).size.height >
+                              1.2)
+                            expands,
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (MediaQuery.of(context).size.width /
+                    MediaQuery.of(context).size.height <
+                1.2)
+              SliverPadding(
+                padding: const EdgeInsets.only(
+                  left: 15,
+                  right: 15,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: expands,
+                ),
+              ),
+            if (content.isNotEmpty)
+              SliverPadding(
+                padding: const EdgeInsets.all(15),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 6,
+                    maxCrossAxisExtent: 400,
+                    mainAxisExtent: 100,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: content.length,
+                    (context, index) {
+                      return GestureDetector(
+                        onTap: () => context.push(
+                          switch (widget.data.type) {
+                            'anime' => '/anime/info/viewer',
+                            'manga' => '/manga/info/viewer',
+                            _ => '',
+                          },
+                          extra: {
+                            'content': content[index],
+                            'contents': content,
+                          },
+                        ),
+                        child: Card(
+                          elevation: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    content[index].title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Flexible(
+                                  child: Text(
+                                    '${(widget.data.type == 'anime') ? 'Episode:' : 'Chapter:'} ${content[index].number}',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

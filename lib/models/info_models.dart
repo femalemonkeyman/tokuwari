@@ -10,6 +10,7 @@ class AniData {
   final int? malid;
   final String title;
   final String description;
+  final String status;
   final String image;
   final String score;
   final String count;
@@ -20,6 +21,7 @@ class AniData {
     required this.malid,
     required this.title,
     required this.description,
+    required this.status,
     required this.image,
     required this.count,
     required this.score,
@@ -31,9 +33,10 @@ class AniData {
         mediaId = json['id'].toString(),
         description = (json['description'] ?? "")
             .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
-        title = "${json['title']['romaji']}",
+        status = json['status'].toString(),
+        title = json['title']['romaji'].toString(),
         image = json['coverImage']['extraLarge'],
-        count = (json['episodes'] ?? "n/a").toString(),
+        count = (json['episodes'] ?? json['chapters'] ?? "n/a").toString(),
         score = (json['averageScore'] ?? "n/a").toString(),
         tags = List.generate(
           json['tags'].length,

@@ -47,18 +47,23 @@ const AniDataSchema = CollectionSchema(
       name: r'score',
       type: IsarType.string,
     ),
-    r'tags': PropertySchema(
+    r'status': PropertySchema(
       id: 6,
+      name: r'status',
+      type: IsarType.string,
+    ),
+    r'tags': PropertySchema(
+      id: 7,
       name: r'tags',
       type: IsarType.stringList,
     ),
     r'title': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'title',
       type: IsarType.string,
     ),
     r'type': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'type',
       type: IsarType.string,
     )
@@ -88,6 +93,7 @@ int _aniDataEstimateSize(
   bytesCount += 3 + object.image.length * 3;
   bytesCount += 3 + object.mediaId.length * 3;
   bytesCount += 3 + object.score.length * 3;
+  bytesCount += 3 + object.status.length * 3;
   bytesCount += 3 + object.tags.length * 3;
   {
     for (var i = 0; i < object.tags.length; i++) {
@@ -112,9 +118,10 @@ void _aniDataSerialize(
   writer.writeLong(offsets[3], object.malid);
   writer.writeString(offsets[4], object.mediaId);
   writer.writeString(offsets[5], object.score);
-  writer.writeStringList(offsets[6], object.tags);
-  writer.writeString(offsets[7], object.title);
-  writer.writeString(offsets[8], object.type);
+  writer.writeString(offsets[6], object.status);
+  writer.writeStringList(offsets[7], object.tags);
+  writer.writeString(offsets[8], object.title);
+  writer.writeString(offsets[9], object.type);
 }
 
 AniData _aniDataDeserialize(
@@ -130,9 +137,10 @@ AniData _aniDataDeserialize(
     malid: reader.readLongOrNull(offsets[3]),
     mediaId: reader.readString(offsets[4]),
     score: reader.readString(offsets[5]),
-    tags: reader.readStringList(offsets[6]) ?? [],
-    title: reader.readString(offsets[7]),
-    type: reader.readString(offsets[8]),
+    status: reader.readString(offsets[6]),
+    tags: reader.readStringList(offsets[7]) ?? [],
+    title: reader.readString(offsets[8]),
+    type: reader.readString(offsets[9]),
   );
   return object;
 }
@@ -157,10 +165,12 @@ P _aniDataDeserializeProp<P>(
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
-      return (reader.readStringList(offset) ?? []) as P;
-    case 7:
       return (reader.readString(offset)) as P;
+    case 7:
+      return (reader.readStringList(offset) ?? []) as P;
     case 8:
+      return (reader.readString(offset)) as P;
+    case 9:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1026,6 +1036,136 @@ extension AniDataQueryFilter
     });
   }
 
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'status',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'status',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'status',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> statusIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'status',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<AniData, AniData, QAfterFilterCondition> tagsElementEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -1581,6 +1721,18 @@ extension AniDataQuerySortBy on QueryBuilder<AniData, AniData, QSortBy> {
     });
   }
 
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'status', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByStatusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'status', Sort.desc);
+    });
+  }
+
   QueryBuilder<AniData, AniData, QAfterSortBy> sortByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -1692,6 +1844,18 @@ extension AniDataQuerySortThenBy
     });
   }
 
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'status', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByStatusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'status', Sort.desc);
+    });
+  }
+
   QueryBuilder<AniData, AniData, QAfterSortBy> thenByTitle() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.asc);
@@ -1760,6 +1924,13 @@ extension AniDataQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AniData, AniData, QDistinct> distinctByStatus(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'status', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<AniData, AniData, QDistinct> distinctByTags() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'tags');
@@ -1822,6 +1993,12 @@ extension AniDataQueryProperty
   QueryBuilder<AniData, String, QQueryOperations> scoreProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'score');
+    });
+  }
+
+  QueryBuilder<AniData, String, QQueryOperations> statusProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'status');
     });
   }
 

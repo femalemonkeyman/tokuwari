@@ -18,7 +18,7 @@ class AniImage extends StatelessWidget {
               fit: BoxFit.cover,
             )
           : CachedNetworkImage(
-              imageUrl: image,
+              imageUrl: ,
               fit: BoxFit.cover,
             ),
     );

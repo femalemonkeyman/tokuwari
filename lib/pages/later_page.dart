@@ -42,51 +42,53 @@ class LaterPageState extends State<LaterPage> {
         return SafeArea(
           child: CustomScrollView(
             slivers: [
-              const SliverToBoxAdapter(
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Divider(),
-                    ),
-                    Spacer(),
-                    Text(
-                      'Anime',
-                      textScaleFactor: 1.2,
-                    ),
-                    Spacer(),
-                    Expanded(
-                      flex: 200,
-                      child: Divider(),
-                    ),
-                  ],
+              if (animeData.isNotEmpty)
+                const SliverToBoxAdapter(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Divider(),
+                      ),
+                      Spacer(),
+                      Text(
+                        'Anime',
+                        textScaleFactor: 1.2,
+                      ),
+                      Spacer(),
+                      Expanded(
+                        flex: 200,
+                        child: Divider(),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               Grid(
                 data: animeData,
                 keep: false,
                 length: animeData.length,
               ),
-              const SliverToBoxAdapter(
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Divider(),
-                    ),
-                    Spacer(),
-                    Text(
-                      'Manga',
-                      textScaleFactor: 1.2,
-                    ),
-                    Spacer(),
-                    Expanded(
-                      flex: 200,
-                      child: Divider(),
-                    ),
-                  ],
+              if (mangaData.isNotEmpty)
+                const SliverToBoxAdapter(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Divider(),
+                      ),
+                      Spacer(),
+                      Text(
+                        'Manga',
+                        textScaleFactor: 1.2,
+                      ),
+                      Spacer(),
+                      Expanded(
+                        flex: 200,
+                        child: Divider(),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               Grid(
                 data: mangaData,
                 keep: false,

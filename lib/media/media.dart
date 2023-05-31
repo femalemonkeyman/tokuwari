@@ -17,22 +17,33 @@ query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre
     },
     media(sort: [TRENDING_DESC], type: \$type, search: \$search, genre_in: \$genre, tag: \$tag) {
       id
-        title {
-          romaji
-          english
-          native
+      title {
+        romaji
+        english
+        native
+      }
+      status
+      chapters
+      idMal
+      genres
+      status
+      averageScore
+      description(asHtml: false)
+      episodes
+      relations {
+        edges {
+          id
+          node {
+            id
+          }
         }
-        idMal
-        status
-        averageScore
-        description(asHtml: false)
-        episodes
-        coverImage {
-          extraLarge
-        }
-        tags {
-          name
-       }
+      }
+      coverImage {
+        extraLarge
+      }
+      tags {
+        name
+      }
     }
   }
 }
