@@ -136,7 +136,6 @@ class InfoPageState extends State<InfoPage> {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
-              backgroundColor: Colors.transparent,
               floating: true,
               title: Text(widget.data.title),
             ),
