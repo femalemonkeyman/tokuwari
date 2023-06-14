@@ -89,10 +89,10 @@ class AniPageState extends State<AniPage> {
   final TextEditingController textController = TextEditingController();
   String? search;
   bool loading = false;
-  List<String> selectedGenres = [];
+  final List<String> selectedGenres = [];
   late String? tag = widget.tag;
   Map pageInfo = {};
-  List<AniData> animeData = [];
+  final List<AniData> animeData = [];
 
   @override
   void initState() {
@@ -144,13 +144,12 @@ class AniPageState extends State<AniPage> {
 
   Future searchData() async {
     pageInfo['currentPage'] = 0;
-    animeData = [];
+    animeData.clear();
+    selectedGenres.clear();
     if (textController.text.isNotEmpty) {
-      selectedGenres = [];
       search = textController.text;
     } else {
       tag = null;
-      selectedGenres = [];
       search = null;
     }
     await queryData();
@@ -202,7 +201,7 @@ class AniPageState extends State<AniPage> {
     ).then(
       (value) async {
         pageInfo = {};
-        animeData = [];
+        animeData.clear();
         await queryData();
         setState(
           () {},

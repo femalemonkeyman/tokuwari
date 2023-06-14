@@ -1,6 +1,5 @@
-import '/media/providers/anime_providers.dart';
+import '../media/providers/providers.dart';
 import '/models/info_models.dart';
-import '/media/providers/manga_providers.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -10,8 +9,9 @@ import '../widgets/image.dart';
 
 class InfoPage extends StatefulWidget {
   final AniData data;
+  final Isar isar = Isar.getInstance('later')!;
 
-  const InfoPage({required this.data, super.key});
+  InfoPage({required this.data, super.key});
 
   @override
   State createState() => InfoPageState();
@@ -19,22 +19,15 @@ class InfoPage extends StatefulWidget {
 
 class InfoPageState extends State<InfoPage> {
   final List<MediaProv> content = [];
-  final Isar isar = Isar.getInstance('later')!;
+  late Function init = providers[widget.data.type]![0]['data'];
 
   @override
   void initState() {
     Future.microtask(
       () async {
         content.addAll(
-          switch (widget.data.type) {
-            'anime' => await zoroList(widget.data.mediaId),
-            'manga' => await dexReader(widget.data.mediaId),
-            _ => [],
-          },
+          await init(widget.data),
         );
-        if (content.isEmpty) {
-          content.addAll(await haniList(widget.data.title));
-        }
         if (mounted) {
           setState(() {});
         }
@@ -44,40 +37,37 @@ class InfoPageState extends State<InfoPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(context) {
+    final double ratio =
+        MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;
     final Widget expands = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         ActionChip(
+          shape: const StadiumBorder(),
           onPressed: () => setState(
             () {
-              QueryBuilder<AniData, AniData, QAfterFilterCondition> media =
-                  isar.aniDatas.filter().mediaIdMatches(
-                        widget.data.mediaId,
-                      );
+              final media = widget.isar.aniDatas.filter().mediaIdMatches(
+                    widget.data.mediaId,
+                  );
               if (media.isEmptySync()) {
-                isar.writeTxnSync(
-                  () => isar.aniDatas.putSync(widget.data),
+                widget.isar.writeTxnSync(
+                  () => widget.isar.aniDatas.putSync(widget.data),
                 );
               } else {
-                isar.writeTxnSync(
+                widget.isar.writeTxnSync(
                   () => media.deleteAllSync(),
                 );
               }
             },
           ),
-          avatar: (isar.aniDatas
+          avatar: (widget.isar.aniDatas
                   .filter()
                   .mediaIdMatches(widget.data.mediaId)
                   .isEmptySync())
-              ? const Icon(MdiIcons.bookmarkOutline)
-              : const Icon(MdiIcons.bookmark),
+              ? Icon(MdiIcons.bookmarkOutline)
+              : Icon(MdiIcons.bookmark),
           label: const Text("Later"),
         ),
         const SizedBox(
@@ -105,26 +95,14 @@ class InfoPageState extends State<InfoPage> {
                 side: BorderSide.none,
                 padding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 label: Text(
                   widget.data.tags[index],
                 ),
-                onPressed: () {
-                  switch (widget.data.type) {
-                    case 'anime':
-                      {
-                        context.go(
-                          '/anime?tag=${widget.data.tags[index]}',
-                        );
-                      }
-                    case 'manga':
-                      {
-                        context.go(
-                          '/manga?tag=${widget.data.tags[index]}',
-                        );
-                      }
-                  }
-                },
+                onPressed: () => context.go(
+                  '/${widget.data.type}?tag=${widget.data.tags[index]}',
+                ),
               );
             },
           ),
@@ -140,15 +118,20 @@ class InfoPageState extends State<InfoPage> {
               title: Text(widget.data.title),
             ),
             SliverPadding(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: 15,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Flexible(
-                      flex: 2,
-                      fit: FlexFit.loose,
+                      flex: 7,
+                      fit: FlexFit.tight,
                       child: AniImage(
                         image: widget.data.image,
                       ),
@@ -156,8 +139,8 @@ class InfoPageState extends State<InfoPage> {
                     const SizedBox(
                       width: 20,
                     ),
-                    Flexible(
-                      flex: 4,
+                    Expanded(
+                      flex: 15,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -170,10 +153,7 @@ class InfoPageState extends State<InfoPage> {
                           const SizedBox(
                             height: 20,
                           ),
-                          if (MediaQuery.of(context).size.width /
-                                  MediaQuery.of(context).size.height >
-                              1.2)
-                            expands,
+                          if (ratio > 1.2) expands,
                         ],
                       ),
                     ),
@@ -181,9 +161,7 @@ class InfoPageState extends State<InfoPage> {
                 ),
               ),
             ),
-            if (MediaQuery.of(context).size.width /
-                    MediaQuery.of(context).size.height <
-                1.2)
+            if (ratio < 1.2)
               SliverPadding(
                 padding: const EdgeInsets.only(
                   left: 15,
@@ -193,6 +171,42 @@ class InfoPageState extends State<InfoPage> {
                   child: expands,
                 ),
               ),
+            SliverPadding(
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+              sliver: SliverToBoxAdapter(
+                child: DropdownButton(
+                  value: init,
+                  padding: const EdgeInsets.only(left: 20),
+                  underline: const SizedBox.shrink(),
+                  focusColor: const Color.fromARGB(0, 0, 0, 0),
+                  borderRadius: BorderRadius.circular(30),
+                  items: List.generate(
+                    providers[widget.data.type]!.length,
+                    (index) => DropdownMenuItem(
+                      value: providers[widget.data.type]![index]['data'],
+                      child: Text(
+                        providers[widget.data.type]![index]['name'],
+                      ),
+                    ),
+                    growable: false,
+                  ),
+                  onChanged: (value) => Future.microtask(
+                    () async {
+                      content
+                        ..clear()
+                        ..addAll(
+                          await (value as Function)(widget.data),
+                        );
+                      setState(
+                        () {
+                          init = value;
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
             if (content.isNotEmpty)
               SliverPadding(
                 padding: const EdgeInsets.all(15),
@@ -208,13 +222,9 @@ class InfoPageState extends State<InfoPage> {
                     (context, index) {
                       return GestureDetector(
                         onTap: () => context.push(
-                          switch (widget.data.type) {
-                            'anime' => '/anime/info/viewer',
-                            'manga' => '/manga/info/viewer',
-                            _ => '',
-                          },
+                          '/${widget.data.type}/info/viewer',
                           extra: {
-                            'content': content[index],
+                            'content': index,
                             'contents': content,
                           },
                         ),

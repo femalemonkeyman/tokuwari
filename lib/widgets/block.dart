@@ -15,17 +15,13 @@ class Block extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         switch (data.type) {
-          case 'anime':
-            {
-              context.push('/anime/info', extra: data);
-            }
-          case 'manga':
-            {
-              context.push('/manga/info', extra: data);
-            }
           case 'novel':
             {
               context.push('/novel/viewer', extra: data);
+            }
+          default:
+            {
+              context.push('/${data.type}/info', extra: data);
             }
         }
       },
@@ -36,7 +32,7 @@ class Block extends StatelessWidget {
               position: DecorationPosition.foreground,
               decoration: BoxDecoration(
                 border: Border.all(strokeAlign: -0.050),
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,

@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -7,7 +6,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import '../models/info_models.dart';
 
 class MangaReader extends StatelessWidget {
-  final MediaProv chapter;
+  final int chapter;
   final List chapters;
   final bool reverse;
   final PageController controller = PageController();
@@ -26,26 +25,10 @@ class MangaReader extends StatelessWidget {
       this.reverse = false})
       : super(key: key);
 
-  Future<List> dexPages(final MediaProv chapter, final reversed) async {
-    final List pages = [];
-    var json = await Dio().get(
-      "https://api.mangadex.org/at-home/server/${chapter.provId}",
-    );
-    for (var page in json.data['chapter']['data']) {
-      pages.add(
-        "https://uploads.mangadex.org/data/${json.data['chapter']['hash']}/$page",
-      );
-    }
-    if (reversed) {
-      pages.addAll(pages.reversed.toList());
-    }
-    return pages;
-  }
-
   @override
   Widget build(final context) {
     return FutureBuilder<List>(
-      future: dexPages(chapter, reverse),
+      future: chapters[chapter].call!(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(

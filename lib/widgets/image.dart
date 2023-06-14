@@ -9,8 +9,9 @@ class AniImage extends StatelessWidget {
 
   @override
   Widget build(context) {
+    //final height = MediaQuery.of(context).size.height.clamp(0, 170);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(15.0),
+      borderRadius: BorderRadius.circular(12.0),
       child: image.startsWith("/")
           ? Image.file(
               File(image),
@@ -19,6 +20,7 @@ class AniImage extends StatelessWidget {
           : CachedNetworkImage(
               imageUrl: image,
               fit: BoxFit.cover,
+              //height: height.toDouble(),
             ),
     );
   }

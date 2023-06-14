@@ -69,7 +69,7 @@ class MediaProv {
   final String title;
   final String number;
   @ignore
-  final Function? call;
+  final Function()? call;
   bool watched;
   String? position;
 
@@ -80,5 +80,17 @@ class MediaProv {
     required this.number,
     this.call,
     this.watched = false,
+  });
+}
+
+class Source {
+  final Map<String, String> qualities;
+  final List<Map<String, String>> subtitles;
+  final Map<String, String>? headers;
+
+  Source({
+    required this.qualities,
+    required this.subtitles,
+    this.headers,
   });
 }

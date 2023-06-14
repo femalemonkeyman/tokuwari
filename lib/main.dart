@@ -1,6 +1,6 @@
 import 'dart:ui';
-import '/media/anime_videos.dart';
-import '/media/manga_reader.dart';
+import 'media/media_anime.dart';
+import 'media/media_manga.dart';
 import 'pages/later_page.dart';
 import '/novel/novel_reader.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +32,16 @@ void main() async {
   runApp(
     MaterialApp.router(
       theme: ThemeData(
-        colorScheme: const ColorScheme.dark(),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color.fromARGB(255, 119, 0, 255),
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
         chipTheme: const ChipThemeData(
           showCheckmark: false,
+          side: BorderSide(
+            color: Color.fromARGB(171, 121, 120, 120),
+          ),
         ),
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
@@ -63,7 +69,7 @@ void main() async {
                       showUnselectedLabels: false,
                       currentIndex: shell.currentIndex,
                       onTap: (value) => shell.goBranch(value),
-                      items: const [
+                      items: [
                         BottomNavigationBarItem(
                           icon: Icon(MdiIcons.youtubeTv),
                           label: 'Anime',
@@ -125,7 +131,6 @@ void main() async {
                 ],
               ),
               StatefulShellBranch(
-                //navigatorKey: _shellkey,
                 routes: [
                   GoRoute(
                     name: 'manga',
@@ -162,7 +167,6 @@ void main() async {
                 ],
               ),
               StatefulShellBranch(
-                //navigatorKey: _shellkey,
                 routes: [
                   GoRoute(
                     name: 'novel',
@@ -181,7 +185,6 @@ void main() async {
                 ],
               ),
               StatefulShellBranch(
-                //navigatorKey: _shellkey,
                 routes: [
                   GoRoute(
                     name: 'later',
