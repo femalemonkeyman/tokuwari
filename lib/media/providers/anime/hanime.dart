@@ -4,11 +4,6 @@ import 'package:string_similarity/string_similarity.dart';
 import '../../../models/info_models.dart';
 
 Future<List<MediaProv>> haniList(final AniData data) async {
-  print((
-    (data.title.split(" ").length > 3)
-        ? data.title.split(" ").getRange(0, 3).join(" ")
-        : data.title,
-  ).toString().replaceAll(RegExp('[^A-Za-z0-9 -]'), ''));
   Response json = await Dio().post(
     "https://search.htv-services.com/",
     data: jsonEncode(

@@ -32,7 +32,6 @@ class NovelPageState extends State<NovelPage> {
       if (await Permission.storage.isDenied) {
         permission =
             (await Permission.manageExternalStorage.request()).isGranted;
-        print("uwu");
       }
     }
     if (permission) {
@@ -50,7 +49,7 @@ class NovelPageState extends State<NovelPage> {
               );
             List<NovData> data = [];
             for (File i in epubs) {
-              print(i);
+              //print(i);
               final Novel novel = Novel(path: i.path);
               await novel.parse();
               await novel.writeCover();

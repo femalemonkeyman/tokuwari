@@ -78,8 +78,8 @@ class Novel {
     for (Map s in spine!['itemref']) {
       for (Map c in content!['manifest']['item']) {
         if (c.containsValue(s['idref'])) {
-          print(c);
-          print('${current.path}/${c['href']}');
+          //print(c);
+          //print('${current.path}/${c['href']}');
           chapters.add(
             Html(
               data: File('${current.path}/${c['href']}').readAsStringSync(),

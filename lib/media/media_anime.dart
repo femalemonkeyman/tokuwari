@@ -14,6 +14,8 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:window_manager/window_manager.dart';
 
+final blank = Source(qualities: {}, subtitles: []);
+
 class AniViewer extends StatefulWidget {
   final List<MediaProv> episodes;
   final int episode;
@@ -31,7 +33,7 @@ class AniViewerState extends State<AniViewer> {
   final List subTracks = [];
   late int currentEpisode = widget.episode;
   bool ready = false;
-  Source getMedia = Source(qualities: {}, subtitles: []);
+  Source getMedia = blank;
   bool fullscreen = false;
   bool show = false;
   Timer? timer;
@@ -52,40 +54,44 @@ class AniViewerState extends State<AniViewer> {
           await Wakelock.enable();
         }
         getMedia = await widget.episodes[currentEpisode].call!();
-        if (getMedia.qualities.isNotEmpty) {
-          final Directory dir = Directory(
-            p.join(
-              (await getTemporaryDirectory()).path,
-              'anisubs',
-            ),
-          );
-          if (getMedia.subtitles.isNotEmpty) {
-            for (final Map i in getMedia.subtitles) {
-              await Dio().download(
-                i['url'],
-                p.join(dir.path, "${i['lang']}.vtt"),
-              );
-            }
-            (player.platform as libmpvPlayer)
-              ..setProperty("sub-auto", 'all')
-              ..setProperty("sub-file-paths", dir.path)
-              ..setProperty(
-                  'sid',
-                  '${getMedia.subtitles.lastIndexWhere(
-                        (element) =>
-                            element['lang']!.toLowerCase().contains('english'),
-                      ) + 1}');
-          }
-          await player.open(
-            Media(
-              getMedia.qualities.values.first,
-              httpHeaders: getMedia.headers ?? {},
-            ),
-          );
-          setState(() {});
-        }
+        await play();
       },
     );
+  }
+
+  Future play() async {
+    if (getMedia.qualities.isNotEmpty) {
+      final Directory dir = Directory(
+        p.join(
+          (await getTemporaryDirectory()).path,
+          'anisubs',
+        ),
+      );
+      if (getMedia.subtitles.isNotEmpty) {
+        for (final Map i in getMedia.subtitles) {
+          await Dio().download(
+            i['url'],
+            p.join(dir.path, "${i['lang']}.vtt"),
+          );
+        }
+        (player.platform as libmpvPlayer)
+          ..setProperty("sub-auto", 'all')
+          ..setProperty("sub-file-paths", dir.path)
+          ..setProperty(
+              'sid',
+              '${getMedia.subtitles.lastIndexWhere(
+                    (element) =>
+                        element['lang']!.toLowerCase().contains('english'),
+                  ) + 1}');
+      }
+      await player.open(
+        Media(
+          getMedia.qualities.values.first,
+          httpHeaders: getMedia.headers ?? {},
+        ),
+      );
+      setState(() {});
+    }
   }
 
   @override
@@ -103,7 +109,7 @@ class AniViewerState extends State<AniViewer> {
           ).deleteSync(
             recursive: true,
           );
-        } catch (e) {}
+        } catch (_) {}
         if (!Platform.isAndroid && !Platform.isIOS) {
           await windowManager.setFullScreen(false);
         }
@@ -122,15 +128,14 @@ class AniViewerState extends State<AniViewer> {
               children: [
                 Video(controller: controller),
                 GestureDetector(
-                  onTap: () => player.playOrPause(),
-                  child: MouseRegion(
-                    onHover: (event) {
-                      setState(() {
-                        if (timer != null) {
-                          timer?.cancel();
-                        }
-                        show = true;
-                      });
+                  onTap: () {
+                    setState(() {
+                      if (timer != null) {
+                        timer?.cancel();
+                      }
+                      show = true;
+                    });
+                    if (player.state.playing) {
                       timer = Timer(const Duration(seconds: 3), () {
                         setState(
                           () {
@@ -138,181 +143,212 @@ class AniViewerState extends State<AniViewer> {
                           },
                         );
                       });
-                    },
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 300),
-                      opacity: !show ? 0.0 : 1.0,
-                      child: AbsorbPointer(
-                        absorbing: !show,
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Color(0xCC000000),
-                                    Color(0x00000000),
-                                    Color(0x00000000),
-                                    Color(0x00000000),
-                                    Color(0x00000000),
-                                    Color(0x00000000),
-                                    Color(0xCC000000),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              left: 0,
-                              child: Row(
-                                children: [
-                                  const BackButton(),
-                                  const Spacer(),
-                                  PopupMenuButton(
-                                    itemBuilder: (context) {
-                                      return [
-                                        PopupMenuItem(
-                                          child: const Text('Subtitles'),
-                                          onTap: () => showBottomSheet(
-                                            context: context,
-                                            constraints:
-                                                BoxConstraints.tightFor(
-                                              height: height / 2,
-                                            ),
-                                            builder: (context) => ListView(
-                                              children: List.generate(
-                                                player.state.tracks.subtitle
-                                                    .length,
-                                                (index) {
-                                                  return ListTile(
-                                                    title: Text(
-                                                      player
-                                                              .state
-                                                              .tracks
-                                                              .subtitle[index]
-                                                              .title ??
-                                                          player
-                                                              .state
-                                                              .tracks
-                                                              .subtitle[index]
-                                                              .id,
-                                                    ),
-                                                    onTap: () {
-                                                      player.setSubtitleTrack(
-                                                        player.state.tracks
-                                                            .subtitle[index],
-                                                      );
-                                                      context.pop();
-                                                    },
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                          child: const Text('Quality'),
-                                          onTap: () => showBottomSheet(
-                                            context: context,
-                                            constraints:
-                                                BoxConstraints.tightFor(
-                                              height: height / 2,
-                                            ),
-                                            builder: (context) => ListView(
-                                              children: List.generate(
-                                                player
-                                                    .state.tracks.video.length,
-                                                (index) {
-                                                  return ListTile(
-                                                    title: Text(
-                                                      player
-                                                              .state
-                                                              .tracks
-                                                              .video[index]
-                                                              .title ??
-                                                          player.state.tracks
-                                                              .video[index].id,
-                                                    ),
-                                                    onTap: () {
-                                                      player.setVideoTrack(
-                                                        player.state.tracks
-                                                            .video[index],
-                                                      );
-                                                      context.pop();
-                                                    },
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ];
-                                    },
-                                  ),
+                    }
+                  },
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 300),
+                    opacity: !show ? 0.0 : 1.0,
+                    child: AbsorbPointer(
+                      absorbing: !show,
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Color(0xCC000000),
+                                  Color(0x00000000),
+                                  Color(0x00000000),
+                                  Color(0x00000000),
+                                  Color(0x00000000),
+                                  Color(0x00000000),
+                                  Color(0xCC000000),
                                 ],
                               ),
                             ),
-                            Positioned(
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: 5, right: 20, left: 20),
-                                    child: StreamBuilder<Duration>(
-                                      stream: player.streams.position,
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<Duration> snapshot) {
-                                        if (snapshot.hasData) {
-                                          return Theme(
-                                            data: ThemeData.dark(),
-                                            child: ProgressBar(
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            left: 0,
+                            child: Row(
+                              children: [
+                                const BackButton(),
+                                const Spacer(),
+                                PopupMenuButton(
+                                  itemBuilder: (context) {
+                                    return [
+                                      PopupMenuItem(
+                                        child: const Text('Subtitles'),
+                                        onTap: () => showBottomSheet(
+                                          context: context,
+                                          constraints: BoxConstraints.tightFor(
+                                            height: height / 2,
+                                          ),
+                                          builder: (context) => ListView(
+                                            children: List.generate(
+                                              player
+                                                  .state.tracks.subtitle.length,
+                                              (index) {
+                                                return ListTile(
+                                                  title: Text(
+                                                    player
+                                                            .state
+                                                            .tracks
+                                                            .subtitle[index]
+                                                            .title ??
+                                                        player.state.tracks
+                                                            .subtitle[index].id,
+                                                  ),
+                                                  onTap: () {
+                                                    player.setSubtitleTrack(
+                                                      player.state.tracks
+                                                          .subtitle[index],
+                                                    );
+                                                    context.pop();
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        child: const Text('Quality'),
+                                        onTap: () => showBottomSheet(
+                                          context: context,
+                                          constraints: BoxConstraints.tightFor(
+                                            height: height / 2,
+                                          ),
+                                          builder: (context) => ListView(
+                                            children: List.generate(
+                                              player.state.tracks.video.length -
+                                                  2,
+                                              (index) {
+                                                return ListTile(
+                                                  title: Text(
+                                                    player
+                                                            .state
+                                                            .tracks
+                                                            .video[index + 2]
+                                                            .title ??
+                                                        player
+                                                            .state
+                                                            .tracks
+                                                            .video[index + 2]
+                                                            .id,
+                                                  ),
+                                                  onTap: () {
+                                                    player.setVideoTrack(
+                                                      player.state.tracks
+                                                          .video[index + 2],
+                                                    );
+                                                    context.pop();
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ];
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 5, right: 20, left: 20),
+                                  child: StreamBuilder<Duration>(
+                                    stream: player.streams.position,
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<Duration> snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Theme(
+                                          data: ThemeData.dark(),
+                                          child: ProgressBar(
                                               progress: snapshot.data!,
                                               total: player.state.duration,
                                               barHeight: 3,
                                               timeLabelLocation:
                                                   TimeLabelLocation.sides,
-                                              onSeek: (duration) {
-                                                player.seek(duration);
-                                              },
-                                            ),
-                                          );
-                                        }
-                                        return const SizedBox.shrink();
-                                      },
+                                              onSeek: (duration) =>
+                                                  player.seek(duration)),
+                                        );
+                                      }
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    const Spacer(),
+                                    IconButton(
+                                      onPressed: (currentEpisode == 0)
+                                          ? null
+                                          : () async {
+                                              currentEpisode -= 1;
+                                              getMedia = await widget
+                                                  .episodes[currentEpisode]
+                                                  .call!();
+                                              await play();
+                                            },
+                                      icon: const Icon(Icons.skip_previous),
                                     ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Spacer(),
-                                      IconButton(
-                                        iconSize: 50,
-                                        onPressed: () async {
-                                          await windowManager.setFullScreen(
-                                            !fullscreen,
-                                          );
-                                          fullscreen = !fullscreen;
-                                        },
-                                        icon: (fullscreen)
-                                            ? const Icon(
-                                                Icons.fullscreen_exit_outlined,
-                                              )
-                                            : const Icon(
-                                                Icons.fullscreen_outlined,
-                                              ),
+                                    IconButton(
+                                      onPressed: () async {
+                                        await player.playOrPause();
+                                        setState(() {});
+                                      },
+                                      icon: Icon((player.state.playing)
+                                          ? Icons.pause
+                                          : Icons.play_arrow),
+                                    ),
+                                    IconButton(
+                                      onPressed: (currentEpisode ==
+                                              widget.episodes.length - 1)
+                                          ? null
+                                          : () async {
+                                              currentEpisode += 1;
+                                              getMedia = await widget
+                                                  .episodes[currentEpisode]
+                                                  .call!();
+                                              await play();
+                                            },
+                                      icon: const Icon(Icons.skip_next),
+                                    ),
+                                    const Spacer(
+                                      flex: 50,
+                                    ),
+                                    IconButton(
+                                      iconSize: 50,
+                                      onPressed: () async {
+                                        await windowManager.setFullScreen(
+                                          !fullscreen,
+                                        );
+                                        fullscreen = !fullscreen;
+                                      },
+                                      icon: Icon(
+                                        (fullscreen)
+                                            ? Icons.fullscreen_exit_outlined
+                                            : Icons.fullscreen_outlined,
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

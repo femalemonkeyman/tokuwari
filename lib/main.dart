@@ -33,7 +33,7 @@ void main() async {
     MaterialApp.router(
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color.fromARGB(255, 119, 0, 255),
+          seedColor: const Color.fromARGB(255, 119, 0, 255),
           brightness: Brightness.dark,
         ),
         useMaterial3: true,

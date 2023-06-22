@@ -77,7 +77,6 @@ Future<Source> zoroInfo(final id) async {
       sources['sourcesBackup'] =
           jsonDecode(decrypt(sources['sourcesBackup'], key));
     }
-    print(sources['tracks']);
     return Source(
       qualities: {
         'default': sources['sources'][0]['file'],

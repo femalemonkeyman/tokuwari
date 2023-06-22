@@ -128,7 +128,7 @@ class NovelControlsState extends State<NovelControls> {
                   child: GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: () {
-                      print("left");
+                      //print("left");
                       // widget.controller.jumpToPage(
                       //   (widget.controller.page! + 1).toInt(),
                       // );

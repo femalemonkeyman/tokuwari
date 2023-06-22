@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
@@ -79,7 +78,6 @@ Future<Source> paheInfo(final String id) async {
       );
     }
   }
-  print(qualities);
   return Source(qualities: qualities, subtitles: [], headers: headers);
 }
 
@@ -156,7 +154,7 @@ class JsUnpack {
         if (v < symtab.length) {
           try {
             lookUp = symtab[v];
-          } catch (e) {}
+          } catch (_) {}
           if (lookUp.isEmpty) lookUp = word;
         } else {
           lookUp = word;

@@ -37,10 +37,10 @@ packages:
     dependency: transitive
     description:
       name: asn1lib
-      sha256: ab96a1cb3beeccf8145c52e449233fe68364c9641623acd3adad66f8184f1039
+      sha256: b74e3842a52c61f8819a1ec8444b4de5419b41a7465e69d4aa681445377398b0
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "1.4.1"
   async:
     dependency: transitive
     description:
@@ -277,10 +277,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: b85eb92b175767fdaa0c543bf3b0d1f610fe966412ea72845fe5ba7801e763ff
+      sha256: b1729fc96627dd44012d0a901558177418818d6bd428df59dcfeb594e5f66432
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.10"
+    version: "5.3.2"
   fixnum:
     dependency: transitive
     description:
@@ -367,10 +367,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: d687b6129476c92bd75244b8dfc1bb56f9a287ab3d51cdf0baf570afeb923c51
+      sha256: da08429b5c1026cc78bd60c60bfff34f0b273b29feddeab00d3f5b56fb6f35ed
       url: "https://pub.dev"
     source: hosted
-    version: "8.0.3"
+    version: "8.0.5"
   gql:
     dependency: transitive
     description:
@@ -592,7 +592,7 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: "4f6d55a7516c566ceff2127a6a45c6422c529845"
+      resolved-ref: c5455401544339da5b0013216774ea04d5ec9f45
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.11"
@@ -601,7 +601,7 @@ packages:
     description:
       path: media_kit_libs_android_video
       ref: main
-      resolved-ref: "4f6d55a7516c566ceff2127a6a45c6422c529845"
+      resolved-ref: c5455401544339da5b0013216774ea04d5ec9f45
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.6"
@@ -610,7 +610,7 @@ packages:
     description:
       path: media_kit_libs_ios_video
       ref: main
-      resolved-ref: "4f6d55a7516c566ceff2127a6a45c6422c529845"
+      resolved-ref: c5455401544339da5b0013216774ea04d5ec9f45
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.4"
@@ -619,7 +619,7 @@ packages:
     description:
       path: media_kit_libs_linux
       ref: main
-      resolved-ref: "4f6d55a7516c566ceff2127a6a45c6422c529845"
+      resolved-ref: c5455401544339da5b0013216774ea04d5ec9f45
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.2"
@@ -628,7 +628,7 @@ packages:
     description:
       path: media_kit_libs_macos_video
       ref: main
-      resolved-ref: "4f6d55a7516c566ceff2127a6a45c6422c529845"
+      resolved-ref: c5455401544339da5b0013216774ea04d5ec9f45
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.5"
@@ -637,7 +637,7 @@ packages:
     description:
       path: media_kit_libs_windows_video
       ref: main
-      resolved-ref: "4f6d55a7516c566ceff2127a6a45c6422c529845"
+      resolved-ref: c5455401544339da5b0013216774ea04d5ec9f45
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.2"
@@ -646,7 +646,7 @@ packages:
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: "4f6d55a7516c566ceff2127a6a45c6422c529845"
+      resolved-ref: c5455401544339da5b0013216774ea04d5ec9f45
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "0.0.12"
@@ -1059,42 +1059,34 @@ packages:
     dependency: "direct main"
     description:
       name: wakelock
-      sha256: "769ecf42eb2d07128407b50cb93d7c10bd2ee48f0276ef0119db1d25cc2f87db"
+      sha256: "78bad4822be81d37e7bc34b6990da7dface2a445255cd37c6f053b51a4ccdb3b"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.2"
+    version: "0.4.0"
   wakelock_macos:
     dependency: transitive
     description:
       name: wakelock_macos
-      sha256: "047c6be2f88cb6b76d02553bca5a3a3b95323b15d30867eca53a19a0a319d4cd"
+      sha256: "73581e5d9ed2dd1ba951375c30e63f0eb8c58d7d6286ae9ddf927b88f2aea8d9"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.0"
+    version: "0.1.0+3"
   wakelock_platform_interface:
     dependency: transitive
     description:
       name: wakelock_platform_interface
-      sha256: "1f4aeb81fb592b863da83d2d0f7b8196067451e4df91046c26b54a403f9de621"
+      sha256: d0a8a1c02af68077db5df1e0f5e2b745f7b1f2cdcc48e3e0b6f8f4dcc349050e
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.0"
+    version: "0.2.1+3"
   wakelock_web:
     dependency: transitive
     description:
       name: wakelock_web
-      sha256: "1b256b811ee3f0834888efddfe03da8d18d0819317f20f6193e2922b41a501b5"
+      sha256: "06b0033d5421712138e7fa482ff5c6280fe12e0a41c40c3fe8fda2c007eb4348"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.0"
-  wakelock_windows:
-    dependency: transitive
-    description:
-      name: wakelock_windows
-      sha256: "857f77b3fe6ae82dd045455baa626bc4b93cb9bb6c86bf3f27c182167c3a5567"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.1"
+    version: "0.2.0+3"
   watcher:
     dependency: transitive
     description:
@@ -1115,10 +1107,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: a6f0236dbda0f63aa9a25ad1ff9a9d8a4eaaa5012da0dc59d21afdb1dc361ca4
+      sha256: "1414f27dd781737e51afa9711f2ac2ace6ab4498ee98e20863fa5505aa00c58c"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.4"
+    version: "5.0.4"
   window_manager:
     dependency: "direct main"
     description:
