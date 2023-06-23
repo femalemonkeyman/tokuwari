@@ -3056,7 +3056,7 @@ void _mediaProvSerialize(
   writer.writeString(offsets[2], object.provId);
   writer.writeString(offsets[3], object.provider);
   writer.writeString(offsets[4], object.title);
-  writer.writeBool(offsets[5], object.watched);
+  writer.writeBool(offsets[5], object.consumed);
 }
 
 MediaProv _mediaProvDeserialize(
@@ -3070,7 +3070,7 @@ MediaProv _mediaProvDeserialize(
     provId: reader.readString(offsets[2]),
     provider: reader.readString(offsets[3]),
     title: reader.readString(offsets[4]),
-    watched: reader.readBoolOrNull(offsets[5]) ?? false,
+    consumed: reader.readBoolOrNull(offsets[5]) ?? false,
   );
   object.position = reader.readStringOrNull(offsets[1]);
   return object;

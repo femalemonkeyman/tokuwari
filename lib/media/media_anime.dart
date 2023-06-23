@@ -36,7 +36,6 @@ class AniViewerState extends State<AniViewer> {
   Source getMedia = blank;
   bool fullscreen = false;
   bool show = false;
-  Timer? timer;
 
   @override
   void initState() {
@@ -116,7 +115,6 @@ class AniViewerState extends State<AniViewer> {
         await player.dispose();
       },
     );
-    timer?.cancel();
     super.dispose();
   }
 
@@ -128,23 +126,9 @@ class AniViewerState extends State<AniViewer> {
               children: [
                 Video(controller: controller),
                 GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (timer != null) {
-                        timer?.cancel();
-                      }
-                      show = true;
-                    });
-                    if (player.state.playing) {
-                      timer = Timer(const Duration(seconds: 3), () {
-                        setState(
-                          () {
-                            show = false;
-                          },
-                        );
-                      });
-                    }
-                  },
+                  onTap: () => setState(
+                    () => show = !show,
+                  ),
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 300),
                     opacity: !show ? 0.0 : 1.0,

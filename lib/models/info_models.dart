@@ -70,7 +70,7 @@ class MediaProv {
   final String number;
   @ignore
   final Function()? call;
-  bool watched;
+  bool consumed;
   String? position;
 
   MediaProv({
@@ -79,7 +79,7 @@ class MediaProv {
     required this.title,
     required this.number,
     this.call,
-    this.watched = false,
+    this.consumed = false,
   });
 }
 

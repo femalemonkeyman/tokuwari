@@ -9,7 +9,7 @@ import '../widgets/image.dart';
 
 extension on Widget {
   Widget padBottom() {
-    return Padding(padding: const EdgeInsets.only(bottom: 20), child: this);
+    return Padding(padding: const EdgeInsets.only(bottom: 15), child: this);
   }
 }
 
@@ -58,7 +58,12 @@ class InfoPageState extends State<InfoPage> {
               title: Text(widget.data.title),
             ),
             SliverPadding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 10,
+                bottom: 10,
+              ),
               sliver: InfoArea(
                 data: widget.data,
                 button: ActionChip(
@@ -90,35 +95,28 @@ class InfoPageState extends State<InfoPage> {
                       : Icon(MdiIcons.bookmark),
                   label: const Text("Later"),
                 ),
-                selector: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: DropdownButton(
-                        value: init,
-                        padding: const EdgeInsets.only(left: 15),
-                        underline: const SizedBox.shrink(),
-                        focusColor: const Color.fromARGB(0, 0, 0, 0),
-                        borderRadius: BorderRadius.circular(30),
-                        items: List.generate(
-                          providers[widget.data.type]!.length,
-                          (index) => DropdownMenuItem(
-                            value: providers[widget.data.type]![index]['data'],
-                            child: Text(
-                              providers[widget.data.type]![index]['name'],
-                            ),
-                          ),
-                          growable: false,
-                        ),
-                        onChanged: (value) => Future.microtask(
-                          () async {
-                            init = (value as Function);
-                            await loadEpisodes();
-                          },
-                        ),
+                selector: DropdownButton(
+                  value: init,
+                  padding: const EdgeInsets.only(left: 15),
+                  underline: const SizedBox.shrink(),
+                  focusColor: const Color.fromARGB(0, 0, 0, 0),
+                  borderRadius: BorderRadius.circular(30),
+                  items: List.generate(
+                    providers[widget.data.type]!.length,
+                    (index) => DropdownMenuItem(
+                      value: providers[widget.data.type]![index]['data'],
+                      child: Text(
+                        providers[widget.data.type]![index]['name'],
                       ),
                     ),
-                  ],
+                    growable: false,
+                  ),
+                  onChanged: (value) => Future.microtask(
+                    () async {
+                      init = (value as Function);
+                      await loadEpisodes();
+                    },
+                  ),
                 ),
               ),
             ),
@@ -149,18 +147,13 @@ class InfoArea extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(
-          height: 10,
-        ),
+        button.padBottom(),
         ExpandableText(
           data.description,
           expandText: "More",
           collapseText: "Less",
           maxLines: 4,
-        ),
-        const SizedBox(
-          height: 15,
-        ),
+        ).padBottom(),
         Wrap(
           spacing: 3,
           runSpacing: 7,
@@ -185,7 +178,7 @@ class InfoArea extends StatelessWidget {
               );
             },
           ),
-        ),
+        ).padBottom(),
       ],
     );
     final double ratio =
@@ -201,7 +194,7 @@ class InfoArea extends StatelessWidget {
               fit: FlexFit.tight,
               child: AniImage(
                 image: data.image,
-              ),
+              ).padBottom(),
             ),
             const SizedBox(
               width: 20,
@@ -217,10 +210,24 @@ class InfoArea extends StatelessWidget {
                       fontSize: 20,
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
+                  Text(
+                    data.status,
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
                   ),
-                  button,
+                  Text(
+                    'Score: ${data.score}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                  Text(
+                    'Count: ${data.count}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  ).padBottom(),
                   if (ratio > 1.2) expands,
                 ],
               ),
@@ -252,9 +259,6 @@ class InfoArea extends StatelessWidget {
         //  ⠄⠄⠐⡏⠉⠉⠉⠉⠉⠄⢸⠛⠿⣿⣿⡟⠄⠄⠄
         //  ⠄⠄⠄⠹⡖⠒⠒⠒⠒⠊⢹⠒⠤⢤⡜⠁⠄⠄⠄
         //  ⠄⠄⠄⠄⠱⠄⠄⠄⠄⠄⢸
-        const SizedBox(
-          height: 15,
-        ),
         selector,
       ],
     );
