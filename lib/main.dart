@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:window_manager/window_manager.dart';
+
 import 'media/media_anime.dart';
 import 'media/media_manga.dart';
 import 'pages/later_page.dart';
@@ -21,6 +23,9 @@ final GlobalKey<NavigatorState> _shellkey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
+  if (!Platform.isAndroid && !Platform.isIOS) {
+    await WindowManager.instance.ensureInitialized();
+  }
   Isar.openSync(
     [AniDataSchema, MediaProvSchema, NovDataSchema],
     name: "later",
