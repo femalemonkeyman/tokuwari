@@ -26,13 +26,10 @@ class AniViewer extends StatefulWidget {
 }
 
 class AniViewerState extends State<AniViewer> {
-  final Player player = Player(
-      configuration: const PlayerConfiguration(logLevel: MPVLogLevel.debug));
+  final Player player = Player();
   late final VideoController controller = VideoController(player);
-  late final double height = MediaQuery.of(context).size.height;
   final List subTracks = [];
   late int currentEpisode = widget.episode;
-  bool ready = false;
   Source getMedia = blank;
   bool fullscreen = false;
   bool show = false;
@@ -89,9 +86,6 @@ class AniViewerState extends State<AniViewer> {
           httpHeaders: getMedia.headers ?? {},
         ),
       );
-      player.streams.log.listen(
-        (event) => print(event),
-      );
       setState(() {});
     }
   }
@@ -123,6 +117,7 @@ class AniViewerState extends State<AniViewer> {
 
   @override
   Widget build(context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: (getMedia.qualities.isNotEmpty)
           ? Stack(
@@ -150,8 +145,14 @@ class AniViewerState extends State<AniViewer> {
                       onTap: () => setState(
                         () => show = !show,
                       ),
-                      onDoubleTapDown: (details) {
-                        print(details.localPosition);
+                      onDoubleTapDown: (details) =>
+                          switch (details.localPosition.dx > size.width / 2) {
+                        true => player.seek(
+                            player.state.position + const Duration(seconds: 5),
+                          ),
+                        false => player.seek(
+                            player.state.position - const Duration(seconds: 5),
+                          ),
                       },
                       child: AnimatedOpacity(
                         duration: const Duration(milliseconds: 300),
@@ -194,7 +195,7 @@ class AniViewerState extends State<AniViewer> {
                                               context: context,
                                               constraints:
                                                   BoxConstraints.tightFor(
-                                                height: height / 2,
+                                                height: size.height / 2,
                                               ),
                                               builder: (context) => ListView(
                                                 children: List.generate(
@@ -234,7 +235,7 @@ class AniViewerState extends State<AniViewer> {
                                               context: context,
                                               constraints:
                                                   BoxConstraints.tightFor(
-                                                height: height / 2,
+                                                height: size.height / 2,
                                               ),
                                               builder: (context) => ListView(
                                                 children: List.generate(

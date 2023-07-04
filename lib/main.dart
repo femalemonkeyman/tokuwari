@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:window_manager/window_manager.dart';
-
 import 'media/media_anime.dart';
 import 'media/media_manga.dart';
 import 'pages/later_page.dart';
@@ -35,7 +34,16 @@ void main() async {
         .path,
   );
   runApp(
-    MaterialApp.router(
+    const Navigation(),
+  );
+}
+
+class Navigation extends StatelessWidget {
+  const Navigation({super.key});
+
+  @override
+  Widget build(context) {
+    return MaterialApp.router(
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 119, 0, 255),
@@ -202,6 +210,6 @@ void main() async {
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
 }
