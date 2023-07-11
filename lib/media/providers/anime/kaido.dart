@@ -79,7 +79,10 @@ Future<Source> zoroInfo(final id) async {
       sources['sourcesBackup'] =
           jsonDecode(decrypt(sources['sourcesBackup'], key));
     }
-    (sources['tracks'] as List).removeLast();
+    print((sources['tracks'] as List));
+    if ((sources['tracks'] as List).last['kind'] != 'captions') {
+      (sources['tracks'] as List).removeLast();
+    }
     return Source(
       qualities: {
         'default': sources['sources'][0]['file'],

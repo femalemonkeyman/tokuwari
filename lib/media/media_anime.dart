@@ -46,8 +46,9 @@ class AniViewerState extends State<AniViewer> {
     );
     Future.microtask(
       () async {
-        await WakelockPlus.enable();
-
+        if (!Platform.isLinux) {
+          await WakelockPlus.enable();
+        }
         await play();
       },
     );
@@ -95,7 +96,9 @@ class AniViewerState extends State<AniViewer> {
     SystemChrome.setPreferredOrientations([]);
     Future.microtask(
       () async {
-        await WakelockPlus.disable();
+        if (!Platform.isLinux) {
+          await WakelockPlus.disable();
+        }
         try {
           Directory(
             p.join((await getTemporaryDirectory()).path, 'anisubs'),
