@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:go_router/go_router.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '/models/info_models.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as p;
-import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
@@ -46,9 +46,8 @@ class AniViewerState extends State<AniViewer> {
     );
     Future.microtask(
       () async {
-        if (!Platform.isLinux) {
-          await Wakelock.enable();
-        }
+        await WakelockPlus.enable();
+
         await play();
       },
     );
@@ -96,9 +95,7 @@ class AniViewerState extends State<AniViewer> {
     SystemChrome.setPreferredOrientations([]);
     Future.microtask(
       () async {
-        if (!Platform.isLinux) {
-          await Wakelock.disable();
-        }
+        await WakelockPlus.disable();
         try {
           Directory(
             p.join((await getTemporaryDirectory()).path, 'anisubs'),

@@ -112,15 +112,15 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     name: 'anime',
                     path: '/anime',
-                    builder: (context, state) {
-                      return AniPage(
+                    pageBuilder: (context, state) => MaterialPage(
+                      child: AniPage(
                         key: (state.queryParameters.isEmpty)
                             ? null
                             : Key(state.queryParameters['tag']!),
                         type: 'anime',
                         tag: state.queryParameters['tag'],
-                      );
-                    },
+                      ),
+                    ),
                     routes: [
                       GoRoute(
                         parentNavigatorKey: _rootKey,

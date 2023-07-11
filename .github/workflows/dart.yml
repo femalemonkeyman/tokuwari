@@ -93,19 +93,22 @@ jobs:
       
         run: echo "${{ secrets.KEY_PROPERTIES }}" | base64 --decode > .key/key.properties
        
-      - run: flutter build apk --release --split-debug-info=''
+      - run: flutter build apk --release --split-debug-info='' --split-per-abi
       - uses: actions/upload-artifact@v3
         with:
           name: android
           path: build/app/outputs/apk/release/app-release.apk
-
       - name: Android release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: build/app/outputs/apk/release/app-release.apk
+          files: |
+            build/app/outputs/apk/release/app-arm64-v8a-release.apk
+            build/app/outputs/apk/release/app-armeabi-v7a-release.apk
+            build/app/outputs/apk/release/app-x86_64-release.apk
+
 
   build-and-release-macos:
     runs-on: macos-latest

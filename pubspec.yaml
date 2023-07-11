@@ -5,7 +5,7 @@ description: Something I guess
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.2.0+1
+version: 0.3.0+2
 
 environment:
   sdk: ">=3.0.0"
@@ -57,11 +57,10 @@ dependencies:
   audio_video_progress_bar:
   window_manager:
   flutter_image:
-  #graphql: ^5.2.0-beta.2
   encrypt: 
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
-  wakelock: 
+  wakelock_plus:
   expandable_text:
   material_design_icons_flutter:
   string_similarity: 
@@ -69,7 +68,7 @@ dependencies:
   html:
   
 dependency_overrides:
-  graphql: ^5.2.0-beta.4
+  graphql: ^5.2.0-beta.5
   media_kit:
     git:
       url: https://github.com/alexmercerind/media_kit.git
