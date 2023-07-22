@@ -2981,35 +2981,35 @@ const MediaProvSchema = CollectionSchema(
   name: r'MediaProv',
   id: 5282315883212320621,
   properties: {
-    r'number': PropertySchema(
+    r'consumed': PropertySchema(
       id: 0,
+      name: r'consumed',
+      type: IsarType.bool,
+    ),
+    r'number': PropertySchema(
+      id: 1,
       name: r'number',
       type: IsarType.string,
     ),
     r'position': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'position',
       type: IsarType.string,
     ),
     r'provId': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'provId',
       type: IsarType.string,
     ),
     r'provider': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'provider',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'title',
       type: IsarType.string,
-    ),
-    r'watched': PropertySchema(
-      id: 5,
-      name: r'watched',
-      type: IsarType.bool,
     )
   },
   estimateSize: _mediaProvEstimateSize,
@@ -3051,12 +3051,12 @@ void _mediaProvSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.number);
-  writer.writeString(offsets[1], object.position);
-  writer.writeString(offsets[2], object.provId);
-  writer.writeString(offsets[3], object.provider);
-  writer.writeString(offsets[4], object.title);
-  writer.writeBool(offsets[5], object.consumed);
+  writer.writeBool(offsets[0], object.consumed);
+  writer.writeString(offsets[1], object.number);
+  writer.writeString(offsets[2], object.position);
+  writer.writeString(offsets[3], object.provId);
+  writer.writeString(offsets[4], object.provider);
+  writer.writeString(offsets[5], object.title);
 }
 
 MediaProv _mediaProvDeserialize(
@@ -3066,13 +3066,13 @@ MediaProv _mediaProvDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = MediaProv(
-    number: reader.readString(offsets[0]),
-    provId: reader.readString(offsets[2]),
-    provider: reader.readString(offsets[3]),
-    title: reader.readString(offsets[4]),
-    consumed: reader.readBoolOrNull(offsets[5]) ?? false,
+    consumed: reader.readBoolOrNull(offsets[0]) ?? false,
+    number: reader.readString(offsets[1]),
+    provId: reader.readString(offsets[3]),
+    provider: reader.readString(offsets[4]),
+    title: reader.readString(offsets[5]),
   );
-  object.position = reader.readStringOrNull(offsets[1]);
+  object.position = reader.readStringOrNull(offsets[2]);
   return object;
 }
 
@@ -3084,17 +3084,17 @@ P _mediaProvDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
-    case 2:
       return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
       return (reader.readString(offset)) as P;
     case 5:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -3189,6 +3189,16 @@ extension MediaProvQueryWhere
 
 extension MediaProvQueryFilter
     on QueryBuilder<MediaProv, MediaProv, QFilterCondition> {
+  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> consumedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'consumed',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> idEqualTo(
       Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -3910,16 +3920,6 @@ extension MediaProvQueryFilter
       ));
     });
   }
-
-  QueryBuilder<MediaProv, MediaProv, QAfterFilterCondition> watchedEqualTo(
-      bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'watched',
-        value: value,
-      ));
-    });
-  }
 }
 
 extension MediaProvQueryObject
@@ -3929,6 +3929,18 @@ extension MediaProvQueryLinks
     on QueryBuilder<MediaProv, MediaProv, QFilterCondition> {}
 
 extension MediaProvQuerySortBy on QueryBuilder<MediaProv, MediaProv, QSortBy> {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByConsumed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'consumed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByConsumedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'consumed', Sort.desc);
+    });
+  }
+
   QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByNumber() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'number', Sort.asc);
@@ -3988,22 +4000,22 @@ extension MediaProvQuerySortBy on QueryBuilder<MediaProv, MediaProv, QSortBy> {
       return query.addSortBy(r'title', Sort.desc);
     });
   }
-
-  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByWatched() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'watched', Sort.asc);
-    });
-  }
-
-  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> sortByWatchedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'watched', Sort.desc);
-    });
-  }
 }
 
 extension MediaProvQuerySortThenBy
     on QueryBuilder<MediaProv, MediaProv, QSortThenBy> {
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByConsumed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'consumed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByConsumedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'consumed', Sort.desc);
+    });
+  }
+
   QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -4075,22 +4087,16 @@ extension MediaProvQuerySortThenBy
       return query.addSortBy(r'title', Sort.desc);
     });
   }
-
-  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByWatched() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'watched', Sort.asc);
-    });
-  }
-
-  QueryBuilder<MediaProv, MediaProv, QAfterSortBy> thenByWatchedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'watched', Sort.desc);
-    });
-  }
 }
 
 extension MediaProvQueryWhereDistinct
     on QueryBuilder<MediaProv, MediaProv, QDistinct> {
+  QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByConsumed() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'consumed');
+    });
+  }
+
   QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByNumber(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -4125,12 +4131,6 @@ extension MediaProvQueryWhereDistinct
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
     });
   }
-
-  QueryBuilder<MediaProv, MediaProv, QDistinct> distinctByWatched() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'watched');
-    });
-  }
 }
 
 extension MediaProvQueryProperty
@@ -4138,6 +4138,12 @@ extension MediaProvQueryProperty
   QueryBuilder<MediaProv, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<MediaProv, bool, QQueryOperations> consumedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'consumed');
     });
   }
 
@@ -4168,12 +4174,6 @@ extension MediaProvQueryProperty
   QueryBuilder<MediaProv, String, QQueryOperations> titleProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'title');
-    });
-  }
-
-  QueryBuilder<MediaProv, bool, QQueryOperations> watchedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'watched');
     });
   }
 }

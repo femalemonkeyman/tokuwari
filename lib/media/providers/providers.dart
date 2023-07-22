@@ -2,13 +2,13 @@ import 'package:tokuwari/media/providers/anime/animepahe.dart';
 import 'package:tokuwari/models/info_models.dart';
 
 import 'anime/hanime.dart';
-import 'anime/kaido.dart';
+import 'anime/aniwatch.dart';
 import 'manga/mangadex.dart';
 
 final Map<String, List<Map<String, dynamic>>> providers = {
   'anime': [
     {
-      'name': 'Kaido',
+      'name': 'Aniwatch',
       'data': (final AniData data) => zoroList(data),
     },
     {

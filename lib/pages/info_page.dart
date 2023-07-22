@@ -26,7 +26,6 @@ class InfoPage extends StatefulWidget {
 class InfoPageState extends State<InfoPage> {
   final List<MediaProv> content = [];
   late Function init = providers[widget.data.type]![0]['data'];
-  bool subs = false;
 
   @override
   void initState() {
@@ -95,28 +94,50 @@ class InfoPageState extends State<InfoPage> {
                       : Icon(MdiIcons.bookmark),
                   label: const Text("Later"),
                 ),
-                selector: DropdownButton(
-                  value: init,
-                  padding: const EdgeInsets.only(left: 15),
-                  underline: const SizedBox.shrink(),
-                  focusColor: const Color.fromARGB(0, 0, 0, 0),
-                  borderRadius: BorderRadius.circular(30),
-                  items: List.generate(
-                    providers[widget.data.type]!.length,
-                    (index) => DropdownMenuItem(
-                      value: providers[widget.data.type]![index]['data'],
-                      child: Text(
-                        providers[widget.data.type]![index]['name'],
+                selector: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButton(
+                      value: init,
+                      padding: const EdgeInsets.only(left: 15),
+                      underline: const SizedBox.shrink(),
+                      focusColor: const Color.fromARGB(0, 0, 0, 0),
+                      borderRadius: BorderRadius.circular(30),
+                      icon: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.refresh_rounded),
+                      ),
+                      items: List.generate(
+                        providers[widget.data.type]!.length,
+                        (index) => DropdownMenuItem(
+                          value: providers[widget.data.type]![index]['data'],
+                          child: Text(
+                            providers[widget.data.type]![index]['name'],
+                          ),
+                        ),
+                        growable: false,
+                      ),
+                      onChanged: (value) => Future.microtask(
+                        () async {
+                          init = (value as Function);
+                          await loadEpisodes();
+                        },
                       ),
                     ),
-                    growable: false,
-                  ),
-                  onChanged: (value) => Future.microtask(
-                    () async {
-                      init = (value as Function);
-                      await loadEpisodes();
-                    },
-                  ),
+                    if (widget.data.type == 'anime')
+                      Flexible(
+                        child: SwitchListTile(
+                          title: const Text('Dub?'),
+                          value: widget.data.dub,
+                          shape: const StadiumBorder(),
+                          onChanged: (value) => setState(
+                              () => widget.data.dub = !widget.data.dub),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),

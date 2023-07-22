@@ -49,14 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
-  audio_video_progress_bar:
-    dependency: "direct main"
-    description:
-      name: audio_video_progress_bar
-      sha256: "67f3a5ea70d48b48caaf29f5a0606284a6aa3a393736daf9e82bec985d2f9b70"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -229,10 +221,10 @@ packages:
     dependency: transitive
     description:
       name: dartx
-      sha256: "45d7176701f16c5a5e00a4798791c1964bc231491b879369c818dd9a9c764871"
+      sha256: "8b25435617027257d43e6508b5fe061012880ddfdaa75a71d607c3de2a13d244"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   dbus:
     dependency: transitive
     description:
@@ -245,10 +237,10 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: a9d76e72985d7087eb7c5e7903224ae52b337131518d127c554b9405936752b8
+      sha256: "3866d67f93523161b643187af65f5ac08bc991a5bcdaf41a2d587fe4ccb49993"
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.1+1"
+    version: "5.3.0"
   encrypt:
     dependency: "direct main"
     description:
@@ -277,10 +269,10 @@ packages:
     dependency: transitive
     description:
       name: file
-      sha256: "1b92bec4fc2a72f59a8e15af5f52cd441e4a7860b49499d69dfa817af20e925d"
+      sha256: "5fc22d7c25582e38ad9a8515372cd9a93834027aacf1801cf01164dac0ffa08c"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.4"
+    version: "7.0.0"
   file_picker:
     dependency: "direct main"
     description:
@@ -375,10 +367,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: b33a88c67816312597e5e0f5906c5139a0b9bd9bb137346e872c788da7af8ea0
+      sha256: "5927202c23bec18ba93f662b5e1f81f2caa2e0cfa472d857d6229f63d59f1730"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.3"
+    version: "9.1.0"
   gql:
     dependency: transitive
     description:
@@ -600,61 +592,61 @@ packages:
     description:
       path: media_kit
       ref: main
-      resolved-ref: "11895cf23408ef2c997a492954f32fd3d1cc761e"
+      resolved-ref: c5459ec11bcc5e56bc0e3ed5c4999d695bacc8f7
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "1.0.2"
   media_kit_libs_android_video:
     dependency: "direct main"
     description:
-      path: media_kit_libs_android_video
+      path: "libs/android/media_kit_libs_android_video"
       ref: main
-      resolved-ref: "11895cf23408ef2c997a492954f32fd3d1cc761e"
+      resolved-ref: c5459ec11bcc5e56bc0e3ed5c4999d695bacc8f7
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.1.1"
+    version: "1.2.0"
   media_kit_libs_ios_video:
     dependency: "direct main"
     description:
-      path: media_kit_libs_ios_video
+      path: "libs/ios/media_kit_libs_ios_video"
       ref: main
-      resolved-ref: "11895cf23408ef2c997a492954f32fd3d1cc761e"
+      resolved-ref: c5459ec11bcc5e56bc0e3ed5c4999d695bacc8f7
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.4"
   media_kit_libs_linux:
     dependency: "direct main"
     description:
-      path: media_kit_libs_linux
+      path: "libs/linux/media_kit_libs_linux"
       ref: main
-      resolved-ref: "11895cf23408ef2c997a492954f32fd3d1cc761e"
+      resolved-ref: c5459ec11bcc5e56bc0e3ed5c4999d695bacc8f7
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.2"
   media_kit_libs_macos_video:
     dependency: "direct main"
     description:
-      path: media_kit_libs_macos_video
+      path: "libs/macos/media_kit_libs_macos_video"
       ref: main
-      resolved-ref: "11895cf23408ef2c997a492954f32fd3d1cc761e"
+      resolved-ref: c5459ec11bcc5e56bc0e3ed5c4999d695bacc8f7
       url: "https://github.com/alexmercerind/media_kit"
     source: git
     version: "1.0.5"
   media_kit_libs_windows_video:
     dependency: "direct main"
     description:
-      path: media_kit_libs_windows_video
+      path: "libs/windows/media_kit_libs_windows_video"
       ref: main
-      resolved-ref: "11895cf23408ef2c997a492954f32fd3d1cc761e"
+      resolved-ref: c5459ec11bcc5e56bc0e3ed5c4999d695bacc8f7
       url: "https://github.com/alexmercerind/media_kit"
     source: git
-    version: "1.0.2"
+    version: "1.0.4"
   media_kit_video:
     dependency: "direct main"
     description:
       path: media_kit_video
       ref: main
-      resolved-ref: "11895cf23408ef2c997a492954f32fd3d1cc761e"
+      resolved-ref: c5459ec11bcc5e56bc0e3ed5c4999d695bacc8f7
       url: "https://github.com/alexmercerind/media_kit.git"
     source: git
     version: "1.0.2"
@@ -742,10 +734,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_foundation
-      sha256: "1995d88ec2948dac43edf8fe58eb434d35d22a2940ecee1a9fefcd62beee6eb3"
+      sha256: "916731ccbdce44d545414dd9961f26ba5fbaa74bcbb55237d8e65a623a8c7297"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.3"
+    version: "2.2.4"
   path_provider_linux:
     dependency: transitive
     description:
@@ -774,34 +766,34 @@ packages:
     dependency: "direct main"
     description:
       name: permission_handler
-      sha256: "415af30ba76a84faccfe1eb251fe1e4fdc790f876924c65ad7d6ed7a1404bcd6"
+      sha256: "63e5216aae014a72fe9579ccd027323395ce7a98271d9defa9d57320d001af81"
       url: "https://pub.dev"
     source: hosted
-    version: "10.4.2"
+    version: "10.4.3"
   permission_handler_android:
     dependency: transitive
     description:
       name: permission_handler_android
-      sha256: "3b61f3da3b1c83bc3fb6a2b431e8dab01d0e5b45f6a3d9c7609770ec88b2a89e"
+      sha256: c0c9754479a4c4b1c1f3862ddc11930c9b3f03bef2816bb4ea6eed1e13551d6f
       url: "https://pub.dev"
     source: hosted
-    version: "10.3.0"
+    version: "10.3.2"
   permission_handler_apple:
     dependency: transitive
     description:
       name: permission_handler_apple
-      sha256: "7a187b671a39919462af2b5e813148365b71a615979165a119868d667fe90c03"
+      sha256: "99e220bce3f8877c78e4ace901082fb29fa1b4ebde529ad0932d8d664b34f3f5"
       url: "https://pub.dev"
     source: hosted
-    version: "9.1.3"
+    version: "9.1.4"
   permission_handler_platform_interface:
     dependency: transitive
     description:
       name: permission_handler_platform_interface
-      sha256: "463a07cb7cc6c758a7a1c7da36ce666bb80a0b4b5e92df0fa36872e0ed456993"
+      sha256: "7c6b1500385dd1d2ca61bb89e2488ca178e274a69144d26bbd65e33eae7c02a9"
       url: "https://pub.dev"
     source: hosted
-    version: "3.11.1"
+    version: "3.11.3"
   permission_handler_windows:
     dependency: transitive
     description:
@@ -858,14 +850,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
-  process:
-    dependency: transitive
-    description:
-      name: process
-      sha256: "53fd8db9cec1d37b0574e12f07520d582019cb6c44abf5479a01505099a34a09"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.2.4"
   pub_semver:
     dependency: transitive
     description:
@@ -1195,10 +1179,10 @@ packages:
     dependency: transitive
     description:
       name: xdg_directories
-      sha256: ee1505df1426458f7f60aac270645098d318a8b4766d85fde75f76f2e21807d1
+      sha256: e0b1147eec179d3911f1f19b59206448f78195ca1d20514134e10641b7d7fbff
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   xml:
     dependency: transitive
     description:
@@ -1211,10 +1195,10 @@ packages:
     dependency: "direct main"
     description:
       name: xml2json
-      sha256: "12ebc382f8684cafcc1e3ae5c982de82b5a52007a5d0ac79b22745d34f5ba975"
+      sha256: "1cd5d23474f38e794fbcab262290bc638c59c985c34d29180fc4525eda24ea7d"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.0"
+    version: "6.2.0"
   xxh3:
     dependency: transitive
     description:

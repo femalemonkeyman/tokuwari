@@ -1,17 +1,13 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../../../models/info_models.dart';
 
 Future<List<MediaProv>> dexReader(final AniData data) async {
   const mangadex = "https://api.mangadex.org/manga";
-  const String syncLink =
-      'https://raw.githubusercontent.com/MALSync/MAL-Sync-Backup/master/data/anilist/manga/';
+  const String syncLink = 'https://api.malsync.moe/mal/manga/';
   try {
-    final Map syncResponse = jsonDecode(
-      (await Dio().get('$syncLink${data.mediaId}.json')).data,
-    );
+    final Map syncResponse = (await Dio().get('$syncLink${data.malid}')).data;
     final Map json = (await Dio().get(
-      "$mangadex/${syncResponse['Pages']['Mangadex'].keys.first}/feed?limit=500&translatedLanguage[]=en&order[chapter]=asc",
+      "$mangadex/${syncResponse['Sites']['Mangadex'].keys.first}/feed?limit=500&translatedLanguage[]=en&order[chapter]=asc",
     ))
         .data;
     return List.generate(

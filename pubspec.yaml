@@ -30,31 +30,30 @@ dependencies:
     git:
      url: https://github.com/alexmercerind/media_kit
      ref: main
-     path: media_kit_libs_linux
+     path: libs/linux/media_kit_libs_linux
   media_kit_libs_windows_video:
     git:
      url: https://github.com/alexmercerind/media_kit
      ref: main
-     path: media_kit_libs_windows_video
+     path: libs/windows/media_kit_libs_windows_video
   media_kit_libs_macos_video:
     git:
      url: https://github.com/alexmercerind/media_kit
      ref: main
-     path: media_kit_libs_macos_video
+     path: libs/macos/media_kit_libs_macos_video
   media_kit_libs_ios_video:
     git:
      url: https://github.com/alexmercerind/media_kit
      ref: main
-     path: media_kit_libs_ios_video
+     path: libs/ios/media_kit_libs_ios_video
   media_kit_libs_android_video:
     git:
      url: https://github.com/alexmercerind/media_kit
      ref: main
-     path: media_kit_libs_android_video
+     path: libs/android/media_kit_libs_android_video
   path_provider: 
   permission_handler: 
   xml2json:
-  audio_video_progress_bar:
   window_manager:
   flutter_image:
   encrypt: 

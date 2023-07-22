@@ -15,6 +15,9 @@ class AniData {
   final String score;
   final String count;
   final List<String> tags;
+  @ignore
+  bool dub = false;
+
   AniData({
     required this.type,
     required this.mediaId,
@@ -53,7 +56,7 @@ class NovData {
   final String title;
   final String image;
   final String path;
-  NovData({
+  const NovData({
     required this.type,
     required this.title,
     required this.image,
@@ -88,7 +91,7 @@ class Source {
   final List<Map<String, String>> subtitles;
   final Map<String, String>? headers;
 
-  Source({
+  const Source({
     required this.qualities,
     required this.subtitles,
     this.headers,

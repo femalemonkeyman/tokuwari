@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import '/models/info_models.dart';
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
@@ -13,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:window_manager/window_manager.dart';
 
-final blank = Source(qualities: {}, subtitles: []);
+const blank = Source(qualities: {}, subtitles: []);
 
 class AniViewer extends StatefulWidget {
   final List<MediaProv> episodes;
@@ -26,7 +25,7 @@ class AniViewer extends StatefulWidget {
 }
 
 class AniViewerState extends State<AniViewer> {
-  final Player player = Player();
+  static final Player player = Player();
   late final VideoController controller = VideoController(player);
   final List subTracks = [];
   late int currentEpisode = widget.episode;
@@ -70,15 +69,16 @@ class AniViewerState extends State<AniViewer> {
             p.join(dir.path, "${i['lang']}.vtt"),
           );
         }
-        (player.platform as libmpvPlayer)
+        (player.platform as NativePlayer)
           ..setProperty("sub-auto", 'all')
           ..setProperty("sub-file-paths", dir.path)
           ..setProperty(
-              'sid',
-              '${getMedia.subtitles.lastIndexWhere(
-                    (element) =>
-                        element['lang']!.toLowerCase().contains('english'),
-                  ) + 1}');
+            'sid',
+            '${getMedia.subtitles.lastIndexWhere(
+                  (element) =>
+                      element['lang']!.toLowerCase().contains('english'),
+                ) + 1}',
+          );
       }
       await player.open(
         Media(
@@ -109,7 +109,7 @@ class AniViewerState extends State<AniViewer> {
         if (!Platform.isAndroid && !Platform.isIOS) {
           await windowManager.setFullScreen(false);
         }
-        await player.dispose();
+        await player.stop();
       },
     );
     super.dispose();
@@ -122,17 +122,19 @@ class AniViewerState extends State<AniViewer> {
       body: (getMedia.qualities.isNotEmpty)
           ? Stack(
               children: [
-                Video(controller: controller),
+                Video(
+                  controller: controller,
+                ),
                 CallbackShortcuts(
                   bindings: {
                     const SingleActivator(LogicalKeyboardKey.arrowRight): () {
                       player.seek(
-                        player.state.position + const Duration(seconds: 1),
+                        const Duration(seconds: 2),
                       );
                     },
                     const SingleActivator(LogicalKeyboardKey.arrowLeft): () {
                       player.seek(
-                        player.state.position - const Duration(seconds: 1),
+                        const Duration(seconds: -2),
                       );
                     },
                     const SingleActivator(LogicalKeyboardKey.space): () {
@@ -186,6 +188,18 @@ class AniViewerState extends State<AniViewer> {
                                   children: [
                                     const BackButton(),
                                     const Spacer(),
+                                    Text(
+                                      "Episode ${widget.episodes[currentEpisode].number}",
+                                    ),
+                                    const Spacer(),
+                                    if (widget.episodes[currentEpisode].title
+                                        .isNotEmpty)
+                                      Text(
+                                        widget.episodes[currentEpisode].title,
+                                      ),
+                                    const Spacer(
+                                      flex: 100,
+                                    ),
                                     PopupMenuButton(
                                       itemBuilder: (context) {
                                         return [
@@ -283,30 +297,7 @@ class AniViewerState extends State<AniViewer> {
                                 bottom: 0,
                                 child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          bottom: 5, right: 20, left: 20),
-                                      child: StreamBuilder<Duration>(
-                                        stream: player.streams.position,
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot<Duration> snapshot) {
-                                          if (snapshot.hasData) {
-                                            return Theme(
-                                              data: ThemeData.dark(),
-                                              child: ProgressBar(
-                                                  progress: snapshot.data!,
-                                                  total: player.state.duration,
-                                                  barHeight: 3,
-                                                  timeLabelLocation:
-                                                      TimeLabelLocation.sides,
-                                                  onSeek: (duration) =>
-                                                      player.seek(duration)),
-                                            );
-                                          }
-                                          return const SizedBox.shrink();
-                                        },
-                                      ),
-                                    ),
+                                    ProgressBar(player: player),
                                     Row(
                                       children: [
                                         const Spacer(),
@@ -344,10 +335,26 @@ class AniViewerState extends State<AniViewer> {
                                                 },
                                           icon: const Icon(Icons.skip_next),
                                         ),
+                                        Slider(
+                                          min: 0,
+                                          max: 100,
+                                          divisions: 100,
+                                          label: player.state.volume
+                                              .round()
+                                              .toString(),
+                                          value: player.state.volume,
+                                          onChanged: (value) =>
+                                              Future.microtask(
+                                            () async {
+                                              await player.setVolume(value);
+                                              setState(() {});
+                                            },
+                                          ),
+                                        ),
                                         const Spacer(
                                           flex: 50,
                                         ),
-                                        if (!Platform.isAndroid ||
+                                        if (!Platform.isAndroid &&
                                             !Platform.isIOS)
                                           IconButton(
                                             iconSize: 50,
@@ -358,9 +365,8 @@ class AniViewerState extends State<AniViewer> {
                                             },
                                             icon: Icon(
                                               (fullscreen)
-                                                  ? Icons
-                                                      .fullscreen_exit_outlined
-                                                  : Icons.fullscreen_outlined,
+                                                  ? Icons.fullscreen_exit
+                                                  : Icons.fullscreen,
                                             ),
                                           ),
                                       ],
@@ -389,6 +395,70 @@ class AniViewerState extends State<AniViewer> {
                 ),
               ],
             ),
+    );
+  }
+}
+
+class ProgressBar extends StatefulWidget {
+  final Player player;
+
+  const ProgressBar({super.key, required this.player});
+
+  @override
+  State createState() => ProgressBarState();
+}
+
+class ProgressBarState extends State<ProgressBar> {
+  late StreamSubscription position;
+  double spot = 0;
+
+  @override
+  void initState() {
+    position = widget.player.stream.position
+        .listen((event) => update(event.inSeconds.toDouble()));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    position.cancel();
+    super.dispose();
+  }
+
+  void update(update) {
+    setState(() {
+      spot = update;
+    });
+  }
+
+  @override
+  Widget build(context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5, right: 20, left: 20),
+      child: Row(
+        children: [
+          Text(Duration(seconds: spot.round()).toString().split('.')[0]),
+          Expanded(
+            child: Slider(
+              min: 0,
+              max: widget.player.state.duration.inSeconds.toDouble(),
+              secondaryTrackValue:
+                  widget.player.state.buffer.inSeconds.toDouble(),
+              value: spot,
+              onChanged: (value) {
+                update(value);
+              },
+              onChangeStart: (value) => position.pause(),
+              onChangeEnd: (value) {
+                widget.player.seek(Duration(seconds: value.toInt()));
+                position.resume();
+              },
+            ),
+          ),
+          Text(
+              widget.player.state.duration.toString().toString().split('.')[0]),
+        ],
+      ),
     );
   }
 }
