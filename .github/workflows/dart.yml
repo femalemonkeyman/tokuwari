@@ -44,6 +44,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Support longpaths
+        run: git config --system core.longpaths true
       - uses: subosito/flutter-action@v2
         with:
           channel: 'master'
