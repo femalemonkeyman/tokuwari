@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:string_similarity/string_similarity.dart';
 import '../../../models/info_models.dart';
 
-Future<List<MediaProv>> haniList(final AniData data) async {
+Provider haniList(final AniData data) async {
   Response json = await Dio().post(
     "https://search.htv-services.com/",
     data: jsonEncode(
@@ -27,10 +27,10 @@ Future<List<MediaProv>> haniList(final AniData data) async {
     final List results = jsonDecode(json.data['hits']);
     final List videos = [];
     for (Map i in results) {
-      final Response v = await Dio().get(
-        "https://hanime.tv/api/v8/video?id=${i['id']}",
-      );
       if (i['name'].toString().similarityTo(data.title) > 0.2) {
+        final Response v = await Dio().get(
+          "https://hanime.tv/api/v8/video?id=${i['id']}",
+        );
         videos.add(v.data);
       }
     }
@@ -42,10 +42,15 @@ Future<List<MediaProv>> haniList(final AniData data) async {
           provId: '',
           title: (videos[index])['hentai_video']['name'],
           number: (index + 1).toString(),
-          call: () => Source(qualities: {
-            "default": videos[index]['videos_manifest']['servers'][0]['streams']
-                [1]['url'],
-          }, subtitles: []),
+          call: () => Future(
+            () => Source(
+              qualities: {
+                "default": videos[index]['videos_manifest']['servers'][0]
+                    ['streams'][1]['url'],
+              },
+              subtitles: {},
+            ),
+          ),
         );
       },
     );

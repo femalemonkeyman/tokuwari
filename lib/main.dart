@@ -6,7 +6,6 @@ import 'pages/later_page.dart';
 import '/novel/novel_reader.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
@@ -82,21 +81,21 @@ class Navigation extends StatelessWidget {
                       showUnselectedLabels: false,
                       currentIndex: shell.currentIndex,
                       onTap: (value) => shell.goBranch(value),
-                      items: [
+                      items: const [
                         BottomNavigationBarItem(
-                          icon: Icon(MdiIcons.youtubeTv),
+                          icon: Icon(Icons.ondemand_video_rounded),
                           label: 'Anime',
                         ),
                         BottomNavigationBarItem(
-                          icon: Icon(MdiIcons.bookOpenOutline),
+                          icon: Icon(Icons.menu_book_rounded),
                           label: 'Manga',
                         ),
                         BottomNavigationBarItem(
-                          icon: Icon(MdiIcons.book),
+                          icon: Icon(Icons.book_rounded),
                           label: 'Novels',
                         ),
                         BottomNavigationBarItem(
-                          icon: Icon(MdiIcons.bookmark),
+                          icon: Icon(Icons.bookmark),
                           label: 'Later',
                         )
                       ],
@@ -114,11 +113,11 @@ class Navigation extends StatelessWidget {
                     path: '/anime',
                     pageBuilder: (context, state) => MaterialPage(
                       child: AniPage(
-                        key: (state.queryParameters.isEmpty)
+                        key: (state.uri.queryParameters.isEmpty)
                             ? null
-                            : Key(state.queryParameters['tag']!),
+                            : Key(state.uri.queryParameters['tag']!),
                         type: 'anime',
-                        tag: state.queryParameters['tag'],
+                        tag: state.uri.queryParameters['tag'],
                       ),
                     ),
                     routes: [
@@ -150,11 +149,11 @@ class Navigation extends StatelessWidget {
                     path: '/manga',
                     builder: (context, state) {
                       return AniPage(
-                        key: (state.queryParameters.isEmpty)
+                        key: (state.uri.queryParameters.isEmpty)
                             ? null
-                            : Key(state.queryParameters['tag']!),
+                            : Key(state.uri.queryParameters['tag']!),
                         type: 'manga',
-                        tag: state.queryParameters['tag'],
+                        tag: state.uri.queryParameters['tag'],
                       );
                     },
                     routes: [

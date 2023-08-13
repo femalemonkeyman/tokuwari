@@ -1,18 +1,14 @@
 import 'dart:async';
 import 'package:go_router/go_router.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
 import '/models/info_models.dart';
-import 'package:dio/dio.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:window_manager/window_manager.dart';
 
-const blank = Source(qualities: {}, subtitles: []);
+const Source blank = Source(qualities: {}, subtitles: {});
 
 class AniViewer extends StatefulWidget {
   final List<MediaProv> episodes;
@@ -25,11 +21,10 @@ class AniViewer extends StatefulWidget {
 }
 
 class AniViewerState extends State<AniViewer> {
-  static final Player player = Player();
+  final Player player = Player();
   late final VideoController controller = VideoController(player);
-  final List subTracks = [];
   late int currentEpisode = widget.episode;
-  Source getMedia = blank;
+  Source media = blank;
   bool fullscreen = false;
   bool show = false;
 
@@ -45,45 +40,18 @@ class AniViewerState extends State<AniViewer> {
     );
     Future.microtask(
       () async {
-        if (!Platform.isLinux) {
-          await WakelockPlus.enable();
-        }
         await play();
       },
     );
   }
 
   Future play() async {
-    getMedia = await widget.episodes[currentEpisode].call!();
-    if (getMedia.qualities.isNotEmpty) {
-      final Directory dir = Directory(
-        p.join(
-          (await getTemporaryDirectory()).path,
-          'anisubs',
-        ),
-      );
-      if (getMedia.subtitles.isNotEmpty) {
-        for (final Map i in getMedia.subtitles) {
-          await Dio().download(
-            i['url'],
-            p.join(dir.path, "${i['lang']}.vtt"),
-          );
-        }
-        (player.platform as NativePlayer)
-          ..setProperty("sub-auto", 'all')
-          ..setProperty("sub-file-paths", dir.path)
-          ..setProperty(
-            'sid',
-            '${getMedia.subtitles.lastIndexWhere(
-                  (element) =>
-                      element['lang']!.toLowerCase().contains('english'),
-                ) + 1}',
-          );
-      }
+    media = await widget.episodes[currentEpisode].call!();
+    if (media.qualities.isNotEmpty) {
       await player.open(
         Media(
-          getMedia.qualities.values.first,
-          httpHeaders: getMedia.headers ?? {},
+          media.qualities.values.first,
+          httpHeaders: media.headers ?? {},
         ),
       );
       setState(() {});
@@ -96,20 +64,10 @@ class AniViewerState extends State<AniViewer> {
     SystemChrome.setPreferredOrientations([]);
     Future.microtask(
       () async {
-        if (!Platform.isLinux) {
-          await WakelockPlus.disable();
-        }
-        try {
-          Directory(
-            p.join((await getTemporaryDirectory()).path, 'anisubs'),
-          ).deleteSync(
-            recursive: true,
-          );
-        } catch (_) {}
         if (!Platform.isAndroid && !Platform.isIOS) {
           await windowManager.setFullScreen(false);
         }
-        await player.stop();
+        await player.dispose();
       },
     );
     super.dispose();
@@ -119,26 +77,29 @@ class AniViewerState extends State<AniViewer> {
   Widget build(context) {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: (getMedia.qualities.isNotEmpty)
+      body: (media.qualities.isNotEmpty)
           ? Stack(
               children: [
                 Video(
                   controller: controller,
+                  pauseUponEnteringBackgroundMode: false,
                 ),
                 CallbackShortcuts(
                   bindings: {
-                    const SingleActivator(LogicalKeyboardKey.arrowRight): () {
-                      player.seek(
-                        const Duration(seconds: 2),
+                    const SingleActivator(LogicalKeyboardKey.arrowRight):
+                        () async {
+                      await player.seek(
+                        player.state.position + const Duration(seconds: 5),
                       );
                     },
-                    const SingleActivator(LogicalKeyboardKey.arrowLeft): () {
-                      player.seek(
-                        const Duration(seconds: -2),
+                    const SingleActivator(LogicalKeyboardKey.arrowLeft):
+                        () async {
+                      await player.seek(
+                        player.state.position - const Duration(seconds: 5),
                       );
                     },
-                    const SingleActivator(LogicalKeyboardKey.space): () {
-                      player.playOrPause();
+                    const SingleActivator(LogicalKeyboardKey.space): () async {
+                      await player.playOrPause();
                     },
                   },
                   child: Focus(
@@ -184,111 +145,12 @@ class AniViewerState extends State<AniViewer> {
                                 top: 0,
                                 right: 0,
                                 left: 0,
-                                child: Row(
-                                  children: [
-                                    const BackButton(),
-                                    const Spacer(),
-                                    Text(
-                                      "Episode ${widget.episodes[currentEpisode].number}",
-                                    ),
-                                    const Spacer(),
-                                    if (widget.episodes[currentEpisode].title
-                                        .isNotEmpty)
-                                      Text(
-                                        widget.episodes[currentEpisode].title,
-                                      ),
-                                    const Spacer(
-                                      flex: 100,
-                                    ),
-                                    PopupMenuButton(
-                                      itemBuilder: (context) {
-                                        return [
-                                          PopupMenuItem(
-                                            child: const Text('Subtitles'),
-                                            onTap: () => showBottomSheet(
-                                              context: context,
-                                              constraints:
-                                                  BoxConstraints.tightFor(
-                                                height: size.height / 2,
-                                              ),
-                                              builder: (context) => ListView(
-                                                children: List.generate(
-                                                  player.state.tracks.subtitle
-                                                      .length,
-                                                  (index) {
-                                                    return ListTile(
-                                                      title: Text(
-                                                        // I miss you state sama
-                                                        player
-                                                                .state
-                                                                .tracks
-                                                                .subtitle[index]
-                                                                .title ??
-                                                            player
-                                                                .state
-                                                                .tracks
-                                                                .subtitle[index]
-                                                                .id,
-                                                      ),
-                                                      onTap: () {
-                                                        player.setSubtitleTrack(
-                                                          player.state.tracks
-                                                              .subtitle[index],
-                                                        );
-                                                        context.pop();
-                                                      },
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          PopupMenuItem(
-                                            child: const Text('Quality'),
-                                            onTap: () => showBottomSheet(
-                                              context: context,
-                                              constraints:
-                                                  BoxConstraints.tightFor(
-                                                height: size.height / 2,
-                                              ),
-                                              builder: (context) => ListView(
-                                                children: List.generate(
-                                                  player.state.tracks.video
-                                                          .length -
-                                                      2,
-                                                  (index) {
-                                                    return ListTile(
-                                                      title: Text(
-                                                        player
-                                                                .state
-                                                                .tracks
-                                                                .video[
-                                                                    index + 2]
-                                                                .title ??
-                                                            player
-                                                                .state
-                                                                .tracks
-                                                                .video[
-                                                                    index + 2]
-                                                                .id,
-                                                      ),
-                                                      onTap: () {
-                                                        player.setVideoTrack(
-                                                          player.state.tracks
-                                                              .video[index + 2],
-                                                        );
-                                                        context.pop();
-                                                      },
-                                                    );
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ];
-                                      },
-                                    ),
-                                  ],
+                                child: TopBar(
+                                  currentEpisode: currentEpisode,
+                                  episodes: widget.episodes,
+                                  media: media,
+                                  player: player,
+                                  size: size,
                                 ),
                               ),
                               Positioned(
@@ -307,20 +169,25 @@ class AniViewerState extends State<AniViewer> {
                                               : () async {
                                                   setState(() {
                                                     currentEpisode -= 1;
-                                                    getMedia = blank;
+                                                    media = blank;
                                                   });
                                                   await play();
                                                 },
                                           icon: const Icon(Icons.skip_previous),
                                         ),
-                                        IconButton(
-                                          onPressed: () async {
-                                            await player.playOrPause();
-                                            setState(() {});
+                                        StreamBuilder(
+                                          stream: player.stream.playing,
+                                          initialData: true,
+                                          builder: (context, snapshot) {
+                                            return IconButton(
+                                              onPressed: () async {
+                                                await player.playOrPause();
+                                              },
+                                              icon: Icon((snapshot.data == true)
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow),
+                                            );
                                           },
-                                          icon: Icon((player.state.playing)
-                                              ? Icons.pause
-                                              : Icons.play_arrow),
                                         ),
                                         IconButton(
                                           onPressed: (currentEpisode ==
@@ -329,7 +196,7 @@ class AniViewerState extends State<AniViewer> {
                                               : () async {
                                                   setState(() {
                                                     currentEpisode += 1;
-                                                    getMedia = blank;
+                                                    media = blank;
                                                   });
                                                   await play();
                                                 },
@@ -409,7 +276,7 @@ class ProgressBar extends StatefulWidget {
 }
 
 class ProgressBarState extends State<ProgressBar> {
-  late StreamSubscription position;
+  late final StreamSubscription position;
   double spot = 0;
 
   @override
@@ -461,4 +328,110 @@ class ProgressBarState extends State<ProgressBar> {
       ),
     );
   }
+}
+
+class TopBar extends StatelessWidget {
+  final int currentEpisode;
+  final List<MediaProv> episodes;
+  final Source media;
+  final Player player;
+  final Size size;
+
+  const TopBar({
+    super.key,
+    required this.currentEpisode,
+    required this.episodes,
+    required this.player,
+    required this.size,
+    required this.media,
+  });
+
+  @override
+  Widget build(context) => Row(
+        children: [
+          const BackButton(),
+          const Spacer(),
+          Text(
+            "Episode ${episodes[currentEpisode].number}",
+          ),
+          const Spacer(),
+          if (episodes[currentEpisode].title.isNotEmpty)
+            Text(
+              episodes[currentEpisode].title,
+            ),
+          const Spacer(
+            flex: 100,
+          ),
+          PopupMenuButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            itemBuilder: (context) => [
+              if (media.subtitles.isNotEmpty)
+                PopupMenuItem(
+                  child: const Text('Subtitles'),
+                  onTap: () => showModalBottomSheet(
+                    context: context,
+                    constraints: BoxConstraints.tightFor(
+                      height: size.height / 2,
+                    ),
+                    showDragHandle: true,
+                    builder: (context) => ListView(
+                      children: List.generate(
+                        media.subtitles.length,
+                        (index) {
+                          return ListTile(
+                            title: Text(
+                              media.subtitles.keys.elementAt(index),
+                            ),
+                            onTap: () {
+                              player.setSubtitleTrack(
+                                SubtitleTrack.uri(
+                                  media.subtitles.values.elementAt(index),
+                                ),
+                              );
+                              context.pop();
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              PopupMenuItem(
+                child: const Text('Quality'),
+                onTap: () => showModalBottomSheet(
+                  showDragHandle: true,
+                  context: context,
+                  constraints: BoxConstraints.tightFor(
+                    height: size.height / 2,
+                  ),
+                  builder: (context) => ListView(
+                    children: List.generate(
+                      // player.state.tracks.video.length - 2,
+                      media.qualities.length,
+                      (index) {
+                        return ListTile(
+                          title: Text(media.qualities.keys.elementAt(index)),
+                          onTap: () async {
+                            final current = await player.stream.buffer.first;
+                            print(current);
+                            await player.open(
+                              Media(
+                                media.qualities.values.elementAt(index),
+                                httpHeaders: media.headers,
+                              ),
+                            );
+                            await player.seek(current);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
 }

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-import '../models/info_models.dart';
 
 class MangaReader extends StatelessWidget {
   final int chapter;

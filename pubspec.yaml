@@ -5,7 +5,7 @@ description: Something I guess
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.3.0+2
+version: 0.4.0
 
 environment:
   sdk: ">=3.0.0"
@@ -13,13 +13,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sliver_tools:
   flutter_html:
-  archive:
-  image:
   path:
   cached_network_image:
   dio: 
-  file_picker: 
   photo_view: 
   media_kit_video:
     git:
@@ -52,19 +50,21 @@ dependencies:
      ref: main
      path: libs/android/media_kit_libs_android_video
   path_provider: 
-  permission_handler: 
-  xml2json:
   window_manager:
   flutter_image:
   encrypt: 
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
-  wakelock_plus:
   expandable_text:
-  material_design_icons_flutter:
   string_similarity: 
   go_router: 
+  # For novels
+  archive:
+  image:
   html:
+  file_picker:
+  xml2json:
+  permission_handler:
   
 dependency_overrides:
   graphql: ^5.2.0-beta.5

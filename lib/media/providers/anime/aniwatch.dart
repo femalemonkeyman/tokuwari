@@ -8,8 +8,7 @@ import '../aes_decrypt.dart';
 
 const String zoro = "https://aniwatch.to/";
 
-Future<List<MediaProv>> zoroList(final AniData data) async {
-  const String malsync = 'https://api.malsync.moe/mal/anime';
+Provider zoroList(final AniData data) async {
   final List<MediaProv> episodes = [];
   try {
     final Map response = (await Dio().get(
@@ -41,7 +40,7 @@ Future<List<MediaProv>> zoroList(final AniData data) async {
   }
 }
 
-Future<Source> zoroInfo(final id) async {
+Anime zoroInfo(final id) async {
   final Options options = Options(responseType: ResponseType.plain);
   final Element server = parse(
     jsonDecode(
@@ -91,18 +90,12 @@ Future<Source> zoroInfo(final id) async {
       qualities: {
         'default': sources['sources'][0]['file'],
       },
-      subtitles: List.generate(
-        sources['tracks'].length,
-        (index) {
-          return {
-            'lang': sources['tracks'][index]['label'],
-            'url': sources['tracks'][index]['file']
-          };
-        },
-      ),
+      subtitles: {
+        for (Map i in sources['tracks']) i['label']: i['file'],
+      },
     );
   } catch (e) {
     print(e);
-    return Source(qualities: {}, subtitles: []);
+    return const Source(qualities: {}, subtitles: {});
   }
 }

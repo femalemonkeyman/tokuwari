@@ -4,8 +4,7 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import '../../../models/info_models.dart';
 
-Future<List<MediaProv>> paheList(final AniData data) async {
-  const String malsync = 'https://api.malsync.moe/mal/anime';
+Provider paheList(final AniData data) async {
   try {
     final Map response = (await Dio().get('$malsync/${data.malid}')).data;
     final String syncId = parse(
@@ -22,8 +21,16 @@ Future<List<MediaProv>> paheList(final AniData data) async {
     final String link =
         'https://animepahe.ru/api?m=release&id=$syncId&sort=episode_asc';
     final Map anime = (await Dio().get(link)).data;
-    for (int i = 2; i <= anime['last_page']; i++) {
-      anime['data'].addAll((await Dio().get('$link&page=$i')).data['data']);
+    if (anime['last_page'] > 1) {
+      final List<Future<Response<Map>>> requests = [];
+      for (int i = 2; i <= anime['last_page']; i++) {
+        requests.add(
+          Dio().get('$link&page=$i'), //.data['data']
+        );
+      }
+      for (Response i in await Future.wait(requests)) {
+        anime['data'].addAll(i.data['data']);
+      }
     }
     return List.generate(
       anime['data'].length,
@@ -40,9 +47,7 @@ Future<List<MediaProv>> paheList(final AniData data) async {
   }
 }
 
-Future<Source> paheInfo(final String id) async {
-  final Map<String, String> qualities = {};
-  final Map<String, String> headers = {};
+Anime paheInfo(final String id) async {
   final Document data = parse(
     (await Dio().get(
       'https://animepahe.ru/play/$id',
@@ -58,16 +63,17 @@ Future<Source> paheInfo(final String id) async {
       .getElementsByTagName('button')
       .where((element) => element.attributes.containsKey('data-src'))) {
     if (i.attributes['data-src']?.contains('kwik') ?? false) {
-      Document arr = parse((await Dio().get(
-        i.attributes['data-src']!,
-        options: Options(
-          headers: {
-            'referer': 'https://animepahe.ru',
-          },
-        ),
-      ))
-          .data);
-      headers.addAll({'referer': 'https://kwik.cx'});
+      Document arr = parse(
+        (await Dio().get(
+          i.attributes['data-src']!,
+          options: Options(
+            headers: {
+              'referer': 'https://animepahe.ru',
+            },
+          ),
+        ))
+            .data,
+      );
       qualities.addAll(
         {
           '${i.attributes['data-fansub']}-${i.attributes['data-resolution']}':
@@ -78,7 +84,11 @@ Future<Source> paheInfo(final String id) async {
       );
     }
   }
-  return Source(qualities: qualities, subtitles: [], headers: headers);
+  return Source(
+    qualities: qualities,
+    subtitles: {},
+    headers: {'referer': 'https://kwik.cx'},
+  );
 }
 
 class JsUnpack {
