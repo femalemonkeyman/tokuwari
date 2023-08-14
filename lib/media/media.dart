@@ -91,7 +91,7 @@ class AniPageState extends State<AniPage> {
   bool loading = false;
   final List<String> selectedGenres = [];
   late String? tag = widget.tag;
-  Map pageInfo = {};
+  final Map pageInfo = {};
   final List<AniData> animeData = [];
 
   @override
@@ -124,7 +124,11 @@ class AniPageState extends State<AniPage> {
           },
         ),
       );
-      pageInfo = query.data!['Page']['pageInfo'];
+      pageInfo
+        ..clear()
+        ..addAll(
+          query.data!['Page']['pageInfo'],
+        );
       animeData.addAll(
         List.generate(
           query.data!['Page']['media'].length,
@@ -200,7 +204,7 @@ class AniPageState extends State<AniPage> {
       },
     ).then(
       (value) async {
-        pageInfo = {};
+        pageInfo.clear();
         animeData.clear();
         await queryData();
         setState(
@@ -237,7 +241,6 @@ class AniPageState extends State<AniPage> {
           },
         ),
         child: CustomScrollView(
-          primary: true,
           slivers: [
             SliverToBoxAdapter(
               child: Center(

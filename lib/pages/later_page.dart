@@ -6,31 +6,29 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
-class LaterPage extends StatefulWidget {
-  const LaterPage({super.key});
+class LaterPage extends StatelessWidget {
+  final List<AniData> animeData = [];
+  final List<AniData> mangaData = [];
 
-  @override
-  State createState() => LaterPageState();
-}
-
-class LaterPageState extends State<LaterPage> {
-  List<AniData> animeData = [];
-  List<AniData> mangaData = [];
+  LaterPage({super.key});
   Future<Directory> get dir async {
     return await getApplicationDocumentsDirectory();
   }
 
   final Isar isar = Isar.getInstance('later')!;
-  late final dataChange = isar.aniDatas.watchLazy(fireImmediately: true);
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  late final Stream dataChange = isar.aniDatas.watchLazy(fireImmediately: true);
 
   void updateData() {
-    animeData = isar.aniDatas.filter().typeEqualTo("anime").findAllSync();
-    mangaData = isar.aniDatas.filter().typeEqualTo("manga").findAllSync();
+    animeData
+      ..clear()
+      ..addAll(
+        isar.aniDatas.filter().typeEqualTo("anime").findAllSync(),
+      );
+    mangaData
+      ..clear()
+      ..addAll(
+        isar.aniDatas.filter().typeEqualTo("manga").findAllSync(),
+      );
   }
 
   @override
@@ -53,7 +51,7 @@ class LaterPageState extends State<LaterPage> {
                       Spacer(),
                       Text(
                         'Anime',
-                        textScaleFactor: 1.2,
+                        textScaler: TextScaler.linear(1.2),
                       ),
                       Spacer(),
                       Expanded(
@@ -79,7 +77,7 @@ class LaterPageState extends State<LaterPage> {
                       Spacer(),
                       Text(
                         'Manga',
-                        textScaleFactor: 1.2,
+                        textScaler: TextScaler.linear(1.2),
                       ),
                       Spacer(),
                       Expanded(

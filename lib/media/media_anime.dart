@@ -10,6 +10,20 @@ import 'package:window_manager/window_manager.dart';
 
 const Source blank = Source(qualities: {}, subtitles: {});
 
+void setSubtitles(final Source media, final Player player) {
+  if (media.subtitles.isNotEmpty) {
+    player.setSubtitleTrack(
+      SubtitleTrack.uri(
+        media.subtitles.entries
+            .firstWhere(
+              (element) => element.key.toLowerCase().contains('eng'),
+            )
+            .value,
+      ),
+    );
+  }
+}
+
 class AniViewer extends StatefulWidget {
   final List<MediaProv> episodes;
   final int episode;
@@ -54,7 +68,11 @@ class AniViewerState extends State<AniViewer> {
           httpHeaders: media.headers ?? {},
         ),
       );
-      setState(() {});
+      setState(
+        () {
+          setSubtitles(media, player);
+        },
+      );
     }
   }
 
@@ -407,26 +425,55 @@ class TopBar extends StatelessWidget {
                     height: size.height / 2,
                   ),
                   builder: (context) => ListView(
-                    children: List.generate(
-                      // player.state.tracks.video.length - 2,
-                      media.qualities.length,
-                      (index) {
-                        return ListTile(
-                          title: Text(media.qualities.keys.elementAt(index)),
-                          onTap: () async {
-                            final current = await player.stream.buffer.first;
-                            print(current);
-                            await player.open(
-                              Media(
-                                media.qualities.values.elementAt(index),
-                                httpHeaders: media.headers,
-                              ),
-                            );
-                            await player.seek(current);
-                          },
-                        );
-                      },
-                    ),
+                    children: (media.qualities.length == 1)
+                        ? List.generate(
+                            player.state.tracks.video.length - 2,
+                            (index) {
+                              return ListTile(
+                                title: Text(
+                                  player.state.tracks.video[index + 2].h
+                                      .toString(),
+                                ),
+                                onTap: () {
+                                  player.setVideoTrack(
+                                    player.state.tracks.video[index + 2],
+                                  );
+                                  context.pop();
+                                },
+                              );
+                            },
+                          )
+                        : List.generate(
+                            media.qualities.length,
+                            (index) {
+                              return ListTile(
+                                title:
+                                    Text(media.qualities.keys.elementAt(index)),
+                                onTap: () {
+                                  Future.microtask(
+                                    () async {
+                                      final current =
+                                          await player.stream.position.first;
+                                      player.open(
+                                        Media(
+                                          media.qualities.values
+                                              .elementAt(index),
+                                          httpHeaders: media.headers,
+                                        ),
+                                        play: false,
+                                      );
+                                      await player.stream.buffer.first;
+                                      setSubtitles(media, player);
+                                      player
+                                        ..seek(current)
+                                        ..play();
+                                    },
+                                  );
+                                  context.pop();
+                                },
+                              );
+                            },
+                          ),
                   ),
                 ),
               ),

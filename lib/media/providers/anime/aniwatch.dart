@@ -41,6 +41,7 @@ Provider zoroList(final AniData data) async {
 }
 
 Anime zoroInfo(final id) async {
+  print(id);
   final Options options = Options(responseType: ResponseType.plain);
   final Element server = parse(
     jsonDecode(
@@ -61,7 +62,7 @@ Anime zoroInfo(final id) async {
       ))
           .data,
     );
-    Map<String, dynamic> sources = jsonDecode(
+    final Map<String, dynamic> sources = jsonDecode(
       (await Dio().get(
               'https://megacloud.tv/embed-2/ajax/e-1/getSources?id=${link['link'].split('e-1/')[1].split('?')[0]}',
               options: options))
@@ -83,9 +84,7 @@ Anime zoroInfo(final id) async {
       }
       sources['sources'] = jsonDecode(decrypt(sources['sources'], key));
     }
-    if (sources['tracks'].last['kind'] != 'captions') {
-      (sources['tracks'] as List).removeLast();
-    }
+    sources['tracks'].removeWhere((element) => element['kind'] != 'captions');
     return Source(
       qualities: {
         'default': sources['sources'][0]['file'],

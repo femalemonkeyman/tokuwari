@@ -111,14 +111,12 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     name: 'anime',
                     path: '/anime',
-                    pageBuilder: (context, state) => MaterialPage(
-                      child: AniPage(
-                        key: (state.uri.queryParameters.isEmpty)
-                            ? null
-                            : Key(state.uri.queryParameters['tag']!),
-                        type: 'anime',
-                        tag: state.uri.queryParameters['tag'],
-                      ),
+                    builder: (context, state) => AniPage(
+                      key: (state.uri.queryParameters.isEmpty)
+                          ? null
+                          : Key(state.uri.queryParameters['tag']!),
+                      type: 'anime',
+                      tag: state.uri.queryParameters['tag'],
                     ),
                     routes: [
                       GoRoute(
@@ -147,15 +145,13 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     name: 'manga',
                     path: '/manga',
-                    builder: (context, state) {
-                      return AniPage(
-                        key: (state.uri.queryParameters.isEmpty)
-                            ? null
-                            : Key(state.uri.queryParameters['tag']!),
-                        type: 'manga',
-                        tag: state.uri.queryParameters['tag'],
-                      );
-                    },
+                    builder: (context, state) => AniPage(
+                      key: (state.uri.queryParameters.isEmpty)
+                          ? null
+                          : Key(state.uri.queryParameters['tag']!),
+                      type: 'manga',
+                      tag: state.uri.queryParameters['tag'],
+                    ),
                     routes: [
                       GoRoute(
                         parentNavigatorKey: _rootKey,
@@ -201,7 +197,7 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     name: 'later',
                     path: '/later',
-                    builder: (context, state) => const LaterPage(),
+                    builder: (context, state) => LaterPage(),
                   ),
                 ],
               ),

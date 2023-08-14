@@ -22,13 +22,12 @@ Provider paheList(final AniData data) async {
         'https://animepahe.ru/api?m=release&id=$syncId&sort=episode_asc';
     final Map anime = (await Dio().get(link)).data;
     if (anime['last_page'] > 1) {
-      final List<Future<Response<Map>>> requests = [];
-      for (int i = 2; i <= anime['last_page']; i++) {
-        requests.add(
-          Dio().get('$link&page=$i'), //.data['data']
-        );
-      }
-      for (Response i in await Future.wait(requests)) {
+      for (Response i in await Future.wait(
+        [
+          for (int i = 2; i <= anime['last_page']; i++)
+            Dio().get('$link&page=$i'),
+        ],
+      )) {
         anime['data'].addAll(i.data['data']);
       }
     }
@@ -48,7 +47,7 @@ Provider paheList(final AniData data) async {
 }
 
 Anime paheInfo(final String id) async {
-  final Document data = parse(
+  final List<Element> data = parse(
     (await Dio().get(
       'https://animepahe.ru/play/$id',
       options: Options(
@@ -58,34 +57,43 @@ Anime paheInfo(final String id) async {
       ),
     ))
         .data,
-  );
-  for (Element i in data.body!
+  )
       .getElementsByTagName('button')
-      .where((element) => element.attributes.containsKey('data-src'))) {
-    if (i.attributes['data-src']?.contains('kwik') ?? false) {
-      Document arr = parse(
-        (await Dio().get(
-          i.attributes['data-src']!,
-          options: Options(
-            headers: {
-              'referer': 'https://animepahe.ru',
-            },
-          ),
-        ))
-            .data,
-      );
-      qualities.addAll(
-        {
-          '${i.attributes['data-fansub']}-${i.attributes['data-resolution']}':
-              JsUnpack(
-            '\r${arr.getElementsByTagName('script').where((element) => element.text.contains('eval')).first.text}',
-          ).unpack().split('source=\'')[1].split('\'')[0]
-        },
-      );
-    }
-  }
+      .where(
+        (element) =>
+            element.attributes.containsKey('data-src') &&
+            (element.attributes['data-src']?.contains('kwik') ?? false),
+      )
+      .toList();
   return Source(
-    qualities: qualities,
+    qualities: Map.fromIterables(
+      [
+        for (Element i in data)
+          '${i.attributes['data-fansub']}-${i.attributes['data-resolution']}'
+      ].reversed,
+      [
+        for (Response i in await Future.wait(
+          [
+            for (Element i in data)
+              Dio().get(
+                i.attributes['data-src']!,
+                options: Options(
+                  headers: {
+                    'referer': 'https://animepahe.ru',
+                  },
+                ),
+              )
+          ],
+        ))
+          JsUnpack(
+            parse(i.data)
+                .getElementsByTagName('script')
+                .where((element) => element.text.contains('eval'))
+                .first
+                .text,
+          ).unpack().split('source=\'')[1].split('\'')[0],
+      ].reversed,
+    ), //qualities,
     subtitles: {},
     headers: {'referer': 'https://kwik.cx'},
   );
