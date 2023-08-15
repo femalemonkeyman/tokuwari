@@ -99,7 +99,9 @@ class AniPageState extends State<AniPage> {
     super.initState();
     Future.microtask(() async {
       await queryData();
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

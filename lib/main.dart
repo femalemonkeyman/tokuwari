@@ -15,8 +15,10 @@ import 'models/info_models.dart';
 import 'novel/novel.dart';
 import 'pages/info_page.dart';
 
-final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _shellkey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _rootKey =
+    GlobalKey<NavigatorState>(debugLabel: 'root');
+final GlobalKey<NavigatorState> _shellkey =
+    GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

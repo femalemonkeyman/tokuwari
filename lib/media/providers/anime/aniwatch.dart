@@ -41,7 +41,6 @@ Provider zoroList(final AniData data) async {
 }
 
 Anime zoroInfo(final id) async {
-  print(id);
   final Options options = Options(responseType: ResponseType.plain);
   final Element server = parse(
     jsonDecode(
