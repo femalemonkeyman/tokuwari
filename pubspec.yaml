@@ -5,7 +5,7 @@ description: Something I guess
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.4.1
+version: 0.4.1+1
 
 environment:
   sdk: ">=3.0.0"
@@ -18,7 +18,8 @@ dependencies:
   path:
   cached_network_image:
   dio: 
-  photo_view: 
+  photo_view:
+  flex_color_scheme:
   media_kit_video:
     git:
       url: https://github.com/alexmercerind/media_kit.git

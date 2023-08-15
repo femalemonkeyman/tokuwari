@@ -64,6 +64,10 @@ class InfoPage extends StatelessWidget {
     final double ratio =
         MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        label: Text('Continue?'),
+      ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [

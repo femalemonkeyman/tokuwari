@@ -82,6 +82,10 @@ class AniViewerState extends State<AniViewer> {
     Future.microtask(
       () async {
         await player.dispose();
+        await const MethodChannel('com.alexmercerind/media_kit_video')
+            .invokeMethod(
+          'Utils.ExitNativeFullscreen',
+        );
       },
     );
     super.dispose();
@@ -91,12 +95,13 @@ class AniViewerState extends State<AniViewer> {
   Widget build(context) {
     final MaterialDesktopVideoControlsThemeData desktop =
         MaterialDesktopVideoControlsThemeData(
+      toggleFullscreenOnDoublePress: false,
       automaticallyImplySkipNextButton: false,
       automaticallyImplySkipPreviousButton: false,
       topButtonBar: [
         MaterialDesktopCustomButton(
           icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => context.pop(),
+          onPressed: () => Navigator.of(context).maybePop(),
         ),
         const Spacer(),
         Text(
@@ -117,7 +122,7 @@ class AniViewerState extends State<AniViewer> {
           flex: 100,
         ),
         PopupMenuButton(
-          iconColor: const Color.fromARGB(255, 255, 255, 255),
+          color: const Color.fromARGB(255, 255, 255, 255),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -239,7 +244,25 @@ class AniViewerState extends State<AniViewer> {
         const MaterialDesktopVolumeButton(),
         const MaterialDesktopPositionIndicator(),
         const Spacer(),
-        const MaterialDesktopFullscreenButton()
+        MaterialDesktopCustomButton(
+          onPressed: () => setState(() {
+            if (fullscreen) {
+              const MethodChannel('com.alexmercerind/media_kit_video')
+                  .invokeMethod(
+                'Utils.ExitNativeFullscreen',
+              );
+            } else {
+              const MethodChannel('com.alexmercerind/media_kit_video')
+                  .invokeMethod(
+                'Utils.EnterNativeFullscreen',
+              );
+            }
+            fullscreen = !fullscreen;
+          }),
+          icon: (fullscreen)
+              ? const Icon(Icons.fullscreen_exit)
+              : const Icon(Icons.fullscreen),
+        ),
       ],
     );
     final MaterialVideoControlsThemeData mobile =
@@ -273,7 +296,7 @@ class AniViewerState extends State<AniViewer> {
           flex: 100,
         ),
         PopupMenuButton(
-          iconColor: const Color.fromARGB(255, 255, 255, 255),
+          color: const Color.fromARGB(255, 255, 255, 255),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -401,6 +424,7 @@ class AniViewerState extends State<AniViewer> {
         const Spacer(flex: 2)
       ],
     );
+
     return Scaffold(
       body: (media.qualities.isNotEmpty)
           ? MaterialDesktopVideoControlsTheme(

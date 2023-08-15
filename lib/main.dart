@@ -1,4 +1,5 @@
-import 'dart:ui';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:window_manager/window_manager.dart';
 import 'media/media_anime.dart';
 import 'media/media_manga.dart';
@@ -45,23 +46,17 @@ class Navigation extends StatelessWidget {
   @override
   Widget build(context) {
     return MaterialApp.router(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 119, 0, 255),
-          brightness: Brightness.dark,
-        ),
+      themeMode: ThemeMode.dark,
+      darkTheme: FlexThemeData.dark(
         useMaterial3: true,
-        chipTheme: const ChipThemeData(
-          showCheckmark: false,
-          side: BorderSide(
-            color: Color.fromARGB(171, 121, 120, 120),
-          ),
-        ),
+        darkIsTrueBlack: true,
+        scheme: FlexScheme.deepPurple,
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
             TargetPlatform.linux: OpenUpwardsPageTransitionsBuilder(),
           },
         ),
+        typography: Typography.material2021(platform: defaultTargetPlatform),
       ),
       debugShowCheckedModeBanner: false,
       routerConfig: GoRouter(

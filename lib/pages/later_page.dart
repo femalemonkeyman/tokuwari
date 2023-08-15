@@ -49,10 +49,7 @@ class LaterPage extends StatelessWidget {
                         child: Divider(),
                       ),
                       Spacer(),
-                      Text(
-                        'Anime',
-                        textScaler: TextScaler.linear(1.2),
-                      ),
+                      Text('Anime', textScaleFactor: 1.2),
                       Spacer(),
                       Expanded(
                         flex: 200,
@@ -77,7 +74,7 @@ class LaterPage extends StatelessWidget {
                       Spacer(),
                       Text(
                         'Manga',
-                        textScaler: TextScaler.linear(1.2),
+                        textScaleFactor: 1.2,
                       ),
                       Spacer(),
                       Expanded(
