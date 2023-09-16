@@ -1,13 +1,15 @@
 import 'dart:io';
-import '/novel/novel_parser.dart';
-import '/widgets/grid.dart';
-import '/models/info_models.dart';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:tokuwari_models/info_models.dart';
+
+import '/novel/novel_parser.dart';
+import '/widgets/grid.dart';
 
 class NovelPage extends StatefulWidget {
   const NovelPage({super.key});

@@ -13,7 +13,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: 
   sliver_tools:
+  discord_rpc:
   flutter_html:
   path:
   cached_network_image:
@@ -30,6 +32,7 @@ dependencies:
      url: https://github.com/alexmercerind/media_kit
      ref: main
      path: libs/linux/media_kit_libs_linux
+  # Media kit imports
   media_kit_libs_windows_video:
     git:
      url: https://github.com/alexmercerind/media_kit
@@ -66,6 +69,17 @@ dependencies:
   file_picker:
   xml2json:
   permission_handler:
+
+  #Model
+  tokuwari_models:
+    git:
+      url: https://github.com/femalemonkeyman/tokuwari-models
+
+  #Modules
+  key:
+    path: ../Projects/modules/key
+    # git: 
+    #  url: https://github.com/femalemonkeyman/key
   
 dependency_overrides:
   graphql: ^5.2.0-beta.5

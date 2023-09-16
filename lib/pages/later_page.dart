@@ -1,19 +1,14 @@
 import 'dart:async';
-import 'dart:io';
-import '/models/info_models.dart';
-import '/widgets/grid.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:tokuwari_models/info_models.dart';
+import '/widgets/grid.dart';
 
 class LaterPage extends StatelessWidget {
   final List<AniData> animeData = [];
   final List<AniData> mangaData = [];
 
   LaterPage({super.key});
-  Future<Directory> get dir async {
-    return await getApplicationDocumentsDirectory();
-  }
 
   final Isar isar = Isar.getInstance('later')!;
   late final Stream dataChange = isar.aniDatas.watchLazy(fireImmediately: true);

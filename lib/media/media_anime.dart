@@ -1,61 +1,50 @@
-import 'dart:async';
 import 'package:go_router/go_router.dart';
-import '/models/info_models.dart';
+import 'package:tokuwari/discord_rpc.dart';
+import 'package:tokuwari_models/info_models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
-const Source blank = Source(qualities: {}, subtitles: {});
-
-void setSubtitles(final Source media, final Player player) async {
-  if (media.subtitles.isNotEmpty) {
-    await player.stream.buffer.first;
-    player.setSubtitleTrack(
-      SubtitleTrack.uri(
-        media.subtitles.entries
-            .firstWhere(
-              (element) => element.key.toLowerCase().contains('eng'),
-            )
-            .value,
-      ),
-    );
-  }
-}
+final GlobalKey<VideoState> videoKey = GlobalKey<VideoState>();
 
 class AniViewer extends StatefulWidget {
   final List<MediaProv> episodes;
   final int episode;
+  final AniData anime;
 
-  const AniViewer({super.key, required this.episodes, required this.episode});
+  const AniViewer(
+      {super.key,
+      required this.episodes,
+      required this.episode,
+      required this.anime});
 
   @override
   State<StatefulWidget> createState() => AniViewerState();
 }
 
 class AniViewerState extends State<AniViewer> {
-  final Player player = Player();
-  late final VideoController controller = VideoController(player);
+  final Player player = Player(
+      configuration: const PlayerConfiguration(
+    //logLevel: MPVLogLevel.v,
+    vo: 'gpu',
+  ));
+  DiscordRPC? discord = startRpc();
+  late final VideoController controller = VideoController(player,
+      configuration: const VideoControllerConfiguration(hwdec: 'auto-safe'));
   late int currentEpisode = widget.episode;
-  Source media = blank;
-  bool fullscreen = false;
-  bool show = false;
+  Source media = const Source(qualities: {}, subtitles: {});
 
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ],
-    );
+    videoKey.currentState?.enterFullscreen();
     Future.microtask(
-      () async {
-        await play();
-      },
+      () async => await play(),
     );
+    player.stream.log.listen((event) {
+      print(event);
+    });
   }
 
   Future<void> play() async {
@@ -66,63 +55,78 @@ class AniViewerState extends State<AniViewer> {
           media.qualities.values.first,
           httpHeaders: media.headers ?? {},
         ),
+        play: false,
       );
-      setState(
-        () {
-          setSubtitles(media, player);
-        },
+      await setSubtitles();
+      if (discord != null) {
+        discord!
+          ..start(autoRegister: true)
+          ..updatePresence(
+            DiscordPresence(
+              largeImageKey: widget.anime.image,
+              details: "Watching: ${widget.anime.title}",
+              state:
+                  "Episode: ${currentEpisode + 1} / ${widget.episodes.length}",
+            ),
+          );
+      }
+      await controller.waitUntilFirstFrameRendered;
+      setState(() {
+        player.play();
+      });
+    }
+  }
+
+  Future<void> setSubtitles() async {
+    if (media.subtitles.isNotEmpty) {
+      player.setSubtitleTrack(
+        SubtitleTrack.uri(
+          media.subtitles.entries
+              .firstWhere(
+                (element) => element.key.toLowerCase().contains('eng'),
+              )
+              .value,
+        ),
       );
     }
   }
 
   @override
-  void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    SystemChrome.setPreferredOrientations([]);
-    Future.microtask(
-      () async {
-        await player.dispose();
-        await const MethodChannel('com.alexmercerind/media_kit_video')
-            .invokeMethod(
-          'Utils.ExitNativeFullscreen',
-        );
-      },
-    );
+  Future<void> dispose() async {
     super.dispose();
+    await videoKey.currentState?.exitFullscreen();
+    await player.dispose();
+    discord?.clearPresence();
   }
 
   @override
   Widget build(context) {
-    final MaterialDesktopVideoControlsThemeData desktop =
-        MaterialDesktopVideoControlsThemeData(
-      toggleFullscreenOnDoublePress: false,
+    final desktop = MaterialDesktopVideoControlsThemeData(
       automaticallyImplySkipNextButton: false,
       automaticallyImplySkipPreviousButton: false,
       topButtonBar: [
         MaterialDesktopCustomButton(
           icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => Navigator.of(context).maybePop(),
+          onPressed: () async {
+            await videoKey.currentState!.exitFullscreen();
+            if (context.mounted) {
+              Navigator.of(context).pop();
+            }
+          },
         ),
         const Spacer(),
         Text(
           "Episode ${widget.episodes[currentEpisode].number}",
-          style: const TextStyle(
-            color: Color.fromARGB(255, 255, 255, 255),
-          ),
         ),
         const Spacer(),
         if (widget.episodes[currentEpisode].title.isNotEmpty)
           Text(
             widget.episodes[currentEpisode].title,
-            style: const TextStyle(
-              color: Color.fromARGB(255, 255, 255, 255),
-            ),
           ),
         const Spacer(
           flex: 100,
         ),
         PopupMenuButton(
-          color: const Color.fromARGB(255, 255, 255, 255),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -162,53 +166,45 @@ class AniViewerState extends State<AniViewer> {
                 context: context,
                 builder: (context) => ListView(
                   children: (media.qualities.length == 1)
-                      ? List.generate(
-                          player.state.tracks.video.length - 2,
-                          (index) {
-                            return ListTile(
+                      ? [
+                          for (int i = 2;
+                              i < player.state.tracks.video.length;
+                              i++)
+                            ListTile(
                               title: Text(
-                                player.state.tracks.video[index + 2].h
-                                    .toString(),
+                                player.state.tracks.video[i].h.toString(),
                               ),
                               onTap: () {
                                 player.setVideoTrack(
-                                  player.state.tracks.video[index + 2],
+                                  player.state.tracks.video[i],
                                 );
                                 context.pop();
                               },
-                            );
-                          },
-                        )
-                      : List.generate(
-                          media.qualities.length,
-                          (index) {
-                            return ListTile(
-                              title:
-                                  Text(media.qualities.keys.elementAt(index)),
-                              onTap: () {
-                                Future.microtask(
-                                  () async {
-                                    final current =
-                                        await player.stream.position.first;
-                                    player.open(
-                                      Media(
-                                        media.qualities.values.elementAt(index),
-                                        httpHeaders: media.headers,
-                                      ),
-                                      play: false,
-                                    );
-                                    await player.stream.buffer.first;
-                                    setSubtitles(media, player);
-                                    player
-                                      ..seek(current)
-                                      ..play();
-                                  },
+                            )
+                        ]
+                      : [
+                          for (int i = 0; i < media.qualities.length; i++)
+                            ListTile(
+                              title: Text(media.qualities.keys.elementAt(i)),
+                              onTap: () async {
+                                final current = player.state.position;
+                                await player.open(
+                                  Media(
+                                    media.qualities.values.elementAt(i),
+                                    httpHeaders: media.headers,
+                                  ),
+                                  play: false,
                                 );
-                                context.pop();
+                                await setSubtitles();
+                                await player
+                                    .seek(player.state.position + current);
+                                await player.play();
+                                if (context.mounted) {
+                                  context.pop();
+                                }
                               },
-                            );
-                          },
-                        ),
+                            )
+                        ],
                 ),
               ),
             ),
@@ -216,57 +212,40 @@ class AniViewerState extends State<AniViewer> {
         ),
       ],
       bottomButtonBar: [
-        MaterialDesktopCustomButton(
+        IconButton(
           onPressed: (currentEpisode == 0)
-              ? () {}
-              : () async {
-                  setState(() {
-                    currentEpisode -= 1;
-                    player.stop();
-                  });
-                  await play();
-                },
+              ? null
+              : () => context.pushReplacement(
+                    '/anime/info/viewer',
+                    extra: {
+                      'index': currentEpisode - 1,
+                      'contents': widget.episodes,
+                      'data': widget.anime,
+                    },
+                  ),
           icon: const Icon(Icons.skip_previous),
         ),
         const MaterialDesktopPlayOrPauseButton(),
-        MaterialDesktopCustomButton(
+        IconButton(
           onPressed: (currentEpisode == widget.episodes.length - 1)
-              ? () {}
-              : () async {
-                  setState(() {
-                    currentEpisode += 1;
-                    player.stop();
-                  });
-                  await play();
-                },
+              ? null
+              : () => context.pushReplacement(
+                    '/anime/info/viewer',
+                    extra: {
+                      'index': currentEpisode + 1,
+                      'contents': widget.episodes,
+                      'data': widget.anime,
+                    },
+                  ),
           icon: const Icon(Icons.skip_next),
         ),
         const MaterialDesktopVolumeButton(),
         const MaterialDesktopPositionIndicator(),
         const Spacer(),
-        MaterialDesktopCustomButton(
-          onPressed: () => setState(() {
-            if (fullscreen) {
-              const MethodChannel('com.alexmercerind/media_kit_video')
-                  .invokeMethod(
-                'Utils.ExitNativeFullscreen',
-              );
-            } else {
-              const MethodChannel('com.alexmercerind/media_kit_video')
-                  .invokeMethod(
-                'Utils.EnterNativeFullscreen',
-              );
-            }
-            fullscreen = !fullscreen;
-          }),
-          icon: (fullscreen)
-              ? const Icon(Icons.fullscreen_exit)
-              : const Icon(Icons.fullscreen),
-        ),
+        const MaterialDesktopFullscreenButton(),
       ],
     );
-    final MaterialVideoControlsThemeData mobile =
-        MaterialVideoControlsThemeData(
+    final mobile = MaterialVideoControlsThemeData(
       seekBarMargin: const EdgeInsets.all(20),
       seekBarHeight: 6,
       bottomButtonBarMargin: const EdgeInsets.all(20),
@@ -336,53 +315,45 @@ class AniViewerState extends State<AniViewer> {
                 context: context,
                 builder: (context) => ListView(
                   children: (media.qualities.length == 1)
-                      ? List.generate(
-                          player.state.tracks.video.length - 2,
-                          (index) {
-                            return ListTile(
+                      ? [
+                          for (int i = 2;
+                              i < player.state.tracks.video.length;
+                              i++)
+                            ListTile(
                               title: Text(
-                                player.state.tracks.video[index + 2].h
-                                    .toString(),
+                                player.state.tracks.video[i].h.toString(),
                               ),
                               onTap: () {
                                 player.setVideoTrack(
-                                  player.state.tracks.video[index + 2],
+                                  player.state.tracks.video[i],
                                 );
                                 context.pop();
                               },
-                            );
-                          },
-                        )
-                      : List.generate(
-                          media.qualities.length,
-                          (index) {
-                            return ListTile(
-                              title:
-                                  Text(media.qualities.keys.elementAt(index)),
-                              onTap: () {
-                                Future.microtask(
-                                  () async {
-                                    final current =
-                                        await player.stream.position.first;
-                                    player.open(
-                                      Media(
-                                        media.qualities.values.elementAt(index),
-                                        httpHeaders: media.headers,
-                                      ),
-                                      play: false,
-                                    );
-                                    await player.stream.buffer.first;
-                                    setSubtitles(media, player);
-                                    player
-                                      ..seek(current)
-                                      ..play();
-                                  },
+                            )
+                        ]
+                      : [
+                          for (int i = 0; i < media.qualities.length; i++)
+                            ListTile(
+                              title: Text(media.qualities.keys.elementAt(i)),
+                              onTap: () async {
+                                final current = player.state.position;
+                                await player.open(
+                                  Media(
+                                    media.qualities.values.elementAt(i),
+                                    httpHeaders: media.headers,
+                                  ),
+                                  play: false,
                                 );
-                                context.pop();
+                                await setSubtitles();
+                                await player
+                                    .seek(player.state.position + current);
+                                await player.play();
+                                if (context.mounted) {
+                                  context.pop();
+                                }
                               },
-                            );
-                          },
-                        ),
+                            )
+                        ],
                 ),
               ),
             ),
@@ -394,37 +365,38 @@ class AniViewerState extends State<AniViewer> {
       ],
       primaryButtonBar: [
         const Spacer(flex: 2),
-        MaterialCustomButton(
+        IconButton(
           onPressed: (currentEpisode == 0)
-              ? () {}
-              : () async {
-                  setState(() {
-                    currentEpisode -= 1;
-                    player.stop();
-                  });
-                  await play();
-                },
+              ? null
+              : () => context.pushReplacement(
+                    '/anime/info/viewer',
+                    extra: {
+                      'index': currentEpisode - 1,
+                      'contents': widget.episodes,
+                      'data': widget.anime,
+                    },
+                  ),
           icon: const Icon(Icons.skip_previous),
         ),
         const Spacer(),
         const MaterialPlayOrPauseButton(iconSize: 48.0),
         const Spacer(),
-        MaterialCustomButton(
+        IconButton(
           onPressed: (currentEpisode == widget.episodes.length - 1)
-              ? () {}
-              : () async {
-                  setState(() {
-                    currentEpisode += 1;
-                    player.stop();
-                  });
-                  await play();
-                },
+              ? null
+              : () => context.pushReplacement(
+                    '/anime/info/viewer',
+                    extra: {
+                      'index': currentEpisode + 1,
+                      'contents': widget.episodes,
+                      'data': widget.anime,
+                    },
+                  ),
           icon: const Icon(Icons.skip_next),
         ),
         const Spacer(flex: 2)
       ],
     );
-
     return Scaffold(
       body: (media.qualities.isNotEmpty)
           ? MaterialDesktopVideoControlsTheme(
@@ -434,9 +406,9 @@ class AniViewerState extends State<AniViewer> {
                 normal: mobile,
                 fullscreen: mobile,
                 child: Video(
+                  key: videoKey,
                   controller: controller,
                   pauseUponEnteringBackgroundMode: false,
-                  controls: AdaptiveVideoControls,
                 ),
               ),
             )
@@ -444,7 +416,7 @@ class AniViewerState extends State<AniViewer> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton(
-                  onPressed: () => Navigator.maybePop(context),
+                  onPressed: () => context.pop(),
                   child: const Text("Escape?"),
                 ),
                 const Center(

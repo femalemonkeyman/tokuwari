@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../../models/info_models.dart';
+import 'package:tokuwari_models/info_models.dart';
 
 Future<List<MediaProv>> dexReader(final AniData data) async {
   const mangadex = "https://api.mangadex.org/manga";

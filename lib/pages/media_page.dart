@@ -1,5 +1,6 @@
 import 'dart:ui';
-import '../models/info_models.dart';
+import 'package:tokuwari_models/info_models.dart';
+
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
 import '../widgets/search_button.dart';

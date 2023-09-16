@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "anicross")
-set(APPLICATION_ID "com.universal.anime.anicross")
+set(BINARY_NAME "tokuwari")
+set(APPLICATION_ID "com.universal.anime.tokuwari")
 
 cmake_policy(SET CMP0063 NEW)
 

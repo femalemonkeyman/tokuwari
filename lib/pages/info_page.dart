@@ -1,7 +1,6 @@
 import 'package:sliver_tools/sliver_tools.dart';
-
+import 'package:tokuwari_models/info_models.dart';
 import '../media/providers/providers.dart';
-import '/models/info_models.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -66,7 +65,7 @@ class InfoPage extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
-        label: Text('Continue?'),
+        label: const Text('Continue?'),
       ),
       body: SafeArea(
         child: CustomScrollView(
@@ -283,15 +282,9 @@ class EpisodeListState extends State<EpisodeList> {
                   },
                 ),
               ),
-              if (widget.data.type == 'anime')
-                SwitchListTile(
-                  title: const Text('Dub?'),
-                  value: widget.data.dub,
-                  shape: const StadiumBorder(),
-                  onChanged: (value) =>
-                      setState(() => widget.data.dub = !widget.data.dub),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
+              const SizedBox(
+                height: 10,
+              ),
             ],
           ),
           SliverGrid(
@@ -308,8 +301,9 @@ class EpisodeListState extends State<EpisodeList> {
                   onTap: () => context.push(
                     '/${widget.data.type}/info/viewer',
                     extra: {
-                      'content': index,
+                      'index': index,
                       'contents': content,
+                      'data': widget.data,
                     },
                   ),
                   child: Card(

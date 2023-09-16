@@ -1,59 +1,64 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:string_similarity/string_similarity.dart';
-import '../../../models/info_models.dart';
+import 'package:tokuwari_models/info_models.dart';
 
 Provider haniList(final AniData data) async {
-  Response json = await Dio().post(
-    "https://search.htv-services.com/",
-    data: jsonEncode(
-      {
-        "search_text": (
-          (data.title.split(" ").length > 3)
-              ? data.title.split(" ").getRange(0, 3).join(" ")
-              : data.title,
-        ).toString().replaceAll(RegExp('[^A-Za-z0-9 -]'), ''),
-        "tags": [],
-        "tags-mode": "AND",
-        "brands": [],
-        "blacklist": [],
-        "order_by": "",
-        "ordering": "",
-        "page": 0
-      },
-    ),
-  );
-  if (json.data['nbHits'] > 0) {
-    final List results = jsonDecode(json.data['hits']);
-    final List videos = [];
-    for (Map i in results) {
-      if (i['name'].toString().similarityTo(data.title) > 0.2) {
-        final Response v = await Dio().get(
-          "https://hanime.tv/api/v8/video?id=${i['id']}",
-        );
-        videos.add(v.data);
-      }
-    }
-    return List.generate(
-      videos.length,
-      (index) {
-        return MediaProv(
-          provider: 'hanime',
-          provId: '',
-          title: (videos[index])['hentai_video']['name'],
-          number: (index + 1).toString(),
-          call: () => Future(
-            () => Source(
-              qualities: {
-                "default": videos[index]['videos_manifest']['servers'][0]
-                    ['streams'][1]['url'],
-              },
-              subtitles: {},
+  try {
+    Map json = (await Dio().post(
+      "https://search.htv-services.com/",
+      data: jsonEncode(
+        {
+          "search_text": data.title
+              .split(" ")
+              .take(2)
+              .join(' ')
+              .replaceAll(RegExp('[^A-Za-z0-9- !]'), ''),
+          "tags": [],
+          "tags-mode": "AND",
+          "brands": [],
+          "blacklist": [],
+          "order_by": "",
+          "ordering": "",
+          "page": 0
+        },
+      ),
+    ))
+        .data;
+    if (json['nbHits'] > 0) {
+      final List requests = await Future.wait(
+        [
+          for (Map i in jsonDecode(json['hits']))
+            if (data.title
+                    .bestMatch([i['name'], ...i['titles']])
+                    .bestMatch
+                    .rating! >
+                0.52)
+              Dio().get(
+                "https://hanime.tv/api/v8/video?id=${i['id']}",
+              ),
+        ],
+      );
+      return [
+        for (Response i in requests)
+          MediaProv(
+            provider: 'hanime',
+            provId: '',
+            title: i.data['hentai_video']['name'],
+            number: i.data['hentai_video']['slug'].split('-').last.toString(),
+            call: () => Future(
+              () => Source(
+                qualities: {
+                  "default": i.data['videos_manifest']['servers'][0]['streams']
+                      [1]['url'],
+                },
+                subtitles: {},
+              ),
             ),
           ),
-        );
-      },
-    );
-  }
+      ];
+    }
+  } catch (_) {}
   return [];
 }

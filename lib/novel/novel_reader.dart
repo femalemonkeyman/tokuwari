@@ -1,5 +1,6 @@
 import 'dart:io';
-import '/models/info_models.dart';
+import 'package:tokuwari_models/info_models.dart';
+
 import '/novel/novel_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';

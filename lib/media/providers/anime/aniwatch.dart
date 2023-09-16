@@ -2,28 +2,29 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-
-import '../../../models/info_models.dart';
-import '../aes_decrypt.dart';
+import 'package:key/key.dart';
+import 'package:tokuwari_models/info_models.dart';
 
 const String zoro = "https://aniwatch.to/";
+const String mega = 'https://megacloud.tv/embed-2/ajax/e-1/getSources?id=';
 
 Provider zoroList(final AniData data) async {
-  final List<MediaProv> episodes = [];
   try {
-    final Map response = (await Dio().get(
-      '$malsync/${data.malid}',
-    ))
-        .data;
-    final Response html = await Dio().get(
-      '${zoro}ajax/v2/episode/list/${response['Sites']['Zoro'].keys.first}',
-      options: Options(
-        responseType: ResponseType.plain,
-      ),
-    );
-    for (Element i in parse(jsonDecode(html.data)['html'])
-        .getElementsByClassName('ssl-item  ep-item')) {
-      episodes.add(
+    return [
+      for (Element i in parse(jsonDecode(await Dio()
+              .get(
+                '$malsync/${data.malid}',
+              )
+              .then(
+                (data) async => Dio().get(
+                  '${zoro}ajax/v2/episode/list/${data.data['Sites']['Zoro'].keys.first}',
+                  options: Options(
+                    responseType: ResponseType.plain,
+                  ),
+                ),
+              )
+              .then((value) => value.data))['html'])
+          .getElementsByClassName('ssl-item  ep-item'))
         MediaProv(
           provider: 'zoro',
           provId: i.attributes['data-id']!,
@@ -31,9 +32,7 @@ Provider zoroList(final AniData data) async {
           number: i.attributes['data-number']!,
           call: () => zoroInfo(i.attributes['data-id']),
         ),
-      );
-    }
-    return episodes;
+    ];
   } catch (e) {
     print(e);
     return [];
@@ -42,46 +41,44 @@ Provider zoroList(final AniData data) async {
 
 Anime zoroInfo(final id) async {
   final Options options = Options(responseType: ResponseType.plain);
-  final Element server = parse(
-    jsonDecode(
-      (await Dio().get(
+  final String sId = await Dio()
+      .get(
         '${zoro}ajax/v2/episode/servers?episodeId=$id',
         options: options,
-      ))
-          .data,
-    )['html'],
-  )
-      .getElementsByClassName("item server-item")
-      .firstWhere((element) => element.text.contains('Vid'));
+      )
+      .then(
+        (value) => parse(jsonDecode(value.data)['html'])
+            .getElementsByClassName("item server-item")
+            .firstWhere(
+              (element) => element.text.contains('Vid'),
+            )
+            .attributes['data-id']!,
+      );
   try {
-    final Map link = jsonDecode(
-      (await Dio().get(
-        '${zoro}ajax/v2/episode/sources?id=${server.attributes['data-id']}',
-        options: options,
-      ))
-          .data,
+    final String link = await Dio()
+        .get(
+      '${zoro}ajax/v2/episode/sources?id=$sId',
+      options: options,
+    )
+        .then(
+      (value) {
+        return jsonDecode(value.data)['link'];
+      },
     );
     final Map<String, dynamic> sources = jsonDecode(
-      (await Dio().get(
-              'https://megacloud.tv/embed-2/ajax/e-1/getSources?id=${link['link'].split('e-1/')[1].split('?')[0]}',
-              options: options))
-          .data,
+      await Dio()
+          .get('$mega${link.split('e-1/')[1].split('?')[0]}', options: options)
+          .then(
+            (value) => value.data,
+          ),
     );
     if (sources['encrypted']) {
-      String key = '';
-      int offset = 0;
-      for (final List i in jsonDecode((await Dio().get(
-              'https://raw.githubusercontent.com/enimax-anime/key/e6/key.txt'))
-          .data)) {
-        key += sources['sources'].substring(i.first - offset, i.last - offset);
-        sources['sources'] = sources['sources'].toString().replaceRange(
-              i.first - offset,
-              i.last - offset,
-              '',
-            );
-        offset += ((i.last as int) - (i.first as int));
-      }
-      sources['sources'] = jsonDecode(decrypt(sources['sources'], key));
+      sources['sources'] = jsonDecode(
+        await getSource(
+          '$mega${link.split('e-1/')[1].split('?')[0]}',
+          sources['sources'],
+        ),
+      );
     }
     sources['tracks'].removeWhere((element) => element['kind'] != 'captions');
     return Source(
@@ -92,8 +89,9 @@ Anime zoroInfo(final id) async {
         for (Map i in sources['tracks']) i['label']: i['file'],
       },
     );
-  } catch (e) {
+  } catch (e, stack) {
     print(e);
+    print(stack);
     return const Source(qualities: {}, subtitles: {});
   }
 }

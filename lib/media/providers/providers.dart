@@ -1,9 +1,10 @@
-import 'package:tokuwari/media/providers/anime/animepahe.dart';
-import 'package:tokuwari/media/providers/anime/marin.dart';
-import 'package:tokuwari/models/info_models.dart';
+import 'package:tokuwari/media/providers/anime/aniwatch.dart';
+import 'package:tokuwari_models/info_models.dart';
+
+import 'anime/animepahe.dart';
+import 'anime/marin.dart';
 
 import 'anime/hanime.dart';
-import 'anime/aniwatch.dart';
 import 'manga/mangadex.dart';
 
 /// Must return of type [Provider]
