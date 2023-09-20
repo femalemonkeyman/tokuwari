@@ -124,27 +124,30 @@ packages:
   cached_network_image:
     dependency: "direct main"
     description:
-      name: cached_network_image
-      sha256: fd3d0dc1d451f9a252b32d95d3f0c3c487bc41a75eba2e6097cb0b9c71491b15
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.3"
+      path: cached_network_image
+      ref: HEAD
+      resolved-ref: d37217f913c108f8096bd5c3f00449903926f41f
+      url: "https://github.com/gauravmehta13/flutter_cached_network_image.git"
+    source: git
+    version: "3.2.4"
   cached_network_image_platform_interface:
     dependency: transitive
     description:
-      name: cached_network_image_platform_interface
-      sha256: bb2b8403b4ccdc60ef5f25c70dead1f3d32d24b9d6117cfc087f496b178594a7
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
+      path: cached_network_image_platform_interface
+      ref: HEAD
+      resolved-ref: d37217f913c108f8096bd5c3f00449903926f41f
+      url: "https://github.com/gauravmehta13/flutter_cached_network_image.git"
+    source: git
+    version: "2.0.1"
   cached_network_image_web:
     dependency: transitive
     description:
-      name: cached_network_image_web
-      sha256: b8eb814ebfcb4dea049680f8c1ffb2df399e4d03bf7a352c775e26fa06e02fa0
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
+      path: cached_network_image_web
+      ref: HEAD
+      resolved-ref: d37217f913c108f8096bd5c3f00449903926f41f
+      url: "https://github.com/gauravmehta13/flutter_cached_network_image.git"
+    source: git
+    version: "1.0.3"
   characters:
     dependency: transitive
     description:
@@ -253,10 +256,10 @@ packages:
     dependency: "direct main"
     description:
       name: encrypt
-      sha256: c1f224c9a65df6f2cd111baaf31edd2f31d3f094abdb22a3b0bbcc64698ef80d
+      sha256: "62d9aa4670cc2a8798bab89b39fc71b6dfbacf615de6cf5001fb39f7e4a996a2"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.2"
+    version: "5.0.3"
   expandable_text:
     dependency: "direct main"
     description:
@@ -391,10 +394,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "5668e6d3dbcb2d0dfa25f7567554b88c57e1e3f3c440b672b24d4a9477017d5b"
+      sha256: e1a30a66d734f9e498b1b6522d6a75ded28242bad2359a9158df38a1c30bcf1f
       url: "https://pub.dev"
     source: hosted
-    version: "10.1.2"
+    version: "10.2.0"
   gql:
     dependency: transitive
     description:
@@ -708,10 +711,11 @@ packages:
   octo_image:
     dependency: transitive
     description:
-      name: octo_image
-      sha256: "107f3ed1330006a3bea63615e81cf637433f5135a52466c7caa0e7152bca9143"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: b41386c904895817a2c87e3c2cfcb3c92a051da0
+      url: "https://github.com/gauravmehta13/octo_image.git"
+    source: git
     version: "1.0.2"
   package_config:
     dependency: transitive
@@ -1211,10 +1215,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "9e82a402b7f3d518fb9c02d0e9ae45952df31b9bf34d77baf19da2de03fc2aaa"
+      sha256: c97defd418eef4ec88c0d1652cdce84b9f7b63dd7198e266d06ac1710d527067
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.7"
+    version: "5.0.8"
   window_manager:
     dependency: "direct main"
     description:

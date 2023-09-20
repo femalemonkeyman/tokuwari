@@ -1,8 +1,8 @@
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tokuwari/discord_rpc.dart';
 import 'package:tokuwari_models/info_models.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -38,7 +38,13 @@ class AniViewerState extends State<AniViewer> {
   @override
   void initState() {
     super.initState();
-    videoKey.currentState?.enterFullscreen();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setPreferredOrientations(
+      [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
+    );
     Future.microtask(
       () async => await play(),
     );
@@ -94,6 +100,13 @@ class AniViewerState extends State<AniViewer> {
   @override
   Future<void> dispose() async {
     super.dispose();
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
+    SystemChrome.setPreferredOrientations(
+      [],
+    );
     await videoKey.currentState?.exitFullscreen();
     await player.dispose();
     discord?.clearPresence();
@@ -409,6 +422,16 @@ class AniViewerState extends State<AniViewer> {
                   key: videoKey,
                   controller: controller,
                   pauseUponEnteringBackgroundMode: false,
+                  onEnterFullscreen: () async => await const MethodChannel(
+                          'com.alexmercerind/media_kit_video')
+                      .invokeMethod(
+                    'Utils.EnterNativeFullscreen',
+                  ),
+                  onExitFullscreen: () async => await const MethodChannel(
+                          'com.alexmercerind/media_kit_video')
+                      .invokeMethod(
+                    'Utils.ExitNativeFullscreen',
+                  ),
                 ),
               ),
             )
