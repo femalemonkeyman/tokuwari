@@ -2,7 +2,6 @@ import 'package:tokuwari/media/providers/anime/aniwatch.dart';
 import 'package:tokuwari_models/info_models.dart';
 
 import 'anime/animepahe.dart';
-import 'anime/marin.dart';
 
 import 'anime/hanime.dart';
 import 'manga/mangadex.dart';
@@ -18,10 +17,11 @@ final Map<String, List<Map<String, dynamic>>> providers = {
       'name': 'AnimePahe',
       'data': (final AniData data) => paheList(data),
     },
-    {
-      'name': 'Marin',
-      'data': (final AniData data) => marinList(data),
-    },
+    //RIP
+    // {
+    //   'name': 'Marin',
+    //   'data': (final AniData data) => marinList(data),
+    // },
     {
       'name': 'Hanime',
       'data': (final AniData data) => haniList(data),

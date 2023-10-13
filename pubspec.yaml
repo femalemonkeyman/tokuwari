@@ -25,39 +25,12 @@ dependencies:
   dio: 
   photo_view:
   flex_color_scheme:
+  media_kit:
   media_kit_video:
-    git:
-      url: https://github.com/alexmercerind/media_kit.git
-      ref: main
-      path: media_kit_video
-  media_kit_libs_linux:
-    git:
-     url: https://github.com/alexmercerind/media_kit
-     ref: main
-     path: libs/linux/media_kit_libs_linux
-  # Media kit imports
-  media_kit_libs_windows_video:
-    git:
-     url: https://github.com/alexmercerind/media_kit
-     ref: main
-     path: libs/windows/media_kit_libs_windows_video
-  media_kit_libs_macos_video:
-    git:
-     url: https://github.com/alexmercerind/media_kit
-     ref: main
-     path: libs/macos/media_kit_libs_macos_video
-  media_kit_libs_ios_video:
-    git:
-     url: https://github.com/alexmercerind/media_kit
-     ref: main
-     path: libs/ios/media_kit_libs_ios_video
-  media_kit_libs_android_video:
-    git:
-     url: https://github.com/alexmercerind/media_kit
-     ref: main
-     path: libs/android/media_kit_libs_android_video
+  media_kit_libs_video:
   path_provider: 
-  window_manager:
+  async:
+  window_manager: 
   flutter_image:
   encrypt: 
   isar: ^3.1.0+1
@@ -86,11 +59,6 @@ dependencies:
   
 dependency_overrides:
   graphql: ^5.2.0-beta.5
-  media_kit:
-    git:
-      url: https://github.com/alexmercerind/media_kit.git
-      ref: main
-      path: media_kit
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

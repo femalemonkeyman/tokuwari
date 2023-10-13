@@ -27,7 +27,7 @@ void main() async {
   MediaKit.ensureInitialized();
   Isar.openSync(
     [AniDataSchema, MediaProvSchema, NovDataSchema],
-    name: "later",
+    name: "tokudb",
     directory: (await Directory(
                 '${(await getApplicationDocumentsDirectory()).path}/.anicross')
             .create())
@@ -62,14 +62,16 @@ class Navigation extends StatelessWidget {
         initialLocation: '/anime',
         routes: [
           StatefulShellRoute.indexedStack(
+            parentNavigatorKey: _rootKey,
             builder: (context, state, shell) => Scaffold(
               body: shell,
               bottomNavigationBar: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width:
-                        clampDouble(MediaQuery.of(context).size.width, 0, 384),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                        maxWidth: clampDouble(
+                            MediaQuery.of(context).size.width, 0, 384)),
                     child: BottomNavigationBar(
                       elevation: 0,
                       useLegacyColorScheme: false,

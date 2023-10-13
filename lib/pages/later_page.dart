@@ -10,19 +10,19 @@ class LaterPage extends StatelessWidget {
 
   LaterPage({super.key});
 
-  final Isar isar = Isar.getInstance('later')!;
+  final Isar isar = Isar.getInstance('tokudb')!;
   late final Stream dataChange = isar.aniDatas.watchLazy(fireImmediately: true);
 
   void updateData() {
     animeData
       ..clear()
       ..addAll(
-        isar.aniDatas.filter().typeEqualTo("anime").findAllSync(),
+        isar.aniDatas.filter().typeEqualTo("anime").findAllSync().reversed,
       );
     mangaData
       ..clear()
       ..addAll(
-        isar.aniDatas.filter().typeEqualTo("manga").findAllSync(),
+        isar.aniDatas.filter().typeEqualTo("manga").findAllSync().reversed,
       );
   }
 
@@ -44,7 +44,10 @@ class LaterPage extends StatelessWidget {
                         child: Divider(),
                       ),
                       Spacer(),
-                      Text('Anime', textScaleFactor: 1.2),
+                      Text(
+                        'Anime',
+                        textScaler: TextScaler.linear(1.2),
+                      ),
                       Spacer(),
                       Expanded(
                         flex: 200,
@@ -69,7 +72,7 @@ class LaterPage extends StatelessWidget {
                       Spacer(),
                       Text(
                         'Manga',
-                        textScaleFactor: 1.2,
+                        textScaler: TextScaler.linear(1.2),
                       ),
                       Spacer(),
                       Expanded(

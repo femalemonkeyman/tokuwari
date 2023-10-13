@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:tokuwari_models/info_models.dart';
 import '../media/providers/providers.dart';
@@ -171,7 +172,7 @@ class InfoPage extends StatelessWidget {
 }
 
 class LaterButton extends StatefulWidget {
-  final Isar isar = Isar.getInstance('later')!;
+  final Isar isar = Isar.getInstance('tokudb')!;
   final AniData data;
 
   LaterButton({super.key, required this.data});
@@ -226,25 +227,25 @@ class EpisodeList extends StatefulWidget {
 
 class EpisodeListState extends State<EpisodeList> {
   final List<MediaProv> content = [];
-  late Function init = providers[widget.data.type]![0]['data'];
+  late Map provider = providers[widget.data.type]![0];
+  late CancelableOperation load =
+      CancelableOperation.fromFuture(provider['data'](widget.data));
 
   @override
   void initState() {
-    Future.microtask(
-      () async => await loadEpisodes(),
-    );
+    Future.microtask(() async {
+      content.addAll(await load.value);
+      if (mounted) {
+        setState(() {});
+      }
+    });
     super.initState();
   }
 
-  Future<void> loadEpisodes() async {
-    content
-      ..clear()
-      ..addAll(
-        await init(widget.data),
-      );
-    if (mounted) {
-      setState(() {});
-    }
+  @override
+  void dispose() {
+    load.cancel();
+    super.dispose();
   }
 
   @override
@@ -256,7 +257,7 @@ class EpisodeListState extends State<EpisodeList> {
           SliverList.list(
             children: [
               DropdownButton(
-                value: init,
+                value: provider,
                 padding: const EdgeInsets.only(left: 15),
                 underline: const SizedBox.shrink(),
                 focusColor: const Color.fromARGB(0, 0, 0, 0),
@@ -268,19 +269,24 @@ class EpisodeListState extends State<EpisodeList> {
                 items: List.generate(
                   providers[widget.data.type]!.length,
                   (index) => DropdownMenuItem(
-                    value: providers[widget.data.type]![index]['data'],
+                    value: providers[widget.data.type]![index],
                     child: Text(
                       providers[widget.data.type]![index]['name'],
                     ),
                   ),
                   growable: false,
                 ),
-                onChanged: (value) => Future.microtask(
-                  () async {
-                    init = (value as Function);
-                    await loadEpisodes();
-                  },
-                ),
+                onChanged: (value) async {
+                  load.cancel();
+                  load = CancelableOperation.fromFuture(
+                      value!['data'](widget.data));
+                  content
+                    ..clear()
+                    ..addAll(await load.value);
+                  setState(() {
+                    provider = value;
+                  });
+                },
               ),
               const SizedBox(
                 height: 10,

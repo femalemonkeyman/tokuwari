@@ -7,6 +7,7 @@ import 'package:tokuwari_models/info_models.dart';
 
 const String zoro = "https://aniwatch.to/";
 const String mega = 'https://megacloud.tv/embed-2/ajax/e-1/getSources?id=';
+int retries = 0;
 
 Provider zoroList(final AniData data) async {
   try {
@@ -77,9 +78,11 @@ Anime zoroInfo(final id) async {
         await getSource(
           '$mega${link.split('e-1/')[1].split('?')[0]}',
           sources['sources'],
+          (retries == 1) ? true : false,
         ),
       );
     }
+    retries = 0;
     sources['tracks'].removeWhere((element) => element['kind'] != 'captions');
     return Source(
       qualities: {
@@ -89,9 +92,12 @@ Anime zoroInfo(final id) async {
         for (Map i in sources['tracks']) i['label']: i['file'],
       },
     );
-  } catch (e, stack) {
-    print(e);
-    print(stack);
-    return const Source(qualities: {}, subtitles: {});
+  } catch (_) {
+    if (retries == 0) {
+      retries++;
+      return await zoroInfo(id);
+    } else {
+      return const Source(qualities: {}, subtitles: {});
+    }
   }
 }
