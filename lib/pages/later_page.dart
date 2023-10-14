@@ -5,7 +5,7 @@ import 'package:tokuwari_models/info_models.dart';
 import '/widgets/grid.dart';
 
 class LaterPage extends StatelessWidget {
-  final Isar isar = Isar.getInstance('tokudb')!;
+  final Isar isar = Isar.get(schemas: [AniDataSchema], name: 'tokudb');
 
   LaterPage({super.key});
 
@@ -15,8 +15,8 @@ class LaterPage extends StatelessWidget {
       child: CustomScrollView(
         slivers: [
           StreamBuilder<List<AniData>>(
-            initialData: isar.aniDatas.where(sort: Sort.desc).typeEqualTo('anime').findAllSync(),
-            stream: isar.aniDatas.where(sort: Sort.desc).typeEqualTo('anime').watch(),
+            initialData: isar.aniDatas.where().typeEqualTo('anime').findAll(),
+            stream: isar.aniDatas.where(). .typeEqualTo('anime').watch(),
             builder: (context, snap) {
               if (snap.hasData && snap.data!.isNotEmpty) {
                 return MultiSliver(
@@ -56,6 +56,9 @@ class LaterPage extends StatelessWidget {
             initialData: isar.aniDatas.where(sort: Sort.desc).typeEqualTo('manga').findAllSync(),
             stream: isar.aniDatas.where(sort: Sort.desc).typeEqualTo('manga').watch(),
             builder: (context, snap) {
+              // for (final i in snap.data!) {
+              //   print(i.title);
+              // }
               if (snap.hasData && snap.data!.isNotEmpty) {
                 return MultiSliver(
                   children: [

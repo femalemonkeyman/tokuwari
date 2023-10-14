@@ -23,8 +23,8 @@ final GlobalKey<NavigatorState> _shellkey = GlobalKey<NavigatorState>(debugLabel
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
-  Isar.openSync(
-    [AniDataSchema, MediaProvSchema, NovDataSchema],
+  Isar.open(
+    schemas: [AniDataSchema, MediaProvSchema, NovDataSchema],
     name: "tokudb",
     directory: (await Directory('${(await getApplicationDocumentsDirectory()).path}/.tokuwari').create()).path,
   );

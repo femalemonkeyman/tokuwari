@@ -19,13 +19,13 @@ class NovelPage extends StatefulWidget {
 }
 
 class NovelPageState extends State<NovelPage> {
-  Isar isar = Isar.getInstance('later')!;
+  Isar isar = Isar.get(schemas: [NovDataSchema], name: 'tokudb');
   List<NovData> novels = [];
 
   @override
   void initState() {
     super.initState();
-    novels = isar.novDatas.filter().typeEqualTo("novel").findAllSync();
+    novels = isar.novDatas. .typeEqualTo("novel").findAllSync();
   }
 
   importNovel() async {
@@ -78,8 +78,8 @@ class NovelPageState extends State<NovelPage> {
   }
 
   void updateIsar() {
-    isar.writeTxnSync(
-      () => isar.novDatas.putAllSync(novels),
+    isar.write(
+      (isar) => isar.novDatas.put(novels),
     );
   }
 
