@@ -171,7 +171,7 @@ class InfoPage extends StatelessWidget {
 }
 
 class LaterButton extends StatefulWidget {
-  final Isar isar = Isar.getInstance('tokudb')!;
+  final Isar isar = Isar.get(schemas: [AniDataSchema], name: 'tokudb');
   final AniData data;
 
   LaterButton({super.key, required this.data});
@@ -181,7 +181,7 @@ class LaterButton extends StatefulWidget {
 }
 
 class LaterButtonState extends State<LaterButton> {
-  late final media = widget.isar.aniDatas.filter().mediaIdMatches(
+  late final media = widget.isar.aniDatas.where().mediaIdEqualTo(
         widget.data.mediaId,
       );
   @override
@@ -191,19 +191,18 @@ class LaterButtonState extends State<LaterButton> {
         visualDensity: VisualDensity.compact,
         onPressed: () => setState(
           () {
-            if (media.isEmptySync()) {
-              widget.isar.writeTxnSync(
-                () => widget.isar.aniDatas.putSync(widget.data),
+            if (media.isEmpty()) {
+              widget.isar.write(
+                (isar) => widget.isar.aniDatas.put(widget.data),
               );
             } else {
-              widget.isar.writeTxnSync(
-                () => media.deleteAllSync(),
+              widget.isar.write(
+                (isar) => media.deleteAll(),
               );
             }
           },
         ),
-        avatar:
-            (media.isEmptySync()) ? const Icon(Icons.bookmark_add_outlined) : const Icon(Icons.bookmark_added_rounded),
+        avatar: (media.isEmpty()) ? const Icon(Icons.bookmark_add_outlined) : const Icon(Icons.bookmark_added_rounded),
         label: const Text("Later"),
       );
 }

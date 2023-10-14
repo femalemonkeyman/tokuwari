@@ -25,7 +25,7 @@ class NovelPageState extends State<NovelPage> {
   @override
   void initState() {
     super.initState();
-    novels = isar.novDatas. .typeEqualTo("novel").findAllSync();
+    novels = isar.novDatas.where().typeEqualTo("novel").findAll();
   }
 
   importNovel() async {
@@ -79,7 +79,7 @@ class NovelPageState extends State<NovelPage> {
 
   void updateIsar() {
     isar.write(
-      (isar) => isar.novDatas.put(novels),
+      (isar) => isar.novDatas.putAll(novels),
     );
   }
 

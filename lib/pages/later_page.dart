@@ -16,7 +16,7 @@ class LaterPage extends StatelessWidget {
         slivers: [
           StreamBuilder<List<AniData>>(
             initialData: isar.aniDatas.where().typeEqualTo('anime').findAll(),
-            stream: isar.aniDatas.where(). .typeEqualTo('anime').watch(),
+            stream: isar.aniDatas.where().typeEqualTo('anime').watch(),
             builder: (context, snap) {
               if (snap.hasData && snap.data!.isNotEmpty) {
                 return MultiSliver(
@@ -42,7 +42,7 @@ class LaterPage extends StatelessWidget {
                       ),
                     ),
                     Grid(
-                      data: snap.data!,
+                      data: snap.data!.reversed.toList(),
                       keep: false,
                       length: snap.data!.length,
                     ),
@@ -53,12 +53,9 @@ class LaterPage extends StatelessWidget {
             },
           ),
           StreamBuilder<List<AniData>>(
-            initialData: isar.aniDatas.where(sort: Sort.desc).typeEqualTo('manga').findAllSync(),
-            stream: isar.aniDatas.where(sort: Sort.desc).typeEqualTo('manga').watch(),
+            initialData: isar.aniDatas.where().typeEqualTo('manga').findAll(),
+            stream: isar.aniDatas.where().typeEqualTo('manga').watch(),
             builder: (context, snap) {
-              // for (final i in snap.data!) {
-              //   print(i.title);
-              // }
               if (snap.hasData && snap.data!.isNotEmpty) {
                 return MultiSliver(
                   children: [
@@ -83,7 +80,7 @@ class LaterPage extends StatelessWidget {
                       ),
                     ),
                     Grid(
-                      data: snap.data!,
+                      data: snap.data!.reversed.toList(),
                       keep: false,
                       length: snap.data!.length,
                     ),
