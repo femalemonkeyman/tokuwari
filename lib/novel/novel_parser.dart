@@ -59,8 +59,7 @@ class Novel {
     content?['spine'] ??= content?['opf\$spine'];
     content?['manifest']['item'] ??= content?['manifest']['opf\$item'];
     if (content?['metadata']?['dc\$title'] is List) {
-      content?['metadata']['dc\$title'] =
-          content?['metadata']?['dc\$title']?[0];
+      content?['metadata']['dc\$title'] = content?['metadata']?['dc\$title']?[0];
     }
 
     metadata = content?['metdata'];
@@ -115,10 +114,8 @@ class Novel {
     final Directory documents = await getApplicationDocumentsDirectory();
     String imagePath = "";
     for (Map i in (content?['manifest']['item'])) {
-      if (i.toString().toLowerCase().contains("cover") &&
-          !i.toString().toLowerCase().contains("html")) {
-        imagePath =
-            '${documents.path}/.anicross/$title-${i['href'].split('/').last}';
+      if (i.toString().toLowerCase().contains("cover") && !i.toString().toLowerCase().contains("html")) {
+        imagePath = '${documents.path}/.anicross/$title-${i['href'].split('/').last}';
         //print(imagePath);
         (img.Command()
               ..decodeImage(

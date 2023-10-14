@@ -10,11 +10,7 @@ Provider haniList(final AniData data) async {
       "https://search.htv-services.com/",
       data: jsonEncode(
         {
-          "search_text": data.title
-              .split(" ")
-              .take(2)
-              .join(' ')
-              .replaceAll(RegExp('[^A-Za-z0-9- !]'), ''),
+          "search_text": data.title.split(" ").take(2).join(' ').replaceAll(RegExp('[^A-Za-z0-9- !]'), ''),
           "tags": [],
           "tags-mode": "AND",
           "brands": [],
@@ -30,11 +26,7 @@ Provider haniList(final AniData data) async {
       final List requests = await Future.wait(
         [
           for (Map i in jsonDecode(json['hits']))
-            if (data.title
-                    .bestMatch([i['name'], ...i['titles']])
-                    .bestMatch
-                    .rating! >
-                0.52)
+            if (data.title.bestMatch([i['name'], ...i['titles']]).bestMatch.rating! > 0.52)
               Dio().get(
                 "https://hanime.tv/api/v8/video?id=${i['id']}",
               ),
@@ -50,8 +42,7 @@ Provider haniList(final AniData data) async {
             call: () => Future(
               () => Source(
                 qualities: {
-                  "default": i.data['videos_manifest']['servers'][0]['streams']
-                      [1]['url'],
+                  "default": i.data['videos_manifest']['servers'][0]['streams'][1]['url'],
                 },
                 subtitles: {},
               ),

@@ -144,6 +144,7 @@ class AniPageState extends State<AniPage> {
         ),
       );
       loading = false;
+      setState(() {});
     } catch (e) {
       animeData.addAll([]);
     }
@@ -160,13 +161,11 @@ class AniPageState extends State<AniPage> {
       search = null;
     }
     await queryData();
-    setState(() {});
   }
 
   Future updateGenre() async {
     await showModalBottomSheet(
-      constraints: BoxConstraints.tightFor(
-          width: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
+      constraints: BoxConstraints.tightFor(width: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
       context: context,
       builder: (context) {
         return Padding(
@@ -210,9 +209,6 @@ class AniPageState extends State<AniPage> {
         pageInfo.clear();
         animeData.clear();
         await queryData();
-        setState(
-          () {},
-        );
       },
     );
   }
@@ -221,15 +217,13 @@ class AniPageState extends State<AniPage> {
   Widget build(context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification.metrics.pixels ==
-                notification.metrics.maxScrollExtent &&
+        if (notification.metrics.pixels == notification.metrics.maxScrollExtent &&
             pageInfo['lastPage'] != pageInfo['currentPage'] &&
             !loading) {
           loading = true;
           Future.microtask(
             () async {
               await queryData();
-              setState(() {});
             },
           );
         }
@@ -240,7 +234,6 @@ class AniPageState extends State<AniPage> {
         onRefresh: () => Future.microtask(
           () async {
             await queryData();
-            setState(() {});
           },
         ),
         child: CustomScrollView(
@@ -252,7 +245,6 @@ class AniPageState extends State<AniPage> {
                   controller: textController,
                   search: () async {
                     await searchData();
-                    setState(() {});
                   },
                 ),
               ),

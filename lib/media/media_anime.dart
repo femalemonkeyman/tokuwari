@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:async/async.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -59,16 +60,18 @@ class AniViewer extends StatefulWidget {
 
 class AniViewerState extends State<AniViewer> {
   final Player player = Player(
-      configuration: const PlayerConfiguration(
-    //logLevel: MPVLogLevel.v,
-    vo: 'gpu',
-  ));
-  DiscordRPC? discord = startRpc();
+    configuration: const PlayerConfiguration(
+      //logLevel: MPVLogLevel.v,
+      vo: 'gpu',
+    ),
+  );
   late final VideoController controller = VideoController(
     player,
     configuration: const VideoControllerConfiguration(hwdec: 'auto-safe'),
   );
   late final CancelableOperation load = CancelableOperation.fromFuture(play());
+  final bool isPhone = Platform.isAndroid || Platform.isIOS;
+  DiscordRPC? discord = startRpc();
   Source media = const Source(qualities: {}, subtitles: {});
 
   @override
@@ -105,8 +108,7 @@ class AniViewerState extends State<AniViewer> {
             DiscordPresence(
               largeImageKey: widget.anime.image,
               details: "Watching: ${widget.episodes[widget.episode].title}",
-              state:
-                  "Episode: ${widget.episode + 1} / ${widget.episodes.length}",
+              state: "Episode: ${widget.episode + 1} / ${widget.episodes.length}",
             ),
           );
       }
@@ -151,19 +153,18 @@ class AniViewerState extends State<AniViewer> {
       body: (media.qualities.isNotEmpty)
           ? CallbackShortcuts(
               bindings: {
-                const SingleActivator(LogicalKeyboardKey.keyF): () async =>
-                    windowManager.setFullScreen(
+                const SingleActivator(LogicalKeyboardKey.keyF): () async => windowManager.setFullScreen(
                       !await windowManager.isFullScreen(),
                     ),
-                const SingleActivator(LogicalKeyboardKey.space): () =>
-                    player.playOrPause(),
+                const SingleActivator(LogicalKeyboardKey.escape): () async => windowManager.setFullScreen(
+                      false,
+                    ),
+                const SingleActivator(LogicalKeyboardKey.space): () => player.playOrPause(),
                 const SingleActivator(LogicalKeyboardKey.arrowRight): () {
-                  player
-                      .seek(player.state.position + const Duration(seconds: 3));
+                  player.seek(player.state.position + const Duration(seconds: 3));
                 },
                 const SingleActivator(LogicalKeyboardKey.arrowLeft): () {
-                  player
-                      .seek(player.state.position - const Duration(seconds: 3));
+                  player.seek(player.state.position - const Duration(seconds: 3));
                 }
               },
               child: Focus(
@@ -197,8 +198,7 @@ class AniViewerState extends State<AniViewer> {
                               ),
                             ),
                             const Spacer(),
-                            if (widget
-                                .episodes[widget.episode].title.isNotEmpty)
+                            if (widget.episodes[widget.episode].title.isNotEmpty)
                               Text(
                                 widget.episodes[widget.episode].title,
                                 style: const TextStyle(
@@ -225,14 +225,12 @@ class AniViewerState extends State<AniViewer> {
                                           (index) {
                                             return ListTile(
                                               title: Text(
-                                                media.subtitles.keys
-                                                    .elementAt(index),
+                                                media.subtitles.keys.elementAt(index),
                                               ),
                                               onTap: () {
                                                 player.setSubtitleTrack(
                                                   SubtitleTrack.uri(
-                                                    media.subtitles.values
-                                                        .elementAt(index),
+                                                    media.subtitles.values.elementAt(index),
                                                   ),
                                                 );
                                                 context.pop();
@@ -253,38 +251,30 @@ class AniViewerState extends State<AniViewer> {
                                           ? List.generate(
                                               player.state.tracks.video.length,
                                               (i) => ListTile(
-                                                    title: Text(
-                                                      player.state.tracks
-                                                          .video[i].h
-                                                          .toString(),
-                                                    ),
-                                                    onTap: () {
-                                                      player.setVideoTrack(
-                                                        player.state.tracks
-                                                            .video[i],
-                                                      );
-                                                      context.pop();
-                                                    },
-                                                  ))
+                                                title: Text(
+                                                  player.state.tracks.video[i].h.toString(),
+                                                ),
+                                                onTap: () {
+                                                  player.setVideoTrack(
+                                                    player.state.tracks.video[i],
+                                                  );
+                                                  context.pop();
+                                                },
+                                              ),
+                                            )
                                           : List.generate(
                                               media.qualities.length,
                                               (i) => ListTile(
-                                                title: Text(media.qualities.keys
-                                                    .elementAt(i)),
+                                                title: Text(media.qualities.keys.elementAt(i)),
                                                 onTap: () async {
-                                                  await (player.platform
-                                                          as NativePlayer)
-                                                      .setProperty(
+                                                  await (player.platform as NativePlayer).setProperty(
                                                     "start",
-                                                    player.state.position
-                                                        .toString(),
+                                                    player.state.position.toString(),
                                                   );
                                                   await player.open(
                                                     Media(
-                                                      media.qualities.values
-                                                          .elementAt(i),
-                                                      httpHeaders:
-                                                          media.headers,
+                                                      media.qualities.values.elementAt(i),
+                                                      httpHeaders: media.headers,
                                                     ),
                                                     play: false,
                                                   );
@@ -336,21 +326,20 @@ class AniViewerState extends State<AniViewer> {
                               player: player,
                             ),
                             IconButton(
-                              onPressed:
-                                  (widget.episode == widget.episodes.length - 1)
-                                      ? null
-                                      : () => context.pushReplacement(
-                                            '/anime/info/viewer',
-                                            extra: {
-                                              'index': widget.episode + 1,
-                                              'contents': widget.episodes,
-                                              'data': widget.anime,
-                                            },
-                                          ),
+                              onPressed: (widget.episode == widget.episodes.length - 1)
+                                  ? null
+                                  : () => context.pushReplacement(
+                                        '/anime/info/viewer',
+                                        extra: {
+                                          'index': widget.episode + 1,
+                                          'contents': widget.episodes,
+                                          'data': widget.anime,
+                                        },
+                                      ),
                               icon: const Icon(Icons.skip_next),
                             ),
                             const Spacer(),
-                            const FullScreenButton(),
+                            if (isPhone) const FullScreenButton(),
                           ],
                         ),
                       ),
@@ -487,8 +476,7 @@ class ProgressBarState extends State<ProgressBar> {
               max: widget.player.state.duration.inSeconds.toDouble(),
               // label: Duration(seconds: spot.toInt()).label(),
               // divisions: widget.player.state.duration.inSeconds,
-              secondaryTrackValue:
-                  widget.player.state.buffer.inSeconds.toDouble(),
+              secondaryTrackValue: widget.player.state.buffer.inSeconds.toDouble(),
               value: spot,
               onChanged: (value) => setState(
                 () => spot = value,
@@ -539,9 +527,7 @@ class PlayButtonState extends State<PlayButton> {
           widget.player.playOrPause();
         }),
         icon: Icon(
-          (widget.player.state.playing)
-              ? Icons.pause
-              : Icons.play_arrow_rounded,
+          (widget.player.state.playing) ? Icons.pause : Icons.play_arrow_rounded,
         ),
       );
 }

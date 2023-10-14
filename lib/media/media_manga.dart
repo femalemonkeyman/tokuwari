@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-
 class MangaReader extends StatelessWidget {
   final int chapter;
   final List chapters;
@@ -17,12 +16,7 @@ class MangaReader extends StatelessWidget {
     ),
   );
 
-  MangaReader(
-      {Key? key,
-      required this.chapter,
-      required this.chapters,
-      this.reverse = false})
-      : super(key: key);
+  MangaReader({Key? key, required this.chapter, required this.chapters, this.reverse = false}) : super(key: key);
 
   @override
   Widget build(final context) {

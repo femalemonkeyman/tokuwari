@@ -13,7 +13,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: 
+  intl:
+  flutter_cache_manager: 
   sliver_tools:
   discord_rpc:
   flutter_html:

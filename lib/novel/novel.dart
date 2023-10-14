@@ -32,8 +32,7 @@ class NovelPageState extends State<NovelPage> {
     bool permission = true;
     if (Platform.isAndroid) {
       if (await Permission.storage.isDenied) {
-        permission =
-            (await Permission.manageExternalStorage.request()).isGranted;
+        permission = (await Permission.manageExternalStorage.request()).isGranted;
       }
     }
     if (permission) {

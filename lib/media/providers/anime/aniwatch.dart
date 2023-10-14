@@ -67,9 +67,7 @@ Anime zoroInfo(final id) async {
       },
     );
     final Map<String, dynamic> sources = jsonDecode(
-      await Dio()
-          .get('$mega${link.split('e-1/')[1].split('?')[0]}', options: options)
-          .then(
+      await Dio().get('$mega${link.split('e-1/')[1].split('?')[0]}', options: options).then(
             (value) => value.data,
           ),
     );

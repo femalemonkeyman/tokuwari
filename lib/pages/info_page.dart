@@ -61,8 +61,7 @@ class InfoPage extends StatelessWidget {
         ).padBottom(),
       ],
     );
-    final double ratio =
-        MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;
+    final double ratio = MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
@@ -182,6 +181,9 @@ class LaterButton extends StatefulWidget {
 }
 
 class LaterButtonState extends State<LaterButton> {
+  late final media = widget.isar.aniDatas.filter().mediaIdMatches(
+        widget.data.mediaId,
+      );
   @override
   Widget build(context) => ActionChip(
         shape: const StadiumBorder(),
@@ -189,9 +191,6 @@ class LaterButtonState extends State<LaterButton> {
         visualDensity: VisualDensity.compact,
         onPressed: () => setState(
           () {
-            final media = widget.isar.aniDatas.filter().mediaIdMatches(
-                  widget.data.mediaId,
-                );
             if (media.isEmptySync()) {
               widget.isar.writeTxnSync(
                 () => widget.isar.aniDatas.putSync(widget.data),
@@ -203,12 +202,8 @@ class LaterButtonState extends State<LaterButton> {
             }
           },
         ),
-        avatar: (widget.isar.aniDatas
-                .filter()
-                .mediaIdMatches(widget.data.mediaId)
-                .isEmptySync())
-            ? const Icon(Icons.bookmark_add_outlined)
-            : const Icon(Icons.bookmark_added_rounded),
+        avatar:
+            (media.isEmptySync()) ? const Icon(Icons.bookmark_add_outlined) : const Icon(Icons.bookmark_added_rounded),
         label: const Text("Later"),
       );
 }
@@ -228,8 +223,7 @@ class EpisodeList extends StatefulWidget {
 class EpisodeListState extends State<EpisodeList> {
   final List<MediaProv> content = [];
   late Map provider = providers[widget.data.type]![0];
-  late CancelableOperation load =
-      CancelableOperation.fromFuture(provider['data'](widget.data));
+  late CancelableOperation load = CancelableOperation.fromFuture(provider['data'](widget.data));
 
   @override
   void initState() {
@@ -278,8 +272,7 @@ class EpisodeListState extends State<EpisodeList> {
                 ),
                 onChanged: (value) async {
                   load.cancel();
-                  load = CancelableOperation.fromFuture(
-                      value!['data'](widget.data));
+                  load = CancelableOperation.fromFuture(value!['data'](widget.data));
                   content
                     ..clear()
                     ..addAll(await load.value);

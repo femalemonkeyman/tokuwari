@@ -17,10 +17,8 @@ import 'pages/info_page.dart';
 import 'pages/later_page.dart';
 import 'pages/media_page.dart';
 
-final GlobalKey<NavigatorState> _rootKey =
-    GlobalKey<NavigatorState>(debugLabel: 'root');
-final GlobalKey<NavigatorState> _shellkey =
-    GlobalKey<NavigatorState>(debugLabel: 'shell');
+final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+final GlobalKey<NavigatorState> _shellkey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +26,7 @@ void main() async {
   Isar.openSync(
     [AniDataSchema, MediaProvSchema, NovDataSchema],
     name: "tokudb",
-    directory: (await Directory(
-                '${(await getApplicationDocumentsDirectory()).path}/.anicross')
-            .create())
-        .path,
+    directory: (await Directory('${(await getApplicationDocumentsDirectory()).path}/.tokuwari').create()).path,
   );
   runApp(
     const Navigation(),
@@ -69,9 +64,7 @@ class Navigation extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxWidth: clampDouble(
-                            MediaQuery.of(context).size.width, 0, 384)),
+                    constraints: BoxConstraints(maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
                     child: BottomNavigationBar(
                       elevation: 0,
                       useLegacyColorScheme: false,
@@ -109,9 +102,7 @@ class Navigation extends StatelessWidget {
                     name: 'anime',
                     path: '/anime',
                     builder: (context, state) => AniPage(
-                      key: (state.uri.queryParameters.isEmpty)
-                          ? null
-                          : Key(state.uri.queryParameters['tag']!),
+                      key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
                       type: 'anime',
                       tag: state.uri.queryParameters['tag'],
                     ),
@@ -144,9 +135,7 @@ class Navigation extends StatelessWidget {
                     name: 'manga',
                     path: '/manga',
                     builder: (context, state) => AniPage(
-                      key: (state.uri.queryParameters.isEmpty)
-                          ? null
-                          : Key(state.uri.queryParameters['tag']!),
+                      key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
                       type: 'manga',
                       tag: state.uri.queryParameters['tag'],
                     ),
