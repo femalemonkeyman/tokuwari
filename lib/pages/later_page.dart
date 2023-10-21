@@ -80,7 +80,7 @@ class LaterPage extends StatelessWidget {
                       ),
                     ),
                     Grid(
-                      data: snap.data!.reversed.toList(),
+                      data: snap.data!,
                       keep: false,
                       length: snap.data!.length,
                     ),

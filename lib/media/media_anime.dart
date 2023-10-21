@@ -43,13 +43,11 @@ extension DurationExtension on Duration {
 final GlobalKey<VideoState> vKey = GlobalKey<VideoState>();
 
 class AniViewer extends StatefulWidget {
-  final List<MediaProv> episodes;
   final AniData anime;
   final int episode;
 
   const AniViewer({
     super.key,
-    required this.episodes,
     required this.episode,
     required this.anime,
   });
@@ -70,7 +68,7 @@ class AniViewerState extends State<AniViewer> {
     configuration: const VideoControllerConfiguration(hwdec: 'auto-safe'),
   );
   late final CancelableOperation load = CancelableOperation.fromFuture(play());
-  final bool isPhone = Platform.isAndroid || Platform.isIOS;
+  final bool isPhone = !Platform.isAndroid && !Platform.isIOS;
   DiscordRPC? discord = startRpc();
   Source media = const Source(qualities: {}, subtitles: {});
 
@@ -91,7 +89,7 @@ class AniViewerState extends State<AniViewer> {
   }
 
   Future<void> play() async {
-    media = await widget.episodes[widget.episode].call!();
+    media = await widget.anime.mediaProv[widget.episode].call!();
     if (media.qualities.isNotEmpty) {
       await player.open(
         Media(
@@ -107,8 +105,8 @@ class AniViewerState extends State<AniViewer> {
           ..updatePresence(
             DiscordPresence(
               largeImageKey: widget.anime.image,
-              details: "Watching: ${widget.episodes[widget.episode].title}",
-              state: "Episode: ${widget.episode + 1} / ${widget.episodes.length}",
+              details: "Watching: ${widget.anime.mediaProv[widget.episode].title}",
+              state: "Episode: ${widget.episode + 1} / ${widget.anime.mediaProv.length}",
             ),
           );
       }
@@ -178,171 +176,10 @@ class AniViewerState extends State<AniViewer> {
                       pauseUponEnteringBackgroundMode: false,
                     ),
                     Controls(
-                      topbar: Positioned(
-                        top: 10,
-                        left: 20,
-                        right: 20,
-                        child: Row(
-                          children: [
-                            BackButton(
-                              onPressed: () {
-                                windowManager.setFullScreen(false);
-                                context.pop();
-                              },
-                            ),
-                            const Spacer(),
-                            Text(
-                              "Episode ${widget.episode + 1}",
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 255, 255, 255),
-                              ),
-                            ),
-                            const Spacer(),
-                            if (widget.episodes[widget.episode].title.isNotEmpty)
-                              Text(
-                                widget.episodes[widget.episode].title,
-                                style: const TextStyle(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                ),
-                              ),
-                            const Spacer(
-                              flex: 100,
-                            ),
-                            PopupMenuButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              itemBuilder: (c) => [
-                                if (media.subtitles.isNotEmpty)
-                                  PopupMenuItem(
-                                    child: const Text('Subtitles'),
-                                    onTap: () => showModalBottomSheet(
-                                      context: context,
-                                      showDragHandle: true,
-                                      builder: (context) => ListView(
-                                        children: List.generate(
-                                          media.subtitles.length,
-                                          (index) {
-                                            return ListTile(
-                                              title: Text(
-                                                media.subtitles.keys.elementAt(index),
-                                              ),
-                                              onTap: () {
-                                                player.setSubtitleTrack(
-                                                  SubtitleTrack.uri(
-                                                    media.subtitles.values.elementAt(index),
-                                                  ),
-                                                );
-                                                context.pop();
-                                              },
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                PopupMenuItem(
-                                  child: const Text('Quality'),
-                                  onTap: () => showModalBottomSheet(
-                                    showDragHandle: true,
-                                    context: context,
-                                    builder: (context) => ListView(
-                                      children: (media.qualities.length == 1)
-                                          ? List.generate(
-                                              player.state.tracks.video.length,
-                                              (i) => ListTile(
-                                                title: Text(
-                                                  player.state.tracks.video[i].h.toString(),
-                                                ),
-                                                onTap: () {
-                                                  player.setVideoTrack(
-                                                    player.state.tracks.video[i],
-                                                  );
-                                                  context.pop();
-                                                },
-                                              ),
-                                            )
-                                          : List.generate(
-                                              media.qualities.length,
-                                              (i) => ListTile(
-                                                title: Text(media.qualities.keys.elementAt(i)),
-                                                onTap: () async {
-                                                  await (player.platform as NativePlayer).setProperty(
-                                                    "start",
-                                                    player.state.position.toString(),
-                                                  );
-                                                  await player.open(
-                                                    Media(
-                                                      media.qualities.values.elementAt(i),
-                                                      httpHeaders: media.headers,
-                                                    ),
-                                                    play: false,
-                                                  );
-                                                  await setSubtitles();
-                                                  await player.play();
-                                                  if (context.mounted) {
-                                                    context.pop();
-                                                  }
-                                                },
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      progressbar: Positioned(
-                        bottom: 40,
-                        left: 0,
-                        right: 0,
-                        child: ProgressBar(
-                          player: player,
-                        ),
-                      ),
-                      bottombar: Positioned(
-                        bottom: 10,
-                        left: 20,
-                        right: 20,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              onPressed: (widget.episode == 0)
-                                  ? null
-                                  : () => context.pushReplacement(
-                                        '/anime/info/viewer',
-                                        extra: {
-                                          'index': widget.episode - 1,
-                                          'contents': widget.episodes,
-                                          'data': widget.anime,
-                                        },
-                                      ),
-                              icon: const Icon(Icons.skip_previous),
-                            ),
-                            PlayButton(
-                              player: player,
-                            ),
-                            IconButton(
-                              onPressed: (widget.episode == widget.episodes.length - 1)
-                                  ? null
-                                  : () => context.pushReplacement(
-                                        '/anime/info/viewer',
-                                        extra: {
-                                          'index': widget.episode + 1,
-                                          'contents': widget.episodes,
-                                          'data': widget.anime,
-                                        },
-                                      ),
-                              icon: const Icon(Icons.skip_next),
-                            ),
-                            const Spacer(),
-                            if (isPhone) const FullScreenButton(),
-                          ],
-                        ),
-                      ),
+                      player: player,
+                      media: media,
+                      episode: widget.episode,
+                      anime: widget.anime,
                     ),
                   ],
                 ),
@@ -365,15 +202,17 @@ class AniViewerState extends State<AniViewer> {
 }
 
 class Controls extends StatefulWidget {
-  final Widget topbar;
-  final Widget progressbar;
-  final Widget bottombar;
+  final Source media;
+  final Player player;
+  final int episode;
+  final AniData anime;
 
   const Controls({
     super.key,
-    required this.topbar,
-    required this.progressbar,
-    required this.bottombar,
+    required this.media,
+    required this.player,
+    required this.episode,
+    required this.anime,
   });
 
   @override
@@ -424,12 +263,161 @@ class ControlsState extends State<Controls> {
                 ],
               ),
             ),
-            child: Stack(
-              children: [
-                widget.topbar,
-                widget.progressbar,
-                widget.bottombar,
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      BackButton(
+                        onPressed: () {
+                          windowManager.setFullScreen(false);
+                          context.pop();
+                        },
+                      ),
+                      const Spacer(),
+                      Text(
+                        "Episode ${widget.episode + 1}",
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                        ),
+                      ),
+                      const Spacer(),
+                      if (widget.anime.mediaProv[widget.episode].title.isNotEmpty)
+                        Text(
+                          widget.anime.mediaProv[widget.episode].title,
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
+                        ),
+                      const Spacer(
+                        flex: 100,
+                      ),
+                      PopupMenuButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        itemBuilder: (c) => [
+                          if (widget.media.subtitles.isNotEmpty)
+                            PopupMenuItem(
+                              child: const Text('Subtitles'),
+                              onTap: () => showModalBottomSheet(
+                                context: context,
+                                showDragHandle: true,
+                                builder: (context) => ListView(
+                                  children: List.generate(
+                                    widget.media.subtitles.length,
+                                    (index) {
+                                      return ListTile(
+                                        title: Text(
+                                          widget.media.subtitles.keys.elementAt(index),
+                                        ),
+                                        onTap: () {
+                                          widget.player.setSubtitleTrack(
+                                            SubtitleTrack.uri(
+                                              widget.media.subtitles.values.elementAt(index),
+                                            ),
+                                          );
+                                          context.pop();
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          PopupMenuItem(
+                            child: const Text('Quality'),
+                            onTap: () => showModalBottomSheet(
+                              showDragHandle: true,
+                              context: context,
+                              builder: (context) => ListView(
+                                children: (widget.media.qualities.length == 1)
+                                    ? List.generate(
+                                        widget.player.state.tracks.video.length - 2,
+                                        (i) => ListTile(
+                                          title: Text(
+                                            widget.player.state.tracks.video[i + 2].h.toString(),
+                                          ),
+                                          onTap: () {
+                                            widget.player.setVideoTrack(
+                                              widget.player.state.tracks.video[i + 2],
+                                            );
+                                            context.pop();
+                                          },
+                                        ),
+                                      )
+                                    : List.generate(
+                                        widget.media.qualities.length,
+                                        (i) => ListTile(
+                                          title: Text(widget.media.qualities.keys.elementAt(i)),
+                                          onTap: () async {
+                                            await (widget.player.platform as NativePlayer).setProperty(
+                                              "start",
+                                              widget.player.state.position.toString(),
+                                            );
+                                            final subs = widget.player.state.track.subtitle;
+                                            await widget.player.open(
+                                              Media(
+                                                widget.media.qualities.values.elementAt(i),
+                                                httpHeaders: widget.media.headers,
+                                              ),
+                                              play: false,
+                                            );
+                                            widget.player.setSubtitleTrack(subs);
+                                            await widget.player.play();
+                                            if (context.mounted) {
+                                              context.pop();
+                                            }
+                                          },
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  ProgressBar(player: widget.player),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: (widget.episode == 0)
+                            ? null
+                            : () => context.pushReplacement(
+                                  '/anime/info/viewer',
+                                  extra: {
+                                    'index': widget.episode - 1,
+                                    'data': widget.anime,
+                                  },
+                                ),
+                        icon: const Icon(Icons.skip_previous),
+                      ),
+                      PlayButton(
+                        player: widget.player,
+                      ),
+                      IconButton(
+                        onPressed: (widget.episode == widget.anime.mediaProv.length - 1)
+                            ? null
+                            : () => context.pushReplacement(
+                                  '/anime/info/viewer',
+                                  extra: {
+                                    'index': widget.episode + 1,
+                                    'contents': widget.anime.mediaProv,
+                                    'data': widget.anime,
+                                  },
+                                ),
+                        icon: const Icon(Icons.skip_next),
+                      ),
+                      const Spacer(),
+                      if (isPhone) const FullScreenButton(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -465,32 +453,29 @@ class ProgressBarState extends State<ProgressBar> {
 
   @override
   Widget build(context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5, right: 20, left: 20),
-      child: Row(
-        children: [
-          Text(Duration(seconds: spot.round()).label()),
-          Expanded(
-            child: Slider(
-              focusNode: FocusNode(canRequestFocus: false),
-              max: widget.player.state.duration.inSeconds.toDouble(),
-              // label: Duration(seconds: spot.toInt()).label(),
-              // divisions: widget.player.state.duration.inSeconds,
-              secondaryTrackValue: widget.player.state.buffer.inSeconds.toDouble(),
-              value: spot,
-              onChanged: (value) => setState(
-                () => spot = value,
-              ),
-              onChangeStart: (_) => widget.player.pause(),
-              onChangeEnd: (value) async {
-                await widget.player.seek(Duration(seconds: value.toInt()));
-                widget.player.play();
-              },
+    return Row(
+      children: [
+        Text(Duration(seconds: spot.round()).label()),
+        Expanded(
+          child: Slider(
+            focusNode: FocusNode(canRequestFocus: false),
+            max: widget.player.state.duration.inSeconds.toDouble(),
+            // label: Duration(seconds: spot.toInt()).label(),
+            // divisions: widget.player.state.duration.inSeconds,
+            secondaryTrackValue: widget.player.state.buffer.inSeconds.toDouble(),
+            value: spot,
+            onChanged: (value) => setState(
+              () => spot = value,
             ),
+            onChangeStart: (_) => widget.player.pause(),
+            onChangeEnd: (value) async {
+              await widget.player.seek(Duration(seconds: value.toInt()));
+              widget.player.play();
+            },
           ),
-          Text(widget.player.state.duration.label()),
-        ],
-      ),
+        ),
+        Text(widget.player.state.duration.label()),
+      ],
     );
   }
 }

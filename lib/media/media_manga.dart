@@ -1,166 +1,106 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view_gallery.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:preload_page_view/preload_page_view.dart';
+import 'package:tokuwari/media/media_controllers.dart';
+import 'package:tokuwari_models/info_models.dart';
 
-class MangaReader extends StatelessWidget {
+class MangaReader extends StatefulWidget {
+  final AniData manga;
   final int chapter;
-  final List chapters;
-  final bool reverse;
-  final PageController controller = PageController();
-  final BaseCacheManager cache = CacheManager(
-    Config(
-      'MReader',
-      maxNrOfCacheObjects: 15,
-      stalePeriod: const Duration(minutes: 2),
-    ),
-  );
 
-  MangaReader({Key? key, required this.chapter, required this.chapters, this.reverse = false}) : super(key: key);
+  const MangaReader({super.key, required this.manga, required this.chapter});
 
   @override
-  Widget build(final context) {
-    return FutureBuilder<List>(
-      future: chapters[chapter].call!(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Scaffold(
-            body: Stack(
-              children: [
-                PhotoViewGallery.builder(
-                  itemCount: snapshot.data!.length,
-                  allowImplicitScrolling: true,
-                  scrollPhysics: const NeverScrollableScrollPhysics(),
-                  pageController: controller,
-                  reverse: true,
-                  builder: (context, index) {
-                    return PhotoViewGalleryPageOptions(
-                      imageProvider: CachedNetworkImageProvider(
-                        snapshot.data?[index],
-                        cacheManager: cache,
-                      ),
-                    );
-                  },
-                ),
-                MangaControls(
-                  controller: controller,
-                ),
-              ],
-            ),
-          );
-        }
-        return const Column(
-          children: [
-            Align(
-              alignment: Alignment.topLeft,
-              child: BackButton(),
-            ),
-            Spacer(),
-            Center(
-              child: CircularProgressIndicator(),
-            ),
-            Spacer()
-          ],
-        );
-      },
-    );
+  State createState() => MangaReaderState();
+}
+
+class MangaReaderState extends State<MangaReader> {
+  final PreloadPageController controller = PreloadPageController();
+  late final ReaderController prefs =
+      ReaderController(chapters: widget.manga.mediaProv, current: widget.chapter, controller: controller);
+  bool _show = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      await prefs.fetch();
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
-}
-
-class MangaControls extends StatefulWidget {
-  final PageController controller;
-  const MangaControls({required this.controller, super.key});
-
-  @override
-  State createState() => MangaControlsState();
-}
-
-class MangaControlsState extends State<MangaControls> {
-  bool show = false;
 
   @override
   void dispose() {
-    widget.controller.dispose();
+    controller.dispose();
+    prefs.dispose();
     super.dispose();
   }
 
   @override
   Widget build(context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-    return SafeArea(
-      child: Stack(
+    return Scaffold(
+      body: Stack(
         children: [
-          AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: !show ? 0.0 : 1.0,
-            child: Stack(
+          PreloadPageView.builder(
+            preloadPagesCount: 3,
+            itemCount: prefs.chapter.pages.length,
+            controller: controller,
+            reverse: prefs.reverse,
+            scrollDirection: switch (prefs.direction) {
+              ReaderDirection.vertical => Axis.vertical,
+              ReaderDirection.horizontal || ReaderDirection.wrong => Axis.horizontal,
+            },
+            itemBuilder: (context, index) {
+              if (prefs.chapter.pages.length > index) {
+                return ExtendedImage.network(
+                  prefs.chapter.pages[index],
+                );
+              }
+              return const SizedBox.expand();
+            },
+          ),
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTapDown: (details) async {
+              final width = MediaQuery.of(context).size.width;
+              if (details.globalPosition.dx < width / 3 && !prefs.loading) {
+                if (controller.page == prefs.chapter.pages.length - 1 && prefs.hasNext) {
+                  await prefs.changeChapter(true);
+                } else {
+                  controller.nextPage(duration: const Duration(microseconds: 1), curve: Curves.linear);
+                }
+              } else if (details.globalPosition.dx > width / 1.5 && !prefs.loading) {
+                if (controller.page == 0 && prefs.hasPrevious) {
+                  await prefs.changeChapter(false);
+                } else {
+                  controller.previousPage(duration: const Duration(microseconds: 1), curve: Curves.linear);
+                }
+              } else {
+                setState(() {
+                  _show = !_show;
+                });
+              }
+            },
+            child: Column(
               children: [
-                Positioned(
-                  bottom: 0,
-                  child: Text(
-                    ((widget.controller.page?.toInt() ?? 0) + 1).toString(),
+                AnimatedContainer(
+                  height: _show ? 56 : 0,
+                  duration: const Duration(milliseconds: 500),
+                  child: AppBar(),
+                ),
+                const Spacer(),
+                AnimatedContainer(
+                  height: _show ? 56 : 0,
+                  duration: const Duration(milliseconds: 500),
+                  child: Container(
+                    color: Colors.black,
                   ),
                 ),
-                Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xCC000000),
-                        Color(0x00000000),
-                        Color(0x00000000),
-                        Color(0x00000000),
-                        Color(0x00000000),
-                        Color(0x00000000),
-                        Color(0xCC000000),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  width: width / 2,
-                  height: height,
-                  child: GestureDetector(
-                    onTap: () {
-                      widget.controller.jumpToPage(
-                        (widget.controller.page! + 1).toInt(),
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  width: width / 2,
-                  height: height,
-                  child: GestureDetector(
-                    onTap: () {
-                      widget.controller.jumpToPage(
-                        (widget.controller.page! - 1).toInt(),
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  height: height / 5,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: GestureDetector(
-                    //behavior: HitTestBehavior.opaque,
-                    onTap: () => setState(
-                      () => (show = !show),
-                    ),
-                  ),
-                ),
-                const BackButton(),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

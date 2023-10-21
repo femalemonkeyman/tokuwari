@@ -88,12 +88,12 @@ class AniPage extends StatefulWidget {
 
 class AniPageState extends State<AniPage> {
   final TextEditingController textController = TextEditingController();
-  String? search;
-  bool loading = false;
   final List<String> selectedGenres = [];
   late String? tag = widget.tag;
   final Map pageInfo = {};
   final List<AniData> animeData = [];
+  String? search;
+  bool loading = false;
 
   @override
   void initState() {

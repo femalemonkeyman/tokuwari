@@ -24,7 +24,6 @@ dependencies:
       url: https://github.com/gauravmehta13/flutter_cached_network_image.git
       path: cached_network_image
   dio: 
-  photo_view:
   flex_color_scheme:
   media_kit:
   media_kit_video:
@@ -32,13 +31,14 @@ dependencies:
   path_provider: 
   async:
   window_manager: 
-  flutter_image:
   encrypt: 
   isar: ^4.0.0-dev.14
   isar_flutter_libs: ^4.0.0-dev.14
   expandable_text:
   string_similarity: 
   go_router: 
+  preload_page_view: 
+  extended_image: 
   # For novels
   archive:
   image:
@@ -49,8 +49,9 @@ dependencies:
 
   #Model
   tokuwari_models:
-    git:
-      url: https://github.com/femalemonkeyman/tokuwari-models
+    path: ../Projects/modules/tokuwari-models
+    # git:
+    #   url: https://github.com/femalemonkeyman/tokuwari-models
 
   #Modules
   key:
@@ -59,7 +60,7 @@ dependencies:
     #  url: https://github.com/femalemonkeyman/key
   
 dependency_overrides:
-  graphql: ^5.2.0-beta.5
+  graphql: ^5.2.0-beta.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

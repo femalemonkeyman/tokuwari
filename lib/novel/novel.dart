@@ -19,13 +19,14 @@ class NovelPage extends StatefulWidget {
 }
 
 class NovelPageState extends State<NovelPage> {
-  Isar isar = Isar.get(schemas: [NovDataSchema], name: 'tokudb');
+  final Isar isar = Isar.get(schemas: [NovDataSchema], name: 'tokudb');
   List<NovData> novels = [];
 
   @override
   void initState() {
     super.initState();
-    novels = isar.novDatas.where().typeEqualTo("novel").findAll();
+    print(isar.novDatas.count());
+    novels = isar.novDatas.where().findAll();
   }
 
   importNovel() async {

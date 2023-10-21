@@ -220,14 +220,13 @@ class EpisodeList extends StatefulWidget {
 }
 
 class EpisodeListState extends State<EpisodeList> {
-  final List<MediaProv> content = [];
   late Map provider = providers[widget.data.type]![0];
   late CancelableOperation load = CancelableOperation.fromFuture(provider['data'](widget.data));
 
   @override
   void initState() {
     Future.microtask(() async {
-      content.addAll(await load.value);
+      widget.data.mediaProv.addAll(await load.value);
       if (mounted) {
         setState(() {});
       }
@@ -272,7 +271,7 @@ class EpisodeListState extends State<EpisodeList> {
                 onChanged: (value) async {
                   load.cancel();
                   load = CancelableOperation.fromFuture(value!['data'](widget.data));
-                  content
+                  widget.data.mediaProv
                     ..clear()
                     ..addAll(await load.value);
                   setState(() {
@@ -293,40 +292,37 @@ class EpisodeListState extends State<EpisodeList> {
               mainAxisExtent: 100,
             ),
             delegate: SliverChildBuilderDelegate(
-              childCount: content.length,
-              (context, index) {
-                return GestureDetector(
-                  onTap: () => context.push(
-                    '/${widget.data.type}/info/viewer',
-                    extra: {
-                      'index': index,
-                      'contents': content,
-                      'data': widget.data,
-                    },
-                  ),
-                  child: Card(
-                    elevation: 3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            content[index].title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+              childCount: widget.data.mediaProv.length,
+              (context, index) => GestureDetector(
+                onTap: () => context.push(
+                  '/${widget.data.type}/info/viewer',
+                  extra: {
+                    'index': index,
+                    'data': widget.data,
+                  },
+                ),
+                child: Card(
+                  elevation: 3,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          widget.data.mediaProv[index].title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Flexible(
-                          child: Text(
-                            '${(widget.data.type == 'anime') ? 'Episode:' : 'Chapter:'} ${content[index].number}',
-                          ),
+                      ),
+                      Flexible(
+                        child: Text(
+                          '${(widget.data.type == 'anime') ? 'Episode:' : 'Chapter:'} ${widget.data.mediaProv[index].number}',
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                );
-              },
+                ),
+              ),
             ),
           ),
         ],

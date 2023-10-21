@@ -9,7 +9,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tokuwari_models/info_models.dart';
 
-import '/novel/novel_reader.dart';
+import 'novel/novel_reader.dart';
 import 'media/media_anime.dart';
 import 'media/media_manga.dart';
 import 'novel/novel.dart';
@@ -18,23 +18,161 @@ import 'pages/later_page.dart';
 import 'pages/media_page.dart';
 
 final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
-final GlobalKey<NavigatorState> _shellkey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   Isar.open(
-    schemas: [AniDataSchema, MediaProvSchema, NovDataSchema],
+    schemas: [AniDataSchema, HistorySchema, NovDataSchema],
     name: "tokudb",
     directory: (await Directory('${(await getApplicationDocumentsDirectory()).path}/.tokuwari').create()).path,
   );
   runApp(
-    const Navigation(),
+    Navigation(),
   );
 }
 
 class Navigation extends StatelessWidget {
-  const Navigation({super.key});
+  Navigation({super.key});
+
+  final router = GoRouter(
+    navigatorKey: _rootKey,
+    initialLocation: '/anime',
+    routes: [
+      StatefulShellRoute.indexedStack(
+        parentNavigatorKey: _rootKey,
+        builder: (context, state, shell) => Scaffold(
+          body: shell,
+          bottomNavigationBar: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
+                child: BottomNavigationBar(
+                  elevation: 0,
+                  useLegacyColorScheme: false,
+                  showUnselectedLabels: false,
+                  currentIndex: shell.currentIndex,
+                  onTap: (value) => shell.goBranch(value),
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.ondemand_video_rounded),
+                      label: 'Anime',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.menu_book_rounded),
+                      label: 'Manga',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.book_rounded),
+                      label: 'Novels',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.bookmark),
+                      label: 'Later',
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: 'anime',
+                path: '/anime',
+                builder: (context, state) => AniPage(
+                  key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
+                  type: 'anime',
+                  tag: state.uri.queryParameters['tag'],
+                ),
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: _rootKey,
+                    path: 'info',
+                    builder: (context, state) => InfoPage(
+                      data: state.extra as AniData,
+                    ),
+                    routes: [
+                      GoRoute(
+                        parentNavigatorKey: _rootKey,
+                        path: 'viewer',
+                        builder: (context, state) => AniViewer(
+                          episode: (state.extra as Map)['index'],
+                          anime: (state.extra as Map)['data'],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: 'manga',
+                path: '/manga',
+                builder: (context, state) => AniPage(
+                  key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
+                  type: 'manga',
+                  tag: state.uri.queryParameters['tag'],
+                ),
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: _rootKey,
+                    path: 'info',
+                    builder: (context, state) => InfoPage(
+                      data: state.extra as AniData,
+                    ),
+                    routes: [
+                      GoRoute(
+                        parentNavigatorKey: _rootKey,
+                        path: 'viewer',
+                        builder: (context, state) => MangaReader(
+                          chapter: (state.extra as Map)['index'],
+                          manga: (state.extra as Map)['data'],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: 'novel',
+                path: '/novel',
+                builder: (context, state) => const NovelPage(),
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: _rootKey,
+                    path: 'viewer',
+                    builder: (context, state) => NovelReader(
+                      data: state.extra as NovData,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: 'later',
+                path: '/later',
+                builder: (context, state) => LaterPage(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
 
   @override
   Widget build(context) {
@@ -52,146 +190,7 @@ class Navigation extends StatelessWidget {
         typography: Typography.material2021(platform: defaultTargetPlatform),
       ),
       debugShowCheckedModeBanner: false,
-      routerConfig: GoRouter(
-        navigatorKey: _rootKey,
-        initialLocation: '/anime',
-        routes: [
-          StatefulShellRoute.indexedStack(
-            parentNavigatorKey: _rootKey,
-            builder: (context, state, shell) => Scaffold(
-              body: shell,
-              bottomNavigationBar: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
-                    child: BottomNavigationBar(
-                      elevation: 0,
-                      useLegacyColorScheme: false,
-                      showUnselectedLabels: false,
-                      currentIndex: shell.currentIndex,
-                      onTap: (value) => shell.goBranch(value),
-                      items: const [
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.ondemand_video_rounded),
-                          label: 'Anime',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.menu_book_rounded),
-                          label: 'Manga',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.book_rounded),
-                          label: 'Novels',
-                        ),
-                        BottomNavigationBarItem(
-                          icon: Icon(Icons.bookmark),
-                          label: 'Later',
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            branches: [
-              StatefulShellBranch(
-                navigatorKey: _shellkey,
-                routes: [
-                  GoRoute(
-                    name: 'anime',
-                    path: '/anime',
-                    builder: (context, state) => AniPage(
-                      key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
-                      type: 'anime',
-                      tag: state.uri.queryParameters['tag'],
-                    ),
-                    routes: [
-                      GoRoute(
-                        parentNavigatorKey: _rootKey,
-                        path: 'info',
-                        builder: (context, state) => InfoPage(
-                          data: state.extra as AniData,
-                        ),
-                        routes: [
-                          GoRoute(
-                            parentNavigatorKey: _rootKey,
-                            path: 'viewer',
-                            builder: (context, state) => AniViewer(
-                              episodes: (state.extra as Map)['contents'],
-                              episode: (state.extra as Map)['index'],
-                              anime: (state.extra as Map)['data'],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                    name: 'manga',
-                    path: '/manga',
-                    builder: (context, state) => AniPage(
-                      key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
-                      type: 'manga',
-                      tag: state.uri.queryParameters['tag'],
-                    ),
-                    routes: [
-                      GoRoute(
-                        parentNavigatorKey: _rootKey,
-                        path: 'info',
-                        builder: (context, state) => InfoPage(
-                          data: state.extra as AniData,
-                        ),
-                        routes: [
-                          GoRoute(
-                            parentNavigatorKey: _rootKey,
-                            path: 'viewer',
-                            builder: (context, state) => MangaReader(
-                              chapter: (state.extra as Map)['index'],
-                              chapters: (state.extra as Map)['contents'],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                    name: 'novel',
-                    path: '/novel',
-                    builder: (context, state) => const NovelPage(),
-                    routes: [
-                      GoRoute(
-                        parentNavigatorKey: _rootKey,
-                        path: 'viewer',
-                        builder: (context, state) => NovelReader(
-                          data: state.extra as NovData,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                    name: 'later',
-                    path: '/later',
-                    builder: (context, state) => LaterPage(),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
+      routerConfig: router,
     );
   }
 }
