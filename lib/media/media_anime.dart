@@ -65,7 +65,10 @@ class AniViewerState extends State<AniViewer> {
   );
   late final VideoController controller = VideoController(
     player,
-    configuration: const VideoControllerConfiguration(hwdec: 'auto-safe'),
+    configuration: const VideoControllerConfiguration(
+      hwdec: 'auto-safe',
+      androidAttachSurfaceAfterVideoParameters: false,
+    ),
   );
   late final CancelableOperation load = CancelableOperation.fromFuture(play());
   final bool isPhone = !Platform.isAndroid && !Platform.isIOS;

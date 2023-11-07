@@ -225,19 +225,25 @@ class EpisodeListState extends State<EpisodeList> {
 
   @override
   void initState() {
-    Future.microtask(() async {
-      widget.data.mediaProv.addAll(await load.value);
-      if (mounted) {
-        setState(() {});
-      }
-    });
     super.initState();
+    if (widget.data.mediaProv.isEmpty) {
+      addEpisodes();
+    }
+  }
+
+  void addEpisodes() async {
+    if (mounted) {
+      widget.data.mediaProv
+        ..clear()
+        ..addAll(await load.value);
+      setState(() {});
+    }
   }
 
   @override
   void dispose() {
-    load.cancel();
     super.dispose();
+    load.cancel();
   }
 
   @override
@@ -255,7 +261,7 @@ class EpisodeListState extends State<EpisodeList> {
                 focusColor: const Color.fromARGB(0, 0, 0, 0),
                 borderRadius: BorderRadius.circular(30),
                 icon: IconButton(
-                  onPressed: () {},
+                  onPressed: () => addEpisodes(),
                   icon: const Icon(Icons.refresh_rounded),
                 ),
                 items: List.generate(

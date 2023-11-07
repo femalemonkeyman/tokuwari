@@ -47,13 +47,13 @@ class MangaReaderState extends State<MangaReader> {
             preloadPagesCount: 3,
             itemCount: prefs.chapter.pages.length,
             controller: controller,
-            reverse: prefs.reverse,
+            reverse: !prefs.reverse,
             scrollDirection: switch (prefs.direction) {
               ReaderDirection.vertical => Axis.vertical,
               ReaderDirection.horizontal || ReaderDirection.wrong => Axis.horizontal,
             },
             itemBuilder: (context, index) {
-              if (prefs.chapter.pages.length > index) {
+              if (prefs.chapter.pages.length >= index) {
                 return ExtendedImage.network(
                   prefs.chapter.pages[index],
                 );
@@ -64,44 +64,105 @@ class MangaReaderState extends State<MangaReader> {
           GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTapDown: (details) async {
+              if (prefs.loading) return;
               final width = MediaQuery.of(context).size.width;
-              if (details.globalPosition.dx < width / 3 && !prefs.loading) {
+              final left = details.globalPosition.dx < width / 3;
+              final right = details.globalPosition.dx > width / 1.5;
+              if ((prefs.reverse) ? right : left) {
                 if (controller.page == prefs.chapter.pages.length - 1 && prefs.hasNext) {
                   await prefs.changeChapter(true);
                 } else {
                   controller.nextPage(duration: const Duration(microseconds: 1), curve: Curves.linear);
                 }
-              } else if (details.globalPosition.dx > width / 1.5 && !prefs.loading) {
+              } else if ((prefs.reverse) ? left : right) {
                 if (controller.page == 0 && prefs.hasPrevious) {
                   await prefs.changeChapter(false);
                 } else {
                   controller.previousPage(duration: const Duration(microseconds: 1), curve: Curves.linear);
                 }
               } else {
-                setState(() {
-                  _show = !_show;
-                });
+                _show = !_show;
               }
+              setState(() {});
             },
-            child: Column(
-              children: [
-                AnimatedContainer(
-                  height: _show ? 56 : 0,
-                  duration: const Duration(milliseconds: 500),
-                  child: AppBar(),
+          ),
+          Column(
+            children: [
+              AnimatedContainer(
+                height: _show ? 56 : 0,
+                duration: const Duration(milliseconds: 500),
+                child: AppBar(),
+              ),
+              const Spacer(),
+              AnimatedContainer(
+                height: _show ? 40 : 0,
+                duration: const Duration(milliseconds: 500),
+                child: ProgressBar(prefs: prefs),
+              ),
+              AnimatedContainer(
+                height: _show ? 100 : 0,
+                duration: const Duration(milliseconds: 500),
+                child: DraggableScrollableSheet(
+                  initialChildSize: 0.5,
+                  minChildSize: 0.5,
+                  maxChildSize: 1,
+                  builder: (context, controller) {
+                    return Container(
+                      color: Colors.blue,
+                      child: ListView(
+                        controller: controller,
+                        children: [
+                          ListTile(
+                            title: Text('UwU'),
+                          )
+                        ],
+                      ),
+                    );
+                  },
                 ),
-                const Spacer(),
-                AnimatedContainer(
-                  height: _show ? 56 : 0,
-                  duration: const Duration(milliseconds: 500),
-                  child: Container(
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProgressBar extends StatefulWidget {
+  final ReaderController prefs;
+  const ProgressBar({super.key, required this.prefs});
+
+  @override
+  State createState() => ProgressBarState();
+}
+
+class ProgressBarState extends State<ProgressBar> {
+  late double page = widget.prefs.controller.page ?? 0;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.prefs.controller.addListener(() => setState(
+          () {
+            page = widget.prefs.controller.page!;
+          },
+        ));
+  }
+
+  @override
+  Widget build(context) {
+    return Directionality(
+      textDirection: widget.prefs.reverse ? TextDirection.ltr : TextDirection.rtl,
+      child: Slider(
+        min: 0,
+        max: widget.prefs.chapter.pages.isNotEmpty ? widget.prefs.chapter.pages.length.toDouble() - 1 : 1,
+        divisions: (widget.prefs.chapter.pages.isEmpty) ? 1 : widget.prefs.chapter.pages.length,
+        label: ((widget.prefs.controller.page ?? 0) + 1).round().toString(),
+        value: page,
+        onChanged: (value) => widget.prefs.controller.jumpToPage(
+          value.toInt(),
+        ),
       ),
     );
   }

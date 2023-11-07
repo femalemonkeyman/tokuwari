@@ -15,7 +15,7 @@ class ReaderController {
   final PreloadPageController controller;
   late CancelableOperation load = CancelableOperation.fromFuture(fetch());
   Chapter chapter = const Chapter(pages: []);
-  ReaderDirection direction = ReaderDirection.wrong;
+  ReaderDirection direction = ReaderDirection.horizontal;
   int current;
   bool loading = false;
 
@@ -23,7 +23,7 @@ class ReaderController {
 
   bool get hasNext => current != chapters.length - 1;
   bool get hasPrevious => current > 0;
-  bool get reverse => (direction == ReaderDirection.wrong) ? false : true;
+  bool get reverse => (direction == ReaderDirection.wrong) ? true : false;
 
   Future<void> fetch() async {
     chapter = await chapters[current].call!();
