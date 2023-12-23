@@ -5,7 +5,7 @@ import 'package:tokuwari_models/info_models.dart';
 
 Provider paheList(final AniData data) async {
   try {
-    final Map response = (await Dio().get('$malsync/${data.malid}')).data;
+    final Map response = (await Dio().get('$anisync/${data.malid}')).data;
     final String syncId = parse(
       (await Dio().get('https://animepahe.com/a/${response['Sites']?['animepahe'].keys.first}')).data,
     ).head!.getElementsByTagName('script').first.text.split('let id = "')[1].split('";')[0];

@@ -4,6 +4,7 @@ import 'package:async/async.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tokuwari/discord_rpc.dart';
+import 'package:tokuwari/widgets/loading.dart';
 import 'package:tokuwari_models/info_models.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
@@ -70,10 +71,9 @@ class AniViewerState extends State<AniViewer> {
       androidAttachSurfaceAfterVideoParameters: false,
     ),
   );
-  late final CancelableOperation load = CancelableOperation.fromFuture(play());
+  late final CancelableOperation<Source> load = CancelableOperation.fromFuture(play());
   final bool isPhone = !Platform.isAndroid && !Platform.isIOS;
-  DiscordRPC? discord = startRpc();
-  Source media = const Source(qualities: {}, subtitles: {});
+  final DiscordRPC? discord = startRpc();
 
   @override
   void initState() {
@@ -85,14 +85,13 @@ class AniViewerState extends State<AniViewer> {
         DeviceOrientation.landscapeRight,
       ],
     );
-    load.value;
     // player.stream.log.listen((event) {
     //   print(event);
     // });
   }
 
-  Future<void> play() async {
-    media = await widget.anime.mediaProv[widget.episode].call!();
+  Future<Source> play() async {
+    final Source media = await widget.anime.mediaProv[widget.episode].call!();
     if (media.qualities.isNotEmpty) {
       await player.open(
         Media(
@@ -101,36 +100,32 @@ class AniViewerState extends State<AniViewer> {
         ),
         play: false,
       );
-      await setSubtitles();
+      if (media.subtitles.isNotEmpty) {
+        await player.setSubtitleTrack(
+          SubtitleTrack.uri(
+            media.subtitles.entries
+                .firstWhere(
+                  (element) => element.key.toLowerCase().contains('eng'),
+                )
+                .value,
+          ),
+        );
+      }
       if (discord != null) {
         discord!
           ..start(autoRegister: true)
           ..updatePresence(
             DiscordPresence(
               largeImageKey: widget.anime.image,
-              details: "Watching: ${widget.anime.mediaProv[widget.episode].title}",
+              details: "Watching: ${widget.anime.title}",
               state: "Episode: ${widget.episode + 1} / ${widget.anime.mediaProv.length}",
             ),
           );
       }
       await controller.waitUntilFirstFrameRendered;
       await player.play();
-      setState(() {});
     }
-  }
-
-  Future<void> setSubtitles() async {
-    if (media.subtitles.isNotEmpty) {
-      player.setSubtitleTrack(
-        SubtitleTrack.uri(
-          media.subtitles.entries
-              .firstWhere(
-                (element) => element.key.toLowerCase().contains('eng'),
-              )
-              .value,
-        ),
-      );
-    }
+    return media;
   }
 
   @override
@@ -151,8 +146,11 @@ class AniViewerState extends State<AniViewer> {
   @override
   Widget build(context) {
     return Scaffold(
-      body: (media.qualities.isNotEmpty)
-          ? CallbackShortcuts(
+      body: FutureBuilder<Source>(
+        future: load.value,
+        builder: (context, snap) {
+          if (snap.hasData && snap.requireData.qualities.isNotEmpty) {
+            return CallbackShortcuts(
               bindings: {
                 const SingleActivator(LogicalKeyboardKey.keyF): () async => windowManager.setFullScreen(
                       !await windowManager.isFullScreen(),
@@ -180,26 +178,18 @@ class AniViewerState extends State<AniViewer> {
                     ),
                     Controls(
                       player: player,
-                      media: media,
+                      media: snap.requireData,
                       episode: widget.episode,
                       anime: widget.anime,
                     ),
                   ],
                 ),
               ),
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                TextButton(
-                  onPressed: () => context.pop(),
-                  child: const Text("Escape?"),
-                ),
-                const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ],
-            ),
+            );
+          }
+          return const Loading();
+        },
+      ),
     );
   }
 }
@@ -243,8 +233,6 @@ class ControlsState extends State<Controls> {
   Widget build(BuildContext context) => MouseRegion(
         onHover: (_) => setState(() {
           hide = false;
-          // vKey.currentState!
-          //     .setSubtitleViewPadding(EdgeInsets.only(bottom: 50));
           enter.reset();
         }),
         child: AnimatedOpacity(
@@ -355,15 +343,12 @@ class ControlsState extends State<Controls> {
                                         (i) => ListTile(
                                           title: Text(widget.media.qualities.keys.elementAt(i)),
                                           onTap: () async {
-                                            await (widget.player.platform as NativePlayer).setProperty(
-                                              "start",
-                                              widget.player.state.position.toString(),
-                                            );
                                             final subs = widget.player.state.track.subtitle;
                                             await widget.player.open(
                                               Media(
                                                 widget.media.qualities.values.elementAt(i),
                                                 httpHeaders: widget.media.headers,
+                                                start: widget.player.state.position,
                                               ),
                                               play: false,
                                             );
@@ -409,7 +394,6 @@ class ControlsState extends State<Controls> {
                                   '/anime/info/viewer',
                                   extra: {
                                     'index': widget.episode + 1,
-                                    'contents': widget.anime.mediaProv,
                                     'data': widget.anime,
                                   },
                                 ),
@@ -483,51 +467,42 @@ class ProgressBarState extends State<ProgressBar> {
   }
 }
 
-class PlayButton extends StatefulWidget {
+class PlayButton extends StatelessWidget {
   final Player player;
 
   const PlayButton({super.key, required this.player});
 
   @override
-  State createState() => PlayButtonState();
-}
-
-class PlayButtonState extends State<PlayButton> {
-  late final StreamSubscription playing;
-
-  @override
-  void initState() {
-    playing = widget.player.stream.playing.listen(
-      (_) => setState(() {}),
-    );
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    playing.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(context) => IconButton(
-        onPressed: () => setState(() {
-          widget.player.playOrPause();
-        }),
-        icon: Icon(
-          (widget.player.state.playing) ? Icons.pause : Icons.play_arrow_rounded,
+  Widget build(context) => StreamBuilder<bool>(
+        initialData: true,
+        stream: player.stream.playing,
+        builder: (context, snap) => IconButton(
+          onPressed: () => player.playOrPause(),
+          icon: Icon(
+            (snap.requireData) ? Icons.pause : Icons.play_arrow_rounded,
+          ),
         ),
       );
 }
 
-class FullScreenButton extends StatelessWidget {
+class FullScreenButton extends StatefulWidget {
   const FullScreenButton({super.key});
 
   @override
-  Widget build(context) => IconButton(
-        onPressed: () async {
-          windowManager.setFullScreen(!await windowManager.isFullScreen());
-        },
-        icon: const Icon(Icons.fullscreen),
+  State<StatefulWidget> createState() => FullScreenButtonState();
+}
+
+class FullScreenButtonState extends State<FullScreenButton> {
+  @override
+  Widget build(context) => FutureBuilder<bool>(
+        initialData: false,
+        future: windowManager.isFullScreen(),
+        builder: (context, snap) => IconButton(
+          onPressed: () async {
+            windowManager.setFullScreen(!await windowManager.isFullScreen());
+            setState(() {});
+          },
+          icon: snap.requireData ? const Icon(Icons.fullscreen_exit_rounded) : const Icon(Icons.fullscreen),
+        ),
       );
 }

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class SearchButton extends StatelessWidget {
   const SearchButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.controller,
     required this.search,
-  }) : super(key: key);
+  });
   final TextEditingController controller;
   final String text;
   final Function search;

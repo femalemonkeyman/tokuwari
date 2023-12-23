@@ -14,7 +14,7 @@ Provider zoroList(final AniData data) async {
     return [
       for (Element i in parse(jsonDecode(await Dio()
               .get(
-                '$malsync/${data.malid}',
+                '$anisync/${data.malid}',
               )
               .then(
                 (data) async => Dio().get(
@@ -74,7 +74,6 @@ Anime zoroInfo(final id) async {
     if (sources['encrypted']) {
       sources['sources'] = jsonDecode(
         await getSource(
-          '$mega${link.split('e-1/')[1].split('?')[0]}',
           sources['sources'],
           (retries == 1) ? true : false,
         ),

@@ -6,24 +6,16 @@ class Block extends StatelessWidget {
   final dynamic data;
 
   const Block({
-    Key? key,
+    super.key,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(context) {
     return GestureDetector(
-      onTap: () {
-        switch (data.type) {
-          case 'novel':
-            {
-              context.push('/novel/viewer', extra: data);
-            }
-          default:
-            {
-              context.push('/${data.type}/info', extra: data);
-            }
-        }
+      onTap: () => switch (data.type) {
+        'novel' => context.push('/novel/viewer', extra: data),
+        _ => context.push('/${data.type}/info', extra: data),
       },
       child: Stack(
         children: [
@@ -62,55 +54,52 @@ class Block extends StatelessWidget {
             Positioned(
               right: 10,
               top: 10,
-              child: Container(
-                padding:
-                    const EdgeInsets.only(left: 7, right: 7, top: 5, bottom: 5),
-                decoration: const BoxDecoration(
-                  color: Colors.black, //Yes
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(30),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color.fromARGB(94, 0, 0, 0),
-                      spreadRadius: 3,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Text(
-                  "★ ${data.score}",
-                ),
-              ),
-            ),
-          if (data.type != 'novel')
-            Positioned(
               left: 10,
-              top: 10,
-              child: Container(
-                padding:
-                    const EdgeInsets.only(left: 7, right: 7, top: 5, bottom: 5),
-                decoration: const BoxDecoration(
-                  color: Colors.white, // Ill swear in russian for real lol :D
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(30),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color.fromARGB(94, 0, 0, 0),
-                      spreadRadius: 3,
-                      blurRadius: 3,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Text(
-                  "# ${data.count}",
-                  style: const TextStyle(color: Colors.black),
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CornerChip(data: "# ${data.count}", bright: true),
+                  const Spacer(),
+                  CornerChip(data: "★ ${data.score}", bright: false)
+                ],
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class CornerChip extends StatelessWidget {
+  final String data;
+  final bool bright;
+  static const black = Color.fromARGB(255, 0, 0, 0);
+  static const white = Color.fromARGB(255, 255, 255, 255);
+  const CornerChip({super.key, required this.data, required this.bright});
+
+  @override
+  Widget build(context) {
+    return Container(
+      padding: const EdgeInsets.only(left: 7, right: 7, top: 5, bottom: 5),
+      decoration: BoxDecoration(
+        color: bright ? white : black, // Ill swear in russian for real lol :D
+        borderRadius: const BorderRadius.all(
+          Radius.circular(30),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color.fromARGB(94, 0, 0, 0),
+            spreadRadius: 3,
+            blurRadius: 3,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Text(
+        data,
+        style: TextStyle(
+          color: bright ? black : white,
+        ),
       ),
     );
   }

@@ -8,7 +8,7 @@ Provider dexReader(final AniData data) async {
     final json = await Dio().get('$syncLink${data.malid}').then(
           (malsync) async => await Dio()
               .get(
-                "$mangadex/${malsync.data['Sites']['Mangadex'].keys.first}/feed?limit=500&translatedLanguage[]=en&order[chapter]=asc",
+                "$mangadex/${malsync.data['Sites']['Mangadex'].keys.first}/feed?limit=500&translatedLanguage[]=en&order[chapter]=asc&includeEmptyPages=0",
               )
               .then((value) => value.data),
         );

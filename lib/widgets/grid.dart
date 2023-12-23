@@ -9,8 +9,8 @@ class Grid extends StatelessWidget {
     required this.data,
     this.keep = true,
     this.length,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

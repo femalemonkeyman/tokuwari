@@ -5,47 +5,63 @@ description: Something I guess
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.4.1+1
+version: 0.5.0
 
 environment:
-  sdk: ">=3.0.0"
+  sdk: ">=3.2.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  intl:
-  flutter_cache_manager: 
   sliver_tools:
   discord_rpc:
-  flutter_html:
   path:
-  cached_network_image:
-    git:
-      url: https://github.com/gauravmehta13/flutter_cached_network_image.git
-      path: cached_network_image
-  dio: 
-  flex_color_scheme:
-  media_kit:
-  media_kit_video:
-  media_kit_libs_video:
-  path_provider: 
+  dio:
   async:
+  graphql:
+  flex_color_scheme:
+# For novels
+  epubx: 
+    path: /mnt/Storage/HomeStuff/Documents/epubx
+  # webf: 
+  #   git: 
+  #     url: https://github.com/openwebf/webf
+  #     ref: feat/bundle_content_type
+  #     path: webf
+  image:
+  html:
+  file_picker:
+  permission_handler:
+  # Media kit
+  media_kit:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit
+  media_kit_video:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit_video
+  media_kit_libs_video:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./libs/universal/media_kit_libs_video
+  path_provider: 
   window_manager: 
   encrypt: 
   isar: ^4.0.0-dev.14
   isar_flutter_libs: ^4.0.0-dev.14
+  xml:
   expandable_text:
-  string_similarity: 
+  string_similarity:
   go_router: 
   preload_page_view: 
-  extended_image: 
-  # For novels
-  archive:
-  image:
-  html:
-  file_picker:
-  xml2json:
-  permission_handler:
+  extended_image:
+  collection:
+  expandable_page_view:
+
 
   #Model
   tokuwari_models:
@@ -61,6 +77,17 @@ dependencies:
   
 dependency_overrides:
   graphql: ^5.2.0-beta.6
+  
+  media_kit:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit
+  media_kit_video:
+    git:
+      url: https://github.com/media-kit/media-kit.git
+      ref: main
+      path: ./media_kit_video
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

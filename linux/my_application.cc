@@ -2,7 +2,6 @@
 
 #include <flutter_linux/flutter_linux.h>
 #ifdef GDK_WINDOWING_X11
-#include <locale>
 #include <gdk/gdkx.h>
 #endif
 
@@ -17,7 +16,6 @@ G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
 // Implements GApplication::activate.
 static void my_application_activate(GApplication* application) {
-  std::setlocale(LC_NUMERIC, "C");
   MyApplication* self = MY_APPLICATION(application);
   GtkWindow* window =
       GTK_WINDOW(gtk_application_window_new(GTK_APPLICATION(application)));
@@ -45,8 +43,7 @@ static void my_application_activate(GApplication* application) {
     gtk_header_bar_set_title(header_bar, "Tokuwari");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
-  }
-  else {
+  } else {
     gtk_window_set_title(window, "Tokuwari");
   }
 
@@ -84,8 +81,26 @@ static gboolean my_application_local_command_line(GApplication* application, gch
   return TRUE;
 }
 
+// Implements GApplication::startup.
+static void my_application_startup(GApplication* application) {
+  //MyApplication* self = MY_APPLICATION(object);
+
+  // Perform any actions required at application startup.
+
+  G_APPLICATION_CLASS(my_application_parent_class)->startup(application);
+}
+
+// Implements GApplication::shutdown.
+static void my_application_shutdown(GApplication* application) {
+  //MyApplication* self = MY_APPLICATION(object);
+
+  // Perform any actions required at application shutdown.
+
+  G_APPLICATION_CLASS(my_application_parent_class)->shutdown(application);
+}
+
 // Implements GObject::dispose.
-static void my_application_dispose(GObject *object) {
+static void my_application_dispose(GObject* object) {
   MyApplication* self = MY_APPLICATION(object);
   g_clear_pointer(&self->dart_entrypoint_arguments, g_strfreev);
   G_OBJECT_CLASS(my_application_parent_class)->dispose(object);
@@ -94,6 +109,8 @@ static void my_application_dispose(GObject *object) {
 static void my_application_class_init(MyApplicationClass* klass) {
   G_APPLICATION_CLASS(klass)->activate = my_application_activate;
   G_APPLICATION_CLASS(klass)->local_command_line = my_application_local_command_line;
+  G_APPLICATION_CLASS(klass)->startup = my_application_startup;
+  G_APPLICATION_CLASS(klass)->shutdown = my_application_shutdown;
   G_OBJECT_CLASS(klass)->dispose = my_application_dispose;
 }
 
@@ -102,5 +119,6 @@ static void my_application_init(MyApplication* self) {}
 MyApplication* my_application_new() {
   return MY_APPLICATION(g_object_new(my_application_get_type(),
                                      "application-id", APPLICATION_ID,
+                                     "flags", G_APPLICATION_NON_UNIQUE,
                                      nullptr));
 }

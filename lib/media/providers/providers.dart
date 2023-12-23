@@ -1,3 +1,4 @@
+import 'package:tokuwari/media/providers/anime/anitaku.dart';
 import 'package:tokuwari/media/providers/anime/aniwatch.dart';
 import 'package:tokuwari_models/info_models.dart';
 
@@ -16,6 +17,10 @@ final Map<String, List<Map<String, dynamic>>> providers = {
     {
       'name': 'AnimePahe',
       'data': (final AniData data) => paheList(data),
+    },
+    {
+      'name': 'Anitaku',
+      'data': (final AniData data) => gogoList(data),
     },
     //RIP
     // {

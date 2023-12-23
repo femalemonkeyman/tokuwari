@@ -80,7 +80,7 @@ const genresList = [
 class AniPage extends StatefulWidget {
   final String? tag;
   final String type;
-  const AniPage({Key? key, required this.type, this.tag}) : super(key: key);
+  const AniPage({super.key, required this.type, this.tag});
 
   @override
   State createState() => AniPageState();

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
@@ -7,12 +8,13 @@ import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tokuwari/viewers/Novel/media_novel.dart';
+import 'package:window_manager/window_manager.dart';
 import 'package:tokuwari_models/info_models.dart';
 
-import 'novel/novel_reader.dart';
-import 'media/media_anime.dart';
-import 'media/media_manga.dart';
-import 'novel/novel.dart';
+import 'viewers/Anime/media_anime.dart';
+import 'viewers/Manga/media_manga.dart';
+import 'pages/novel_page.dart';
 import 'pages/info_page.dart';
 import 'pages/later_page.dart';
 import 'pages/media_page.dart';
@@ -21,6 +23,9 @@ final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(debugLabel:
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+  }
   MediaKit.ensureInitialized();
   Isar.open(
     schemas: [AniDataSchema, HistorySchema, NovDataSchema],
@@ -47,27 +52,29 @@ class Navigation extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
-                child: BottomNavigationBar(
+                constraints: BoxConstraints(
+                  maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384),
+                ),
+                child: NavigationBar(
                   elevation: 0,
-                  useLegacyColorScheme: false,
-                  showUnselectedLabels: false,
-                  currentIndex: shell.currentIndex,
-                  onTap: (value) => shell.goBranch(value),
-                  items: const [
-                    BottomNavigationBarItem(
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                  onDestinationSelected: (value) => shell.goBranch(value),
+                  selectedIndex: shell.currentIndex,
+                  labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+                  destinations: const [
+                    NavigationDestination(
                       icon: Icon(Icons.ondemand_video_rounded),
                       label: 'Anime',
                     ),
-                    BottomNavigationBarItem(
+                    NavigationDestination(
                       icon: Icon(Icons.menu_book_rounded),
                       label: 'Manga',
                     ),
-                    BottomNavigationBarItem(
+                    NavigationDestination(
                       icon: Icon(Icons.book_rounded),
                       label: 'Novels',
                     ),
-                    BottomNavigationBarItem(
+                    NavigationDestination(
                       icon: Icon(Icons.bookmark),
                       label: 'Later',
                     )
@@ -152,7 +159,7 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     parentNavigatorKey: _rootKey,
                     path: 'viewer',
-                    builder: (context, state) => NovelReader(
+                    builder: (context, state) => NovelViewer(
                       data: state.extra as NovData,
                     ),
                   ),
@@ -189,8 +196,19 @@ class Navigation extends StatelessWidget {
         ),
         typography: Typography.material2021(platform: defaultTargetPlatform),
       ),
+      scrollBehavior: const Allow(),
       debugShowCheckedModeBanner: false,
       routerConfig: router,
     );
   }
+}
+
+class Allow extends MaterialScrollBehavior {
+  const Allow();
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+      };
 }

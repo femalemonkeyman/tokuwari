@@ -1,9 +1,10 @@
 import 'package:async/async.dart';
-import 'package:sliver_tools/sliver_tools.dart';
+import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:tokuwari_models/info_models.dart';
 import '../media/providers/providers.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
 import '../widgets/image.dart';
@@ -160,7 +161,7 @@ class InfoPage extends StatelessWidget {
                 ],
               ),
             ),
-            EpisodeList(
+            Selector(
               data: data,
             ),
           ],
@@ -207,42 +208,26 @@ class LaterButtonState extends State<LaterButton> {
       );
 }
 
-class EpisodeList extends StatefulWidget {
+class Selector extends StatefulWidget {
   final AniData data;
 
-  const EpisodeList({
+  const Selector({
     super.key,
     required this.data,
   });
 
   @override
-  State createState() => EpisodeListState();
+  State createState() => SelectorState();
 }
 
-class EpisodeListState extends State<EpisodeList> {
+class SelectorState extends State<Selector> {
   late Map provider = providers[widget.data.type]![0];
-  late CancelableOperation load = CancelableOperation.fromFuture(provider['data'](widget.data));
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.data.mediaProv.isEmpty) {
-      addEpisodes();
-    }
-  }
-
-  void addEpisodes() async {
-    if (mounted) {
-      widget.data.mediaProv
-        ..clear()
-        ..addAll(await load.value);
-      setState(() {});
-    }
-  }
+  late CancelableOperation<List<MediaProv>> load = CancelableOperation.fromFuture(provider['data'](widget.data));
 
   @override
   void dispose() {
     super.dispose();
+    widget.data.mediaProv.clear();
     load.cancel();
   }
 
@@ -250,89 +235,118 @@ class EpisodeListState extends State<EpisodeList> {
   Widget build(context) {
     return SliverPadding(
       padding: const EdgeInsets.only(left: 15, right: 15),
-      sliver: MultiSliver(
+      sliver: SliverList.list(
         children: [
-          SliverList.list(
-            children: [
-              DropdownButton(
-                value: provider,
-                padding: const EdgeInsets.only(left: 15),
-                underline: const SizedBox.shrink(),
-                focusColor: const Color.fromARGB(0, 0, 0, 0),
-                borderRadius: BorderRadius.circular(30),
-                icon: IconButton(
-                  onPressed: () => addEpisodes(),
-                  icon: const Icon(Icons.refresh_rounded),
+          DropdownButton(
+            value: provider,
+            padding: const EdgeInsets.only(left: 15),
+            underline: const SizedBox.shrink(),
+            focusColor: const Color.fromARGB(0, 0, 0, 0),
+            borderRadius: BorderRadius.circular(30),
+            items: List.generate(
+              providers[widget.data.type]!.length,
+              (index) => DropdownMenuItem(
+                value: providers[widget.data.type]![index],
+                child: Text(
+                  providers[widget.data.type]![index]['name'],
                 ),
-                items: List.generate(
-                  providers[widget.data.type]!.length,
-                  (index) => DropdownMenuItem(
-                    value: providers[widget.data.type]![index],
-                    child: Text(
-                      providers[widget.data.type]![index]['name'],
-                    ),
-                  ),
-                  growable: false,
-                ),
-                onChanged: (value) async {
-                  load.cancel();
-                  load = CancelableOperation.fromFuture(value!['data'](widget.data));
-                  widget.data.mediaProv
-                    ..clear()
-                    ..addAll(await load.value);
-                  setState(() {
-                    provider = value;
-                  });
-                },
               ),
-              const SizedBox(
-                height: 10,
-              ),
-            ],
+              growable: false,
+            ),
+            onChanged: (value) async {
+              await load.cancel();
+              setState(() {
+                widget.data.mediaProv.clear();
+                load = CancelableOperation.fromFuture(value!['data'](widget.data));
+                provider = value;
+              });
+            },
           ),
-          SliverGrid(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              mainAxisSpacing: 5,
-              crossAxisSpacing: 6,
-              maxCrossAxisExtent: 400,
-              mainAxisExtent: 100,
-            ),
-            delegate: SliverChildBuilderDelegate(
-              childCount: widget.data.mediaProv.length,
-              (context, index) => GestureDetector(
-                onTap: () => context.push(
-                  '/${widget.data.type}/info/viewer',
-                  extra: {
-                    'index': index,
-                    'data': widget.data,
-                  },
-                ),
-                child: Card(
-                  elevation: 3,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          widget.data.mediaProv[index].title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Flexible(
-                        child: Text(
-                          '${(widget.data.type == 'anime') ? 'Episode:' : 'Chapter:'} ${widget.data.mediaProv[index].number}',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          const SizedBox(
+            height: 10,
+          ),
+          FutureBuilder(
+            future: load.value,
+            builder: (context, snap) {
+              if (snap.connectionState == ConnectionState.done && snap.requireData.isNotEmpty) {
+                if (widget.data.mediaProv.isEmpty) {
+                  widget.data.mediaProv.addAll(snap.requireData);
+                }
+                final split = snap.requireData.slices(24).toList();
+                return EpisodeList(split: split, data: widget.data);
+              }
+              if (snap.connectionState == ConnectionState.done && snap.requireData.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
           ),
         ],
       ),
     );
+  }
+}
+
+class EpisodeList extends StatelessWidget {
+  final List<List> split;
+  final AniData data;
+
+  const EpisodeList({super.key, required this.split, required this.data});
+
+  @override
+  Widget build(context) {
+    return ExpandablePageView.builder(
+      pageSnapping: false,
+      itemCount: split.length,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (BuildContext context, int pindex) {
+        return GridView.custom(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 6,
+            maxCrossAxisExtent: 400,
+            mainAxisExtent: 100,
+          ),
+          childrenDelegate: SliverChildBuilderDelegate(
+            childCount: split[pindex].length,
+            (context, gindex) => GestureDetector(
+              onTap: () => context.push(
+                '/${data.type}/info/viewer',
+                extra: {
+                  'index': (pindex * 12) + gindex,
+                  'data': data,
+                },
+              ),
+              child: Card(
+                elevation: 3,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: Text(
+                          split[pindex][gindex].title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        '${(data.type == 'anime') ? 'Episode:' : 'Chapter:'} ${split[pindex][gindex].number}',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    ).padBottom();
   }
 }
