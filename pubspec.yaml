@@ -22,7 +22,9 @@ dependencies:
   flex_color_scheme:
 # For novels
   epubx: 
-    path: /mnt/Storage/HomeStuff/Documents/epubx
+    git: 
+     url: https://github.com/femalemonkeyman/epubx
+    # path: /mnt/Storage/HomeStuff/Documents/epubx
   # webf: 
   #   git: 
   #     url: https://github.com/openwebf/webf
@@ -65,15 +67,15 @@ dependencies:
 
   #Model
   tokuwari_models:
-    path: ../Projects/modules/tokuwari-models
-    # git:
-    #   url: https://github.com/femalemonkeyman/tokuwari-models
+    # path: ../Projects/modules/tokuwari-models
+    git:
+      url: https://github.com/femalemonkeyman/tokuwari-models
 
   #Modules
   key:
-    path: ../Projects/modules/key
-    # git: 
-    #  url: https://github.com/femalemonkeyman/key
+    # path: ../Projects/modules/key
+    git: 
+     url: https://github.com/femalemonkeyman/key
   
 dependency_overrides:
   graphql: ^5.2.0-beta.6
