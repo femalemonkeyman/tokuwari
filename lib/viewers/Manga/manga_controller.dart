@@ -30,9 +30,9 @@ class ReaderController {
     });
   }
 
-  bool get hasNext => current != pageCount;
+  bool get hasNext => current != chapters.length -1;
   bool get hasPrevious => current > 0;
-  bool get reverse => (direction != ReaderDirection.horizontal) ? false : true;
+  bool get reverse => direction != ReaderDirection.horizontal ? false : true;
   List get pages => chapter.pages;
   bool get isVertical => direction == ReaderDirection.vertical;
   int get pageCount => !twoPage || isVertical ? chapter.pages.length : (chapter.pages.length / 2).ceil();

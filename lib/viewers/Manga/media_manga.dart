@@ -251,7 +251,7 @@ class ProgressBar extends StatelessWidget {
                 Expanded(
                   child: Slider(
                     min: 0,
-                    max: prefs.pages.isNotEmpty ? prefs.pageCount.toDouble() - 1 : 1,
+                    max: prefs.pages.isNotEmpty ? prefs.pageCount - 1 : 1,
                     divisions: prefs.pageCount <= 1 ? 1 : prefs.pageCount - 1,
                     label: ((page + 1)).round().toString(),
                     value: prefs.page.value,
