@@ -20,7 +20,7 @@ Provider gogoList(final AniData data) async {
         .then(
           (value) => jsonDecode(value.data)['Sites']['Gogoanime'].keys.first,
         );
-    final gogoPage = await Dio().get(gogo + 'category/' + msync);
+    final gogoPage = await Dio().get('${gogo}category/$msync');
     print(gogoPage);
     return [];
   } catch (e) {

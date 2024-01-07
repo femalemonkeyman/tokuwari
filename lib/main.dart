@@ -194,7 +194,7 @@ class Navigation extends StatelessWidget {
             TargetPlatform.linux: OpenUpwardsPageTransitionsBuilder(),
           },
         ),
-        typography: Typography.material2021(platform: defaultTargetPlatform),
+        typography: Typography.material2021(platform: Theme.of(context).platform),
       ),
       scrollBehavior: const Allow(),
       debugShowCheckedModeBanner: false,

@@ -1,6 +1,6 @@
 import 'package:async/async.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 import 'package:tokuwari_models/info_models.dart';
 
 enum ReaderDirection {
@@ -12,7 +12,7 @@ enum ReaderDirection {
 }
 
 class ReaderController {
-  final PreloadPageController controller = PreloadPageController();
+  final ExtendedPageController controller = ExtendedPageController();
   final List<MediaProv> chapters;
   final ValueNotifier<double> page = ValueNotifier<double>(0.0);
   late CancelableOperation load = CancelableOperation.fromFuture(fetch());
@@ -30,7 +30,7 @@ class ReaderController {
     });
   }
 
-  bool get hasNext => current != chapters.length -1;
+  bool get hasNext => current != chapters.length - 1;
   bool get hasPrevious => current > 0;
   bool get reverse => direction != ReaderDirection.horizontal ? false : true;
   List get pages => chapter.pages;

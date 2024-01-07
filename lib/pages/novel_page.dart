@@ -11,6 +11,7 @@ import 'package:isar/isar.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:tokuwari/widgets/grid.dart';
+import 'package:tokuwari/widgets/search_button.dart';
 import 'package:tokuwari_models/info_models.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -42,7 +43,35 @@ class NovelPageState extends State<NovelPage> {
         : SafeArea(
             child: CustomScrollView(
               slivers: [
-                //SliverToBoxAdapter(SearchBar),
+                SliverToBoxAdapter(
+                  child: Center(
+                    child: SearchButton(
+                      text: 'Novels',
+                      controller: SearchController(),
+                      search: () {},
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        onPressed: () {},
+                        child: Text('Add More'),
+                      ),
+                      TextButton(
+                        onPressed: () => setState(() {
+                          isar.write(
+                            (isar) => isar.novDatas.clear(),
+                          );
+                          novels.clear();
+                        }),
+                        child: Text('Clear'),
+                      ),
+                    ],
+                  ),
+                ),
                 Grid(data: novels),
               ],
             ),
@@ -68,11 +97,10 @@ class ImportNovels extends StatelessWidget {
           '',
     );
     if (directory.existsSync()) {
-      final List<File> epubs = directory
-          .listSync(recursive: true)
-          .whereType<File>()
-          .where((element) => element.path.endsWith('.epub'))
-          .toList();
+      final List<File> epubs = [
+        for (final entity in directory.listSync(recursive: true))
+          if (entity is File && entity.path.endsWith('.epub')) entity,
+      ];
       if (epubs.isNotEmpty) {
         final covers = path.join((await getApplicationDocumentsDirectory()).path, '.tokuwari', 'covers/');
         final novels = <NovData>[];
@@ -82,7 +110,7 @@ class ImportNovels extends StatelessWidget {
           }, epub);
           yield bookref.Title.Title;
           final imgbits = Uint8List.fromList(
-            bookref.readCover?.getContentStream() ??
+            bookref.cover?.getContentStream() ??
                 bookref
                     .Content
                     .Images[(bookref.manifest.Items
@@ -97,8 +125,8 @@ class ImportNovels extends StatelessWidget {
           final resizedImage = (await codec.getNextFrame()).image;
           final img = await resizedImage.toByteData(format: ImageByteFormat.png);
           final cover = (Directory(covers)..createSync()).path + path.setExtension(path.basename(epub.path), '.png');
-          await File(cover).writeAsBytes(img!.buffer.asUint8List());
-          novels.add(NovData(type: 'novel', title: bookref.Title.Title, image: cover, path: epub.path));
+          File(cover).writeAsBytes(img!.buffer.asUint8List());
+          novels.add(NovData(type: 'novel', title: bookref.Title.Title.trim(), image: cover, path: epub.path));
         }
         isar.write((isar) => isar.novDatas.putAll(novels));
       }
@@ -129,9 +157,26 @@ class ImportNovels extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         const Text('Importing:'),
-                        Flexible(child: Text(snap.data ?? '')),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 5, right: 5),
+                          child: Text(
+                            snap.data ?? '',
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
                         TextButton(
-                          onPressed: () => dcontext.pop(),
+                          onPressed: () async {
+                            final dir = Directory(
+                              path.join((await getApplicationDocumentsDirectory()).path, '.tokuwari', 'covers/'),
+                            );
+                            if (dir.existsSync()) {
+                              dir.delete();
+                            }
+                            if (dcontext.mounted) {
+                              dcontext.pop();
+                            }
+                          },
                           child: const Text('Cancel'),
                         ),
                       ],

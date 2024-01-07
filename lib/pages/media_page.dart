@@ -257,7 +257,6 @@ class AniPageState extends State<AniPage> {
                     onPressed: () => updateGenre(),
                     child: const Text(
                       "Filter by genre",
-                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],

@@ -16,7 +16,7 @@ class AniImage extends StatelessWidget {
       child: FadeInImage(
         key: UniqueKey(),
         fadeInDuration: const Duration(milliseconds: 300),
-        placeholder: MemoryImage(Uint8List.fromList(kTransparentImage)),
+        placeholder: MemoryImage(kTransparentImage),
         fit: BoxFit.cover,
         image: image.startsWith("https://")
             ? ExtendedNetworkImageProvider(
@@ -31,7 +31,7 @@ class AniImage extends StatelessWidget {
   }
 }
 
-const List<int> kTransparentImage = [
+Uint8List kTransparentImage = Uint8List.fromList([
   0x89,
   0x50,
   0x4E,
@@ -158,4 +158,4 @@ const List<int> kTransparentImage = [
   0x42,
   0x60,
   0x82,
-];
+]);

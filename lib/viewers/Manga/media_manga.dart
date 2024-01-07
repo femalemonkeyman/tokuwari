@@ -2,7 +2,6 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:preload_page_view/preload_page_view.dart';
 import 'package:tokuwari/viewers/Manga/manga_controller.dart';
 import 'package:tokuwari_models/info_models.dart';
 
@@ -48,7 +47,7 @@ class MangaReaderState extends State<MangaReader> {
     return Scaffold(
       body: Stack(
         children: [
-          PreloadPageView.builder(
+          GesturePageView.builder(
             preloadPagesCount: prefs.twoPage ? 2 : 3,
             itemCount: prefs.pageCount,
             controller: prefs.controller,
