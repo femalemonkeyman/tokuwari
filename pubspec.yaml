@@ -22,9 +22,9 @@ dependencies:
   flex_color_scheme:
 # For novels
   epubx: 
-    # git: 
-    #  url: https://github.com/femalemonkeyman/epubx
-    path: /mnt/Storage/HomeStuff/Documents/epubx
+    git: 
+     url: https://github.com/femalemonkeyman/epubx
+    #path: /mnt/Storage/HomeStuff/Documents/epubx
   html:
   file_picker:
   permission_handler:
