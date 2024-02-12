@@ -1,6 +1,5 @@
-package com.universal.anime.anicross
+package com.universal.anime.tokuwari
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity() {
-}
+class MainActivity: FlutterActivity()

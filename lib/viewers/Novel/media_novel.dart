@@ -34,16 +34,13 @@ class NovelViewerState extends State<NovelViewer> with AutomaticKeepAliveClientM
             return Stack(
               children: [
                 GesturePageView.builder(
-                  itemCount: controller.chapterSpans.length,
+                  itemCount: controller.chapters.length,
                   itemBuilder: (context, index) {
                     return SafeArea(
                       child: SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
-                          child: RichText(
-                            text: controller.chapterSpans[index],
-                            textScaler: TextScaler.linear(controller.fontScale),
-                          ),
+                          child: controller.chapters[index],
                         ),
                       ),
                     );
@@ -53,7 +50,7 @@ class NovelViewerState extends State<NovelViewer> with AutomaticKeepAliveClientM
                   behavior: HitTestBehavior.translucent,
                   onTap: () => setState(() {
                     print('yes');
-                    controller.setFontScale(16);
+                    controller.setFontScale(20);
                   }),
                 ),
                 const BackButton(),

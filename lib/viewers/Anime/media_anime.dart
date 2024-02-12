@@ -131,13 +131,6 @@ class AniViewerState extends State<AniViewer> {
   @override
   Future<void> dispose() async {
     super.dispose();
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: SystemUiOverlay.values,
-    );
-    SystemChrome.setPreferredOrientations(
-      [],
-    );
     load.cancel();
     await player.dispose();
     discord?.clearPresence();

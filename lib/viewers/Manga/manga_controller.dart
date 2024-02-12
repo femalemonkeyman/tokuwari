@@ -16,7 +16,7 @@ class ReaderController {
   final List<MediaProv> chapters;
   final ValueNotifier<double> page = ValueNotifier<double>(0.0);
   late CancelableOperation load = CancelableOperation.fromFuture(fetch());
-  bool twoPage = true;
+  bool twoPage = false;
   Chapter chapter = const Chapter(pages: []);
   ReaderDirection direction = ReaderDirection.horizontal;
   int current;

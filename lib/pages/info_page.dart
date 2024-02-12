@@ -315,7 +315,7 @@ class EpisodeList extends StatelessWidget {
               onTap: () => context.push(
                 '/${data.type}/info/viewer',
                 extra: {
-                  'index': (pindex * 12) + gindex,
+                  'index': (pindex * 24) + gindex,
                   'data': data,
                 },
               ),

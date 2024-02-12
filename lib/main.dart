@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
@@ -106,6 +107,16 @@ class Navigation extends StatelessWidget {
                       GoRoute(
                         parentNavigatorKey: _rootKey,
                         path: 'viewer',
+                        onExit: (context) {
+                          SystemChrome.setEnabledSystemUIMode(
+                            SystemUiMode.manual,
+                            overlays: SystemUiOverlay.values,
+                          );
+                          SystemChrome.setPreferredOrientations(
+                            [],
+                          );
+                          return true;
+                        },
                         builder: (context, state) => AniViewer(
                           episode: (state.extra as Map)['index'],
                           anime: (state.extra as Map)['data'],

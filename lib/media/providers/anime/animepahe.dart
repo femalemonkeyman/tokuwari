@@ -4,13 +4,29 @@ import 'package:html/parser.dart';
 import 'package:tokuwari_models/info_models.dart';
 
 Provider paheList(final AniData data) async {
+  const mmcookie = {'Cookie': '__ddg1=;__ddg2_=;'};
   try {
     final Map response = (await Dio().get('$anisync/${data.malid}')).data;
-    final String syncId = parse(
-      (await Dio().get('https://animepahe.com/a/${response['Sites']?['animepahe'].keys.first}')).data,
-    ).head!.getElementsByTagName('script').first.text.split('let id = "')[1].split('";')[0];
+    final String syncId = (await Dio().get(
+      'https://animepahe.ru/a/${response['Sites']?['animepahe'].keys.first}',
+      options: Options(
+        headers: mmcookie,
+        followRedirects: false,
+        validateStatus: (status) => true,
+      ),
+    ))
+        .headers['location']!
+        .first
+        .split('/')
+        .last;
     final String link = 'https://animepahe.ru/api?m=release&id=$syncId&sort=episode_asc';
-    final Map anime = (await Dio().get(link)).data;
+    final Map anime = (await Dio().get(
+      link,
+      options: Options(
+        headers: mmcookie,
+      ),
+    ))
+        .data;
     if (anime['last_page'] > 1) {
       for (Response i in await Future.wait(
         [
@@ -42,6 +58,7 @@ Anime paheInfo(final String id) async {
       options: Options(
         headers: {
           'referer': 'https://animepahe.ru',
+          'Cookie': '__ddg1=;__ddg2_=;',
         },
       ),
     ))

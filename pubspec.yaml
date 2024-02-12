@@ -5,7 +5,7 @@ description: Something I guess
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.5.0
+version: 0.5.1
 
 environment:
   sdk: ">=3.2.0"
@@ -25,11 +25,9 @@ dependencies:
     # git: 
     #  url: https://github.com/femalemonkeyman/epubx
     path: /mnt/Storage/HomeStuff/Documents/epubx
-  sass:
   html:
   file_picker:
   permission_handler:
-  flutter_widget_from_html_core:
   # Media kit
   media_kit:
     git:
