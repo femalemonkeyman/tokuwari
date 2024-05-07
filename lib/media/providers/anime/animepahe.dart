@@ -91,7 +91,7 @@ Anime paheInfo(final String id) async {
             parse(i.data).getElementsByTagName('script').where((element) => element.text.contains('eval')).first.text,
           ).unpack().split('source=\'')[1].split('\'')[0],
       ].reversed,
-    ), //qualities,
+    ),
     subtitles: {},
     headers: {'referer': 'https://kwik.cx'},
   );

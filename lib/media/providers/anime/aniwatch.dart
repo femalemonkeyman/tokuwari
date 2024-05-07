@@ -5,7 +5,7 @@ import 'package:html/parser.dart';
 import 'package:key/key.dart';
 import 'package:tokuwari_models/info_models.dart';
 
-const String zoro = "https://aniwatch.to/";
+const String zoro = "https://hianime.to/";
 const String mega = 'https://megacloud.tv/embed-2/ajax/e-1/getSources?id=';
 int retries = 0;
 
@@ -42,20 +42,18 @@ Provider zoroList(final AniData data) async {
 
 Anime zoroInfo(final id) async {
   final Options options = Options(responseType: ResponseType.plain);
-  final String sId = await Dio()
-      .get(
-        '${zoro}ajax/v2/episode/servers?episodeId=$id',
-        options: options,
-      )
-      .then(
-        (value) => parse(jsonDecode(value.data)['html'])
-            .getElementsByClassName("item server-item")
-            .firstWhere(
-              (element) => element.text.contains('Vid'),
-            )
-            .attributes['data-id']!,
-      );
   try {
+    final String sId = await Dio()
+        .get(
+          '${zoro}ajax/v2/episode/servers?episodeId=$id',
+          options: options,
+        )
+        .then(
+          (value) => parse(jsonDecode(value.data)['html'])
+              .getElementsByClassName("item server-item")
+              .first
+              .attributes['data-id']!,
+        );
     final String link = await Dio()
         .get(
       '${zoro}ajax/v2/episode/sources?id=$sId',
@@ -94,6 +92,7 @@ Anime zoroInfo(final id) async {
       retries++;
       return await zoroInfo(id);
     } else {
+      print(_);
       return const Source(qualities: {}, subtitles: {});
     }
   }

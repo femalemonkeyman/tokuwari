@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tokuwari/pages/settings_page.dart';
 import 'package:tokuwari/viewers/Novel/media_novel.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:tokuwari_models/info_models.dart';
@@ -107,7 +108,7 @@ class Navigation extends StatelessWidget {
                       GoRoute(
                         parentNavigatorKey: _rootKey,
                         path: 'viewer',
-                        onExit: (context) {
+                        onExit: (context, state) {
                           SystemChrome.setEnabledSystemUIMode(
                             SystemUiMode.manual,
                             overlays: SystemUiOverlay.values,
@@ -189,6 +190,11 @@ class Navigation extends StatelessWidget {
           ),
         ],
       ),
+      GoRoute(
+        name: 'settings',
+        path: '/settings',
+        builder: (context, state) => Settings(),
+      ),
     ],
   );
 
@@ -200,12 +206,7 @@ class Navigation extends StatelessWidget {
         useMaterial3: true,
         darkIsTrueBlack: true,
         scheme: FlexScheme.deepPurple,
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.linux: OpenUpwardsPageTransitionsBuilder(),
-          },
-        ),
-        typography: Typography.material2021(platform: Theme.of(context).platform),
+        //typography: Typography.material2021(platform: Theme.of(context).platform),
       ),
       scrollBehavior: const Allow(),
       debugShowCheckedModeBanner: false,

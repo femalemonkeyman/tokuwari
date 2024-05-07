@@ -43,14 +43,10 @@ class NovelPageState extends State<NovelPage> {
         : SafeArea(
             child: CustomScrollView(
               slivers: [
-                SliverToBoxAdapter(
-                  child: Center(
-                    child: SearchButton(
-                      text: 'Novels',
-                      controller: SearchController(),
-                      search: () {},
-                    ),
-                  ),
+                SearchButton(
+                  text: 'Novels',
+                  controller: SearchController(),
+                  search: () {},
                 ),
                 SliverToBoxAdapter(
                   child: Wrap(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SearchButton extends StatelessWidget {
   const SearchButton({
@@ -13,40 +14,34 @@ class SearchButton extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 10, bottom: 8),
-        child: Card(
-          elevation: 5,
-          shape: const StadiumBorder(),
-          child: TextField(
-            controller: controller,
-            onSubmitted: (string) => search(),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width / 1.2,
-              ),
-              prefixIcon: const Icon(Icons.search),
-              hintText: text,
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      controller.clear();
-                      search();
-                    },
-                    icon: const Icon(Icons.clear),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.settings),
-                  ),
-                ],
+    return SliverPadding(
+      padding: const EdgeInsets.only(bottom: 8),
+      sliver: SliverAppBar(
+        floating: true,
+        flexibleSpace: SearchBar(
+          controller: controller,
+          elevation: const WidgetStatePropertyAll<double>(0),
+          shape: const WidgetStatePropertyAll(BeveledRectangleBorder()),
+          onSubmitted: (string) => search(),
+          onTapOutside: (event) => FocusManager.instance.primaryFocus!.unfocus(),
+          leading: const Icon(Icons.search),
+          hintText: text,
+          trailing: [
+            Visibility(
+              visible: FocusManager.instance.primaryFocus?.hasFocus ?? false,
+              child: IconButton(
+                onPressed: () {
+                  controller.clear();
+                  search();
+                },
+                icon: const Icon(Icons.clear),
               ),
             ),
-          ),
+            IconButton(
+              onPressed: () => context.pushNamed('settings'),
+              icon: const Icon(Icons.settings),
+            ),
+          ],
         ),
       ),
     );

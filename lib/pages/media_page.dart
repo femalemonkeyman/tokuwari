@@ -16,7 +16,7 @@ query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre
       total
       currentPage
     },
-    media(sort: [TRENDING_DESC], type: \$type, search: \$search, genre_in: \$genre, tag: \$tag) {
+    media(sort: [TRENDING_DESC], type: \$type, search: \$search, genre_in: \$genre, tag: \$tag, isAdult: false) {
       id
       title {
         romaji
@@ -143,8 +143,9 @@ class AniPageState extends State<AniPage> {
           },
         ),
       );
-      loading = false;
-      setState(() {});
+      setState(() {
+        loading = false;
+      });
     } catch (e) {
       animeData.addAll([]);
     }
@@ -236,42 +237,40 @@ class AniPageState extends State<AniPage> {
             await queryData();
           },
         ),
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Center(
-                child: SearchButton(
-                  text: "Anilist",
-                  controller: textController,
-                  search: () async {
-                    await searchData();
-                  },
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SearchButton(
+                text: "Anilist",
+                controller: textController,
+                search: () async {
+                  await searchData();
+                },
+              ),
+              SliverToBoxAdapter(
+                child: Wrap(
+                  alignment: WrapAlignment.spaceAround,
+                  children: [
+                    TextButton(
+                      onPressed: () => updateGenre(),
+                      child: const Text(
+                        "Filter by genre",
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: Wrap(
-                alignment: WrapAlignment.spaceAround,
-                children: [
-                  TextButton(
-                    onPressed: () => updateGenre(),
-                    child: const Text(
-                      "Filter by genre",
+              (animeData.isNotEmpty)
+                  ? Grid(
+                      data: animeData,
+                    )
+                  : const SliverToBoxAdapter(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            (animeData.isNotEmpty)
-                ? Grid(
-                    data: animeData,
-                  )
-                : const SliverToBoxAdapter(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-          ],
+            ],
+          ),
         ),
       ),
     );

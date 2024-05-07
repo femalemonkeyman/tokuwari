@@ -14,7 +14,6 @@ dependencies:
   flutter:
     sdk: flutter
   sliver_tools:
-  discord_rpc:
   path:
   dio:
   async:
@@ -67,9 +66,9 @@ dependencies:
 
   #Modules
   key:
-    # path: ../Projects/modules/key
-    git: 
-     url: https://github.com/femalemonkeyman/key
+    path: ../Projects/modules/key
+    # git: 
+    #  url: https://github.com/femalemonkeyman/key
   
 dependency_overrides:
   graphql: ^5.2.0-beta.6

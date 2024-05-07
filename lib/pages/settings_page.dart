@@ -12,6 +12,13 @@ class Settings extends StatefulWidget {
 class SettingsState extends State<Settings> {
   @override
   Widget build(context) {
-    return const Scaffold();
+    return const Scaffold(
+      body: Column(
+        children: [
+          BackButton(),
+          Placeholder(),
+        ],
+      ),
+    );
   }
 }
