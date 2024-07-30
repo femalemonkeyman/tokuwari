@@ -2,19 +2,16 @@ import 'dart:io';
 
 import 'package:epubx/epubx.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:csslib/parser.dart' as cs;
 import 'package:csslib/visitor.dart' as csv;
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
 class NovelController {
   final EpubBook epub;
-  final List<Widget> chapters;
+  final List<InlineSpan> chapters;
   double fontScale = Platform.isAndroid || Platform.isIOS ? 1 : 1.14285714;
 
   NovelController._(this.epub, this.chapters);
@@ -83,8 +80,8 @@ class ChapterParser {
         _ => const TextStyle(),
       };
 
-  List<Widget> parseChapters() {
-    final List<Widget> chapters = [];
+  List<InlineSpan> parseChapters() {
+    final List<InlineSpan> chapters = [];
     for (final chapter in epub.Chapters) {
       final List<InlineSpan> children = [];
       currentChapterFile = chapter.ContentFileName;
@@ -101,15 +98,16 @@ class ChapterParser {
       if (htmlBody == null) {
         throw Exception('Chapter parsing error: HTML body not found');
       }
-      _parseElements(htmlBody, children, const TextStyle());
-      chapters.add(ChapterElement(text: TextSpan(children: children)));
+      _parseElements(htmlBody, children);
+      chapters.add(TextSpan(children: children));
     }
     return chapters;
   }
 
-  void _parseElements(XmlElement node, List<InlineSpan> children, TextStyle style) {
+  void _parseElements(XmlElement node, List<InlineSpan> children) {
     if (node.getAttribute('hidden') != null) return;
     final name = node.localName.toLowerCase();
+    final textWidgets = _buildWidgets(node);
     switch (node.localName.toLowerCase()) {
       // Inline Elements
       case 'image':
@@ -119,11 +117,13 @@ class ChapterParser {
             .path;
         children.add(
           WidgetSpan(
-            child: ExtendedImage.memory(
-              epub.images[location]!.Content!,
-              fit: BoxFit.cover,
-              enableMemoryCache: false,
-              clearMemoryCacheWhenDispose: true,
+            child: Center(
+              child: ExtendedImage.memory(
+                epub.images[location]!.Content!,
+                fit: BoxFit.cover,
+                enableMemoryCache: false,
+                clearMemoryCacheWhenDispose: true,
+              ),
             ),
           ),
         );
@@ -140,76 +140,51 @@ class ChapterParser {
       case 'body':
       case 'section':
       case 'p':
-        children.addAll(_buildWidgets(node, style));
+        children.add(const TextSpan(text: '\n', style: TextStyle(fontSize: 0)));
+        children.addAll(textWidgets);
       case 'br':
-        print('no');
         children.add(const TextSpan(text: '\n'));
+      // Inline
       case 'em':
       case 'i':
+        children.add(
+          TextSpan(
+            children: textWidgets,
+            style: const TextStyle(fontStyle: FontStyle.italic),
+          ),
+        );
       case 'b':
-      case 'span':
       case 'strong':
+        children.add(
+          TextSpan(
+            children: textWidgets,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        );
       case 'a':
-        children.addAll(_buildWidgets(node, style));
+        children.add(
+          TextSpan(
+            children: textWidgets,
+            style: const TextStyle(color: Colors.blue),
+          ),
+        );
       default:
+        children.addAll(textWidgets);
     }
   }
 
-  List<InlineSpan> _buildWidgets(XmlElement node, TextStyle style) {
+  List<InlineSpan> _buildWidgets(XmlElement node) {
     final List<InlineSpan> children = [];
     for (final child in node.children) {
       if (child case XmlText(:final value)) {
         if (value.trim().isEmpty) continue;
         children.add(TextSpan(text: value));
       } else if (child is XmlElement) {
-        _parseElements(child, children, style);
+        _parseElements(child, children);
       } else {
         print(child);
       }
     }
     return children;
   }
-}
-
-class ChapterElement extends MultiChildRenderObjectWidget {
-  final InlineSpan text;
-  final ElementRenderType renderType;
-  ChapterElement({
-    super.key,
-    required this.text,
-    this.renderType = ElementRenderType.block,
-  }) : super(children: WidgetSpan.extractFromInlineSpan(text, TextScaler.noScaling));
-
-  @override
-  ChapterElementRenderObject createRenderObject(BuildContext context) {
-    return ChapterElementRenderObject(text, textDirection: TextDirection.ltr);
-  }
-
-  @override
-  void updateRenderObject(BuildContext context, covariant ChapterElementRenderObject renderObject) {
-    // TODO: implement updateRenderObject
-    //renderObject.markNeedsPaint();
-  }
-}
-
-class TextNode extends TextSpan {
-  final ElementRenderType renderType;
-  const TextNode({super.text, super.style, this.renderType = ElementRenderType.block, super.children});
-}
-
-class ChapterElementRenderObject extends RenderParagraph {
-  ChapterElementRenderObject(
-    super.text, {
-    super.textDirection = TextDirection.ltr,
-  });
-  @override
-  void performLayout() {
-    // For non-block elements, perform default layout
-    super.performLayout();
-  }
-}
-
-enum ElementRenderType {
-  block,
-  inline,
 }

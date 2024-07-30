@@ -40,7 +40,10 @@ class NovelViewerState extends State<NovelViewer> with AutomaticKeepAliveClientM
                       child: SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
-                          child: controller.chapters[index],
+                          child: RichText(
+                            text: controller.chapters[index],
+                            textScaler: TextScaler.linear(controller.fontScale),
+                          ),
                         ),
                       ),
                     );
@@ -50,7 +53,7 @@ class NovelViewerState extends State<NovelViewer> with AutomaticKeepAliveClientM
                   behavior: HitTestBehavior.translucent,
                   onTap: () => setState(() {
                     print('yes');
-                    controller.setFontScale(20);
+                    controller.setFontScale(16);
                   }),
                 ),
                 const BackButton(),

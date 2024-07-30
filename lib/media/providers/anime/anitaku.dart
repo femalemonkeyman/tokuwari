@@ -6,7 +6,7 @@ import 'package:encrypt/encrypt.dart';
 import 'package:html/parser.dart';
 import 'package:tokuwari_models/info_models.dart';
 
-const String gogo = 'https://anitaku.so';
+const String gogo = 'https://anitaku.pe';
 
 Provider gogoList(final AniData data) async {
   try {
@@ -59,9 +59,9 @@ Anime gogoInfo(final String id) async {
     );
     final response = await Dio()
         .get(
-          'https://playtaku.online/encrypt-ajax.php?id=$updatedParams&alias=$encrypt',
+          'https://s3taku.com/encrypt-ajax.php?id=$updatedParams&alias=$encrypt',
           options: Options(
-            headers: {'referer': episode, 'host': 'playtaku.online', 'x-requested-with': 'XMLHttpRequest'},
+            headers: {'referer': episode, 'host': 's3taku.com', 'x-requested-with': 'XMLHttpRequest'},
           ),
         )
         .then((value) => jsonDecode(value.data)['data']);
