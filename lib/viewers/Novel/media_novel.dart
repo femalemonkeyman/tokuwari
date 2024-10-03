@@ -1,9 +1,8 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:tokuwari/models/novdata.dart';
 import 'package:tokuwari/viewers/Novel/novel_controller.dart';
 
 import 'package:tokuwari/widgets/loading.dart';
-import 'package:tokuwari_models/info_models.dart';
 
 class NovelViewer extends StatefulWidget {
   final NovData data;
@@ -33,7 +32,7 @@ class NovelViewerState extends State<NovelViewer> with AutomaticKeepAliveClientM
           if (snap.connectionState == ConnectionState.done) {
             return Stack(
               children: [
-                GesturePageView.builder(
+                PageView.builder(
                   itemCount: controller.chapters.length,
                   itemBuilder: (context, index) {
                     return SafeArea(

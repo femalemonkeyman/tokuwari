@@ -1,13 +1,15 @@
 import 'dart:ui';
-import 'package:tokuwari_models/info_models.dart';
+import 'package:isar/isar.dart';
+import 'package:tokuwari/models/anidata.dart';
 
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
+import 'package:tokuwari/models/settings.dart';
 import '../widgets/search_button.dart';
 import '../widgets/grid.dart';
 
-const base = """
-query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre: [String])
+const qString = """
+query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre: [String], \$adult: Boolean)
   {
   Page(perPage: 50, page: \$page) {
     pageInfo {
@@ -16,7 +18,7 @@ query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre
       total
       currentPage
     },
-    media(sort: [TRENDING_DESC], type: \$type, search: \$search, genre_in: \$genre, tag: \$tag, isAdult: false) {
+    media(sort: [TRENDING_DESC], type: \$type, search: \$search, genre_in: \$genre, tag: \$tag, isAdult: \$adult) {
       id
       title {
         romaji
@@ -50,11 +52,6 @@ query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre
 }
 """;
 
-final client = GraphQLClient(
-  cache: GraphQLCache(),
-  link: HttpLink("https://graphql.anilist.co/"),
-);
-
 const genresList = [
   "Action",
   "Adventure",
@@ -87,6 +84,11 @@ class AniPage extends StatefulWidget {
 }
 
 class AniPageState extends State<AniPage> {
+  static final client = GraphQLClient(
+    cache: GraphQLCache(),
+    link: HttpLink("https://graphql.anilist.co/"),
+  );
+  final isar = Isar.get(name: "tokudb", schemas: [SettingsSchema]);
   final TextEditingController textController = TextEditingController();
   final List<String> selectedGenres = [];
   late String? tag = widget.tag;
@@ -117,33 +119,34 @@ class AniPageState extends State<AniPage> {
       QueryResult query = await client.query(
         QueryOptions(
           fetchPolicy: FetchPolicy.networkOnly,
-          document: gql(base),
+          document: gql(qString),
           variables: {
             "page": (pageInfo.isEmpty) ? 1 : pageInfo['currentPage'] + 1,
             'type': widget.type.toUpperCase(),
             'search': search,
             "genre": (selectedGenres.isNotEmpty) ? selectedGenres : null,
             "tag": tag,
-          },
-        ),
-      );
-      pageInfo
-        ..clear()
-        ..addAll(
-          query.data!['Page']['pageInfo'],
-        );
-      animeData.addAll(
-        List.generate(
-          query.data!['Page']['media'].length,
-          (index) {
-            return AniData.fromJson(
-              query.data!['Page']['media'][index],
-              widget.type,
-            );
+            if (isar.settings.get(1)?.isNsfw != true) 'adult': false,
           },
         ),
       );
       setState(() {
+        pageInfo
+          ..clear()
+          ..addAll(
+            query.data!['Page']['pageInfo'],
+          );
+        animeData.addAll(
+          List.generate(
+            query.data!['Page']['media'].length,
+            (index) {
+              return AniData.fromJson(
+                query.data!['Page']['media'][index],
+                widget.type,
+              );
+            },
+          ),
+        );
         loading = false;
       });
     } catch (e) {

@@ -10,9 +10,9 @@ import 'package:epubx/epubx.dart';
 import 'package:isar/isar.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:tokuwari/models/novdata.dart';
 import 'package:tokuwari/widgets/grid.dart';
 import 'package:tokuwari/widgets/search_button.dart';
-import 'package:tokuwari_models/info_models.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NovelPage extends StatefulWidget {
@@ -54,7 +54,7 @@ class NovelPageState extends State<NovelPage> {
                     children: [
                       TextButton(
                         onPressed: () {},
-                        child: Text('Add More'),
+                        child: const Text('Add More'),
                       ),
                       TextButton(
                         onPressed: () => setState(() {
@@ -63,7 +63,7 @@ class NovelPageState extends State<NovelPage> {
                           );
                           novels.clear();
                         }),
-                        child: Text('Clear'),
+                        child: const Text('Clear'),
                       ),
                     ],
                   ),

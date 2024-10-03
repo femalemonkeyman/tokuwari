@@ -4,7 +4,10 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:html/parser.dart';
-import 'package:tokuwari_models/info_models.dart';
+import 'package:tokuwari/models/anidata.dart';
+import 'package:tokuwari/models/media_prov.dart';
+import 'package:tokuwari/models/source.dart';
+import 'package:tokuwari/models/types.dart';
 
 const String gogo = 'https://anitaku.pe';
 

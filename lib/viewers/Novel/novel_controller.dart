@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:epubx/epubx.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:csslib/parser.dart' as cs;
@@ -118,11 +117,9 @@ class ChapterParser {
         children.add(
           WidgetSpan(
             child: Center(
-              child: ExtendedImage.memory(
+              child: Image.memory(
                 epub.images[location]!.Content!,
                 fit: BoxFit.cover,
-                enableMemoryCache: false,
-                clearMemoryCacheWhenDispose: true,
               ),
             ),
           ),

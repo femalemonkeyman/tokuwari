@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:tokuwari_models/info_models.dart';
+import 'package:tokuwari/models/anidata.dart';
+import 'package:tokuwari/models/chapter.dart';
+import 'package:tokuwari/models/media_prov.dart';
+import 'package:tokuwari/models/types.dart';
 
 Provider dexReader(final AniData data) async {
   const mangadex = "https://api.mangadex.org/manga";

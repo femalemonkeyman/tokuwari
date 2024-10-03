@@ -1,22 +1,41 @@
 //TODO settings
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:isar/isar.dart';
+import 'package:tokuwari/models/settings.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  State createState() => SettingsState();
+  State createState() => SettingsPageState();
 }
 
-class SettingsState extends State<Settings> {
+class SettingsPageState extends State<SettingsPage> {
+  final isar = Isar.get(name: "tokudb", schemas: [SettingsSchema]);
+  late var settings = isar.settings.get(1) ?? Settings();
+
   @override
   Widget build(context) {
-    return const Scaffold(
-      body: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: ListView(
         children: [
-          BackButton(),
-          Placeholder(),
+          SwitchListTile(
+            title: const Text('Nsfw?'),
+            value: settings.isNsfw,
+            onChanged: (v) {
+              setState(() {
+                isar.write((isar) {
+                  settings.isNsfw = v;
+                  isar.settings.put(settings);
+                });
+              });
+            },
+          ),
         ],
       ),
     );

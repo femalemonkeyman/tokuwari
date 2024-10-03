@@ -5,14 +5,18 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tokuwari/models/anidata.dart';
+import 'package:tokuwari/models/history.dart';
+import 'package:tokuwari/models/novdata.dart';
+import 'package:tokuwari/models/settings.dart';
 import 'package:tokuwari/pages/settings_page.dart';
 import 'package:tokuwari/viewers/Novel/media_novel.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:tokuwari_models/info_models.dart';
 
 import 'viewers/Anime/media_anime.dart';
 import 'viewers/Manga/media_manga.dart';
@@ -30,12 +34,14 @@ void main() async {
   }
   MediaKit.ensureInitialized();
   Isar.open(
-    schemas: [AniDataSchema, HistorySchema, NovDataSchema],
+    schemas: [AniDataSchema, HistorySchema, NovDataSchema, SettingsSchema],
     name: "tokudb",
     directory: (await Directory('${(await getApplicationDocumentsDirectory()).path}/.tokuwari').create()).path,
   );
   runApp(
-    Navigation(),
+    ProviderScope(
+      child: Navigation(),
+    ),
   );
 }
 
@@ -58,8 +64,8 @@ class Navigation extends StatelessWidget {
                   maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384),
                 ),
                 child: NavigationBar(
+                  backgroundColor: Colors.transparent,
                   elevation: 0,
-                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   onDestinationSelected: (value) => shell.goBranch(value),
                   selectedIndex: shell.currentIndex,
                   labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
@@ -184,7 +190,7 @@ class Navigation extends StatelessWidget {
               GoRoute(
                 name: 'later',
                 path: '/later',
-                builder: (context, state) => LaterPage(),
+                builder: (context, state) => const LaterPage(),
               ),
             ],
           ),
@@ -193,7 +199,7 @@ class Navigation extends StatelessWidget {
       GoRoute(
         name: 'settings',
         path: '/settings',
-        builder: (context, state) => Settings(),
+        builder: (context, state) => const SettingsPage(),
       ),
     ],
   );
@@ -204,9 +210,12 @@ class Navigation extends StatelessWidget {
       themeMode: ThemeMode.dark,
       darkTheme: FlexThemeData.dark(
         useMaterial3: true,
-        darkIsTrueBlack: true,
-        scheme: FlexScheme.deepPurple,
-        //typography: Typography.material2021(platform: Theme.of(context).platform),
+        scheme: FlexScheme.purpleM3,
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.linux: OpenUpwardsPageTransitionsBuilder(),
+          },
+        ),
       ),
       scrollBehavior: const Allow(),
       debugShowCheckedModeBanner: false,
@@ -222,5 +231,6 @@ class Allow extends MaterialScrollBehavior {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
         PointerDeviceKind.trackpad,
+        PointerDeviceKind.unknown,
       };
 }

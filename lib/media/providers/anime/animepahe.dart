@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:tokuwari_models/info_models.dart';
+import 'package:tokuwari/models/anidata.dart';
+import 'package:tokuwari/models/media_prov.dart';
+import 'package:tokuwari/models/source.dart';
+import 'package:tokuwari/models/types.dart';
 
 Provider paheList(final AniData data) async {
   const mmcookie = {'Cookie': '__ddg1=;__ddg2_=;'};

@@ -1,6 +1,6 @@
 import 'package:tokuwari/media/providers/anime/anitaku.dart';
 import 'package:tokuwari/media/providers/anime/aniwatch.dart';
-import 'package:tokuwari_models/info_models.dart';
+import 'package:tokuwari/models/anidata.dart';
 
 import 'anime/animepahe.dart';
 

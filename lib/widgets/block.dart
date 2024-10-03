@@ -23,8 +23,8 @@ class Block extends StatelessWidget {
             child: DecoratedBox(
               position: DecorationPosition.foreground,
               decoration: BoxDecoration(
-                border: Border.all(strokeAlign: -0.050),
-                borderRadius: BorderRadius.circular(12),
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(6),
                 gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,

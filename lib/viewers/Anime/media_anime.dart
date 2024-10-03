@@ -3,43 +3,14 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tokuwari/models/anidata.dart';
+import 'package:tokuwari/models/source.dart';
+import 'package:tokuwari/viewers/Anime/anime_controller.dart';
 import 'package:tokuwari/widgets/loading.dart';
-import 'package:tokuwari_models/info_models.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:window_manager/window_manager.dart';
-
-extension DurationExtension on Duration {
-  /// Returns clamp of [Duration] between [min] and [max].
-  Duration clamp(Duration min, Duration max) {
-    if (this < min) return min;
-    if (this > max) return max;
-    return this;
-  }
-
-  /// Returns a [String] representation of [Duration].
-  String label({Duration? reference}) {
-    reference ??= this;
-    int days = inDays;
-    int hours = inHours - (days * 24);
-    int minutes = inMinutes - (inHours * 60);
-    int seconds = inSeconds - (inMinutes * 60);
-    if (reference > const Duration(days: 1)) {
-      return '${days.toString().padLeft(3, '0')}:'
-          '${hours.toString().padLeft(2, '0')}:'
-          '${minutes.toString().padLeft(2, '0')}:'
-          '${seconds.toString().padLeft(2, '0')}';
-    } else if (reference > const Duration(hours: 1)) {
-      return '${hours.toString().padLeft(2, '0')}:'
-          '${minutes.toString().padLeft(2, '0')}:'
-          '${seconds.toString().padLeft(2, '0')}';
-    } else {
-      return '${minutes.toString().padLeft(2, '0')}:'
-          '${seconds.toString().padLeft(2, '0')}';
-    }
-  }
-}
 
 class AniViewer extends StatefulWidget {
   final AniData anime;
@@ -326,7 +297,6 @@ class ControlsState extends State<Controls> {
                   ],
                 ),
               ),
-              // const Spacer(),
               Expanded(
                 child: GestureDetector(
                   onTap: () => setState(() {
@@ -395,43 +365,48 @@ class ProgressBar extends StatefulWidget {
   const ProgressBar({super.key, required this.player});
 
   @override
-  State createState() => ProgressBarState();
+  ProgressBarState createState() => ProgressBarState();
 }
 
 class ProgressBarState extends State<ProgressBar> {
-  late final StreamSubscription position;
-  double spot = 0;
+  late final StreamSubscription<Duration> _positionSubscription;
+  double _currentPosition = 0;
 
   @override
   void initState() {
-    position = widget.player.stream.position.listen((event) => setState(() {
-          spot = event.inSeconds.toDouble();
-        }));
     super.initState();
+
+    _positionSubscription = widget.player.stream.position.listen((position) {
+      setState(() {
+        _currentPosition = position.inSeconds.toDouble();
+      });
+    });
   }
 
   @override
   void dispose() {
-    position.cancel();
+    _positionSubscription.cancel();
     super.dispose();
   }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(Duration(seconds: spot.round()).label()),
+        Text(Duration(seconds: _currentPosition.round()).label()),
         Expanded(
           child: Slider(
             focusNode: FocusNode(canRequestFocus: false),
             max: widget.player.state.duration.inSeconds.toDouble(),
-            // label: Duration(seconds: spot.toInt()).label(),
-            // divisions: widget.player.state.duration.inSeconds,
             secondaryTrackValue: widget.player.state.buffer.inSeconds.toDouble(),
-            value: spot,
-            onChanged: (value) => setState(
-              () => spot = value,
-            ),
+            divisions: widget.player.state.duration.inSeconds < 1 ? 1 : widget.player.state.duration.inSeconds,
+            label: Duration(seconds: _currentPosition.toInt()).label(),
+            value: _currentPosition,
+            onChanged: (value) {
+              setState(() {
+                _currentPosition = value;
+              });
+            },
             onChangeStart: (_) => widget.player.pause(),
             onChangeEnd: (value) async {
               await widget.player.seek(Duration(seconds: value.toInt()));
@@ -472,40 +447,42 @@ class VolumeSlider extends StatefulWidget {
 }
 
 class VolumeSliderState extends State<VolumeSlider> {
+  late double volume;
+
+  @override
+  void initState() {
+    super.initState();
+    volume = widget.player.state.volume;
+  }
+
   @override
   Widget build(context) => Slider(
         min: 0,
         max: 100,
         divisions: 100,
-        label: widget.player.state.volume.round().toString(),
-        value: widget.player.state.volume,
-        onChanged: (value) => Future.microtask(
-          () async {
-            await widget.player.setVolume(value);
-            setState(() {});
-          },
-        ),
+        label: volume.round().toString(),
+        value: volume,
+        onChanged: (value) {
+          setState(() {
+            volume = value;
+          });
+          widget.player.setVolume(value);
+        },
       );
 }
 
-class FullScreenButton extends StatefulWidget {
+class FullScreenButton extends StatelessWidget {
   const FullScreenButton({super.key});
 
   @override
-  State<StatefulWidget> createState() => FullScreenButtonState();
-}
-
-class FullScreenButtonState extends State<FullScreenButton> {
-  @override
-  Widget build(context) => FutureBuilder<bool>(
-        initialData: false,
-        future: windowManager.isFullScreen(),
-        builder: (context, snap) => IconButton(
-          onPressed: () async {
-            windowManager.setFullScreen(!await windowManager.isFullScreen());
-            setState(() {});
-          },
-          icon: snap.requireData ? const Icon(Icons.fullscreen_exit_rounded) : const Icon(Icons.fullscreen),
-        ),
-      );
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () async {
+        await windowManager.setFullScreen(!await windowManager.isFullScreen());
+      },
+      icon: Icon(
+        Icons.fullscreen,
+      ),
+    );
+  }
 }

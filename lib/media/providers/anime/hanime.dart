@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:string_similarity/string_similarity.dart';
-import 'package:tokuwari_models/info_models.dart';
+import 'package:tokuwari/models/anidata.dart';
+import 'package:tokuwari/models/media_prov.dart';
+import 'package:tokuwari/models/source.dart';
+import 'package:tokuwari/models/types.dart';
 
 Provider haniList(final AniData data) async {
   try {

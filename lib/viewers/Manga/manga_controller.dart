@@ -1,7 +1,7 @@
 import 'package:async/async.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:tokuwari_models/info_models.dart';
+import 'package:tokuwari/models/chapter.dart';
+import 'package:tokuwari/models/media_prov.dart';
 
 enum ReaderDirection {
   vertical,
@@ -12,11 +12,11 @@ enum ReaderDirection {
 }
 
 class ReaderController {
-  final ExtendedPageController controller = ExtendedPageController();
+  final PageController controller = PageController();
   final List<MediaProv> chapters;
   final ValueNotifier<double> page = ValueNotifier<double>(0.0);
   late CancelableOperation load = CancelableOperation.fromFuture(fetch());
-  bool twoPage = false;
+  bool twoPage = true;
   Chapter chapter = const Chapter(pages: []);
   ReaderDirection direction = ReaderDirection.horizontal;
   int current;

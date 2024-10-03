@@ -1,9 +1,10 @@
-import 'package:extended_image/extended_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tokuwari/models/anidata.dart';
 import 'package:tokuwari/viewers/Manga/manga_controller.dart';
-import 'package:tokuwari_models/info_models.dart';
+import 'package:tokuwari/widgets/preload_page_view.dart';
 
 class MangaReader extends StatefulWidget {
   final AniData manga;
@@ -47,8 +48,8 @@ class MangaReaderState extends State<MangaReader> {
     return Scaffold(
       body: Stack(
         children: [
-          GesturePageView.builder(
-            preloadPagesCount: prefs.twoPage ? 2 : 3,
+          PreloadPageView.builder(
+            //preloadPagesCount: prefs.twoPage ? 2 : 3,
             itemCount: prefs.pageCount,
             controller: prefs.controller,
             reverse: prefs.reverse,
@@ -67,8 +68,8 @@ class MangaReaderState extends State<MangaReader> {
                 );
               }
               if (!prefs.twoPage) {
-                return ExtendedImage.network(
-                  prefs.chapter.pages[index],
+                return CachedNetworkImage(
+                  imageUrl: prefs.chapter.pages[index],
                 );
               } else {
                 index = index * 2;
@@ -77,13 +78,13 @@ class MangaReaderState extends State<MangaReader> {
                   children: [
                     if (prefs.pages.length - 1 > index)
                       Flexible(
-                        child: ExtendedImage.network(
-                          prefs.pages[index + 1],
+                        child: CachedNetworkImage(
+                          imageUrl: prefs.pages[index + 1],
                         ),
                       ),
                     Flexible(
-                      child: ExtendedImage.network(
-                        prefs.pages[index],
+                      child: CachedNetworkImage(
+                        imageUrl: prefs.pages[index],
                       ),
                     ),
                   ],
