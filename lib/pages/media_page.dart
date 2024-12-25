@@ -4,6 +4,7 @@ import 'package:tokuwari/models/anidata.dart';
 
 import 'package:flutter/material.dart';
 import 'package:graphql/client.dart';
+import 'package:tokuwari/models/filter.dart';
 import 'package:tokuwari/models/settings.dart';
 import '../widgets/search_button.dart';
 import '../widgets/grid.dart';
@@ -52,28 +53,6 @@ query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre
 }
 """;
 
-const genresList = [
-  "Action",
-  "Adventure",
-  "Comedy",
-  "Drama",
-  "Ecchi",
-  "Fantasy",
-  "Hentai",
-  "Horror",
-  "Mahou Shoujo",
-  "Mecha",
-  "Music",
-  "Mystery",
-  "Psychological",
-  "Romance",
-  "Sci-Fi",
-  "Slice of Life",
-  "Sports",
-  "Supernatural",
-  "Thriller",
-];
-
 class AniPage extends StatefulWidget {
   final String? tag;
   final String type;
@@ -86,7 +65,12 @@ class AniPage extends StatefulWidget {
 class AniPageState extends State<AniPage> {
   static final client = GraphQLClient(
     cache: GraphQLCache(),
-    link: HttpLink("https://graphql.anilist.co/"),
+    link: HttpLink("https://graphql.anilist.co/", defaultHeaders: {
+      'referer': 'https://anilist.co/',
+      'origin': 'https://anilist.co',
+      'user-agent':
+          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+    }),
   );
   final isar = Isar.get(name: "tokudb", schemas: [SettingsSchema]);
   final TextEditingController textController = TextEditingController();
@@ -94,6 +78,7 @@ class AniPageState extends State<AniPage> {
   late String? tag = widget.tag;
   final Map pageInfo = {};
   final List<AniData> animeData = [];
+  AniFilter filter = AniFilter();
   String? search;
   bool loading = false;
 
@@ -130,6 +115,9 @@ class AniPageState extends State<AniPage> {
           },
         ),
       );
+      if (query.hasException) {
+        print(query.exception);
+      }
       setState(() {
         pageInfo
           ..clear()
@@ -180,24 +168,24 @@ class AniPageState extends State<AniPage> {
               spacing: 10,
               runSpacing: 10,
               children: List.generate(
-                genresList.length,
+                AniFilter.genresList.length,
                 (index) {
                   return FilterChip(
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     visualDensity: VisualDensity.compact,
                     labelPadding: const EdgeInsets.all(0),
                     selected: selectedGenres.contains(
-                      genresList[index],
+                      AniFilter.genresList[index],
                     ),
                     label: Text(
-                      genresList[index],
+                      AniFilter.genresList[index],
                     ),
                     onSelected: (value) => setState(
                       () {
                         if (value) {
-                          selectedGenres.add(genresList[index]);
+                          selectedGenres.add(AniFilter.genresList[index]);
                         } else {
-                          selectedGenres.remove(genresList[index]);
+                          selectedGenres.remove(AniFilter.genresList[index]);
                         }
                       },
                     ),

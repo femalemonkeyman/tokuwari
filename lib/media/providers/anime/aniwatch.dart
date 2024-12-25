@@ -67,6 +67,7 @@ Anime zoroInfo(final id) async {
         return jsonDecode(value.data)['link'];
       },
     );
+    print(link);
     final Map<String, dynamic> sources = jsonDecode(
       await Dio().get('$mega${link.split('e-1/')[1].split('?')[0]}', options: options).then(
             (value) => value.data,
@@ -90,12 +91,12 @@ Anime zoroInfo(final id) async {
         for (Map i in sources['tracks']) i['label']: i['file'],
       },
     );
-  } catch (_) {
+  } catch (err, _) {
     if (retries == 0) {
       retries++;
       return await zoroInfo(id);
     } else {
-      print(_);
+      //print(_);
       return const Source(qualities: {}, subtitles: {});
     }
   }

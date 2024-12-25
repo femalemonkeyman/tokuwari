@@ -42,6 +42,8 @@ class MangaReaderState extends State<MangaReader> {
     super.dispose();
   }
 
+  nextPage(details) {}
+
   @override
   Widget build(context) {
     final width = MediaQuery.of(context).size.width;
@@ -50,7 +52,7 @@ class MangaReaderState extends State<MangaReader> {
         children: [
           PreloadPageView.builder(
             //preloadPagesCount: prefs.twoPage ? 2 : 3,
-            itemCount: prefs.pageCount,
+            itemCount: prefs.pageCount + 1,
             controller: prefs.controller,
             reverse: prefs.reverse,
             pageSnapping: !prefs.isVertical,
@@ -66,6 +68,10 @@ class MangaReaderState extends State<MangaReader> {
                     child: const Text("Escape?"),
                   ),
                 );
+              }
+              if (index > prefs.pageCount) {
+                print('end');
+                return Placeholder();
               }
               if (!prefs.twoPage) {
                 return CachedNetworkImage(
@@ -172,8 +178,8 @@ class MangaReaderState extends State<MangaReader> {
                                       onTap: () async {
                                         await prefs.setChapter(index);
                                         setState(() {});
-                                        if (mounted) {
-                                          context.pop();
+                                        if (context.mounted) {
+                                          Navigator.of(context).pop();
                                         }
                                       },
                                     ),
