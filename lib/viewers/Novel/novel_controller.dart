@@ -65,19 +65,19 @@ class ChapterParser {
   }
 
   TextStyle tagStyle(String tag) => switch (tag) {
-        'small' => const TextStyle(fontSize: 11.2),
-        'sub' => const TextStyle(fontFeatures: [FontFeature.subscripts()]),
-        'sup' => const TextStyle(fontFeatures: [FontFeature.superscripts()]),
-        'h1' => const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-        'h2' => const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
-        'h3' => const TextStyle(fontSize: 16.38, fontWeight: FontWeight.bold),
-        'h4' => const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        'h5' => const TextStyle(fontSize: 11.62, fontWeight: FontWeight.bold),
-        'h6' => const TextStyle(fontSize: 9.38, fontWeight: FontWeight.bold),
-        'b' || 'strong' => const TextStyle(fontWeight: FontWeight.bold),
-        'i' || 'em' => const TextStyle(fontStyle: FontStyle.italic),
-        _ => const TextStyle(),
-      };
+    'small' => const TextStyle(fontSize: 11.2),
+    'sub' => const TextStyle(fontFeatures: [FontFeature.subscripts()]),
+    'sup' => const TextStyle(fontFeatures: [FontFeature.superscripts()]),
+    'h1' => const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+    'h2' => const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+    'h3' => const TextStyle(fontSize: 16.38, fontWeight: FontWeight.bold),
+    'h4' => const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+    'h5' => const TextStyle(fontSize: 11.62, fontWeight: FontWeight.bold),
+    'h6' => const TextStyle(fontSize: 9.38, fontWeight: FontWeight.bold),
+    'b' || 'strong' => const TextStyle(fontWeight: FontWeight.bold),
+    'i' || 'em' => const TextStyle(fontStyle: FontStyle.italic),
+    _ => const TextStyle(),
+  };
 
   List<InlineSpan> parseChapters() {
     final List<InlineSpan> chapters = [];
@@ -85,9 +85,14 @@ class ChapterParser {
       final List<InlineSpan> children = [];
       currentChapterFile = chapter.ContentFileName;
       final document = XmlDocument.parse(chapter.HtmlContent);
-      final html = document.getElement('html', namespace: 'http://www.w3.org/1999/xhtml');
+      final html = document.getElement(
+        'html',
+        namespace: 'http://www.w3.org/1999/xhtml',
+      );
       if (html == null) {
-        throw Exception('Chapter parsing error: Chapter does not contain proper xhtml');
+        throw Exception(
+          'Chapter parsing error: Chapter does not contain proper xhtml',
+        );
       }
       final htmlStyle = html.getElement('head')!.getElement('style');
       if (htmlStyle != null) {
@@ -111,9 +116,13 @@ class ChapterParser {
       // Inline Elements
       case 'image':
       case 'img':
-        final location = Uri.directory(p.dirname(currentChapterFile))
-            .resolve(node.getAttribute('src') ?? node.getAttribute('href', namespace: '*')!)
-            .path;
+        final location =
+            Uri.directory(p.dirname(currentChapterFile))
+                .resolve(
+                  node.getAttribute('src') ??
+                      node.getAttribute('href', namespace: '*')!,
+                )
+                .path;
         children.add(
           WidgetSpan(
             child: Center(

@@ -21,17 +21,11 @@ class AniImage extends StatelessWidget {
           fadeInDuration: const Duration(milliseconds: 300),
           placeholder: MemoryImage(kTransparentImage),
           fit: BoxFit.cover,
-          image: image.startsWith("https://")
-              ? CachedNetworkImageProvider(
-                  maxHeight: height,
-                  image,
-                ) as ImageProvider
-              : ResizeImage(
-                  height: height,
-                  FileImage(
-                    File(image),
-                  ),
-                ),
+          image:
+              image.startsWith("https://")
+                  ? CachedNetworkImageProvider(maxHeight: height, image)
+                      as ImageProvider
+                  : ResizeImage(height: height, FileImage(File(image))),
         ),
       ),
     );

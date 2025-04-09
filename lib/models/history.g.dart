@@ -20,30 +20,12 @@ const HistorySchema = IsarGeneratedSchema(
     idName: 'id',
     embedded: false,
     properties: [
-      IsarPropertySchema(
-        name: 'mediaId',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'title',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'image',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'type',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'watched',
-        type: IsarType.long,
-      ),
-      IsarPropertySchema(
-        name: 'page',
-        type: IsarType.long,
-      ),
+      IsarPropertySchema(name: 'mediaId', type: IsarType.string),
+      IsarPropertySchema(name: 'title', type: IsarType.string),
+      IsarPropertySchema(name: 'image', type: IsarType.string),
+      IsarPropertySchema(name: 'type', type: IsarType.string),
+      IsarPropertySchema(name: 'watched', type: IsarType.long),
+      IsarPropertySchema(name: 'page', type: IsarType.long),
     ],
     indexes: [],
   ),
@@ -167,16 +149,17 @@ class _HistoryUpdateImpl implements _HistoryUpdate {
     Object? watched = ignore,
     Object? page = ignore,
   }) {
-    return collection.updateProperties([
-          id
-        ], {
-          if (mediaId != ignore) 1: mediaId as String?,
-          if (title != ignore) 2: title as String?,
-          if (image != ignore) 3: image as String?,
-          if (type != ignore) 4: type as String?,
-          if (watched != ignore) 5: watched as int?,
-          if (page != ignore) 6: page as int?,
-        }) >
+    return collection.updateProperties(
+          [id],
+          {
+            if (mediaId != ignore) 1: mediaId as String?,
+            if (title != ignore) 2: title as String?,
+            if (image != ignore) 3: image as String?,
+            if (type != ignore) 4: type as String?,
+            if (watched != ignore) 5: watched as int?,
+            if (page != ignore) 6: page as int?,
+          },
+        ) >
         0;
   }
 }
@@ -310,15 +293,10 @@ extension HistoryQueryBuilderUpdate
 
 extension HistoryQueryFilter
     on QueryBuilder<History, History, QFilterCondition> {
-  QueryBuilder<History, History, QAfterFilterCondition> idEqualTo(
-    int value,
-  ) {
+  QueryBuilder<History, History, QAfterFilterCondition> idEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 0,
-          value: value,
-        ),
+        EqualCondition(property: 0, value: value),
       );
     });
   }
@@ -328,10 +306,7 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 0,
-          value: value,
-        ),
+        GreaterCondition(property: 0, value: value),
       );
     });
   }
@@ -341,24 +316,14 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 0,
-          value: value,
-        ),
+        GreaterOrEqualCondition(property: 0, value: value),
       );
     });
   }
 
-  QueryBuilder<History, History, QAfterFilterCondition> idLessThan(
-    int value,
-  ) {
+  QueryBuilder<History, History, QAfterFilterCondition> idLessThan(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessCondition(
-          property: 0,
-          value: value,
-        ),
-      );
+      return query.addFilterCondition(LessCondition(property: 0, value: value));
     });
   }
 
@@ -367,10 +332,7 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 0,
-          value: value,
-        ),
+        LessOrEqualCondition(property: 0, value: value),
       );
     });
   }
@@ -381,11 +343,7 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 0,
-          lower: lower,
-          upper: upper,
-        ),
+        BetweenCondition(property: 0, lower: lower, upper: upper),
       );
     });
   }
@@ -396,11 +354,7 @@ extension HistoryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 1,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 1, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -421,10 +375,7 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition>
-      mediaIdGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  mediaIdGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -442,20 +393,13 @@ extension HistoryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 1,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 1, value: value, caseSensitive: caseSensitive),
       );
     });
   }
 
   QueryBuilder<History, History, QAfterFilterCondition>
-      mediaIdLessThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  mediaIdLessThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         LessOrEqualCondition(
@@ -515,8 +459,9 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition> mediaIdContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -529,8 +474,9 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition> mediaIdMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -545,10 +491,7 @@ extension HistoryQueryFilter
   QueryBuilder<History, History, QAfterFilterCondition> mediaIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 1,
-          value: '',
-        ),
+        const EqualCondition(property: 1, value: ''),
       );
     });
   }
@@ -556,10 +499,7 @@ extension HistoryQueryFilter
   QueryBuilder<History, History, QAfterFilterCondition> mediaIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 1,
-          value: '',
-        ),
+        const GreaterCondition(property: 1, value: ''),
       );
     });
   }
@@ -570,11 +510,7 @@ extension HistoryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 2,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 2, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -595,10 +531,7 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition>
-      titleGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  titleGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -616,11 +549,7 @@ extension HistoryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 2,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 2, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -688,8 +617,9 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition> titleContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -702,8 +632,9 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition> titleMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -718,10 +649,7 @@ extension HistoryQueryFilter
   QueryBuilder<History, History, QAfterFilterCondition> titleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 2,
-          value: '',
-        ),
+        const EqualCondition(property: 2, value: ''),
       );
     });
   }
@@ -729,10 +657,7 @@ extension HistoryQueryFilter
   QueryBuilder<History, History, QAfterFilterCondition> titleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 2,
-          value: '',
-        ),
+        const GreaterCondition(property: 2, value: ''),
       );
     });
   }
@@ -743,11 +668,7 @@ extension HistoryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 3,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 3, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -768,10 +689,7 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition>
-      imageGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  imageGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -789,11 +707,7 @@ extension HistoryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 3,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 3, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -861,8 +775,9 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition> imageContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -875,8 +790,9 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition> imageMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -891,10 +807,7 @@ extension HistoryQueryFilter
   QueryBuilder<History, History, QAfterFilterCondition> imageIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 3,
-          value: '',
-        ),
+        const EqualCondition(property: 3, value: ''),
       );
     });
   }
@@ -902,10 +815,7 @@ extension HistoryQueryFilter
   QueryBuilder<History, History, QAfterFilterCondition> imageIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 3,
-          value: '',
-        ),
+        const GreaterCondition(property: 3, value: ''),
       );
     });
   }
@@ -916,11 +826,7 @@ extension HistoryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 4,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 4, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -941,10 +847,7 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition>
-      typeGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  typeGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -962,11 +865,7 @@ extension HistoryQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 4,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 4, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1034,8 +933,9 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition> typeContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -1048,8 +948,9 @@ extension HistoryQueryFilter
   }
 
   QueryBuilder<History, History, QAfterFilterCondition> typeMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -1064,10 +965,7 @@ extension HistoryQueryFilter
   QueryBuilder<History, History, QAfterFilterCondition> typeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 4,
-          value: '',
-        ),
+        const EqualCondition(property: 4, value: ''),
       );
     });
   }
@@ -1075,10 +973,7 @@ extension HistoryQueryFilter
   QueryBuilder<History, History, QAfterFilterCondition> typeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 4,
-          value: '',
-        ),
+        const GreaterCondition(property: 4, value: ''),
       );
     });
   }
@@ -1100,10 +995,7 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 5,
-          value: value,
-        ),
+        EqualCondition(property: 5, value: value),
       );
     });
   }
@@ -1113,24 +1005,16 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 5,
-          value: value,
-        ),
+        GreaterCondition(property: 5, value: value),
       );
     });
   }
 
   QueryBuilder<History, History, QAfterFilterCondition>
-      watchedGreaterThanOrEqualTo(
-    int? value,
-  ) {
+  watchedGreaterThanOrEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 5,
-          value: value,
-        ),
+        GreaterOrEqualCondition(property: 5, value: value),
       );
     });
   }
@@ -1139,25 +1023,15 @@ extension HistoryQueryFilter
     int? value,
   ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessCondition(
-          property: 5,
-          value: value,
-        ),
-      );
+      return query.addFilterCondition(LessCondition(property: 5, value: value));
     });
   }
 
   QueryBuilder<History, History, QAfterFilterCondition>
-      watchedLessThanOrEqualTo(
-    int? value,
-  ) {
+  watchedLessThanOrEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 5,
-          value: value,
-        ),
+        LessOrEqualCondition(property: 5, value: value),
       );
     });
   }
@@ -1168,11 +1042,7 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 5,
-          lower: lower,
-          upper: upper,
-        ),
+        BetweenCondition(property: 5, lower: lower, upper: upper),
       );
     });
   }
@@ -1194,10 +1064,7 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 6,
-          value: value,
-        ),
+        EqualCondition(property: 6, value: value),
       );
     });
   }
@@ -1207,24 +1074,16 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 6,
-          value: value,
-        ),
+        GreaterCondition(property: 6, value: value),
       );
     });
   }
 
   QueryBuilder<History, History, QAfterFilterCondition>
-      pageGreaterThanOrEqualTo(
-    int? value,
-  ) {
+  pageGreaterThanOrEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 6,
-          value: value,
-        ),
+        GreaterOrEqualCondition(property: 6, value: value),
       );
     });
   }
@@ -1233,12 +1092,7 @@ extension HistoryQueryFilter
     int? value,
   ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessCondition(
-          property: 6,
-          value: value,
-        ),
-      );
+      return query.addFilterCondition(LessCondition(property: 6, value: value));
     });
   }
 
@@ -1247,10 +1101,7 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 6,
-          value: value,
-        ),
+        LessOrEqualCondition(property: 6, value: value),
       );
     });
   }
@@ -1261,11 +1112,7 @@ extension HistoryQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 6,
-          lower: lower,
-          upper: upper,
-        ),
+        BetweenCondition(property: 6, lower: lower, upper: upper),
       );
     });
   }
@@ -1287,87 +1134,67 @@ extension HistoryQuerySortBy on QueryBuilder<History, History, QSortBy> {
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> sortByMediaId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> sortByMediaId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        1,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> sortByMediaIdDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> sortByMediaIdDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        1,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(1, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> sortByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> sortByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        2,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(2, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> sortByTitleDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> sortByTitleDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        2,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(2, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> sortByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> sortByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        3,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(3, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> sortByImageDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> sortByImageDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        3,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(3, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> sortByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> sortByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        4,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(4, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> sortByTypeDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> sortByTypeDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        4,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(4, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
@@ -1410,57 +1237,65 @@ extension HistoryQuerySortThenBy
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> thenByMediaId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> thenByMediaId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> thenByMediaIdDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> thenByMediaIdDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(1, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> thenByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> thenByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(2, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> thenByTitleDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> thenByTitleDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(2, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> thenByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> thenByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(3, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> thenByImageDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> thenByImageDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(3, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> thenByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> thenByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(4, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterSortBy> thenByTypeDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterSortBy> thenByTypeDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(4, sort: Sort.desc, caseSensitive: caseSensitive);
     });
@@ -1493,29 +1328,33 @@ extension HistoryQuerySortThenBy
 
 extension HistoryQueryWhereDistinct
     on QueryBuilder<History, History, QDistinct> {
-  QueryBuilder<History, History, QAfterDistinct> distinctByMediaId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterDistinct> distinctByMediaId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterDistinct> distinctByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterDistinct> distinctByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(2, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterDistinct> distinctByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterDistinct> distinctByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(3, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<History, History, QAfterDistinct> distinctByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<History, History, QAfterDistinct> distinctByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(4, caseSensitive: caseSensitive);
     });

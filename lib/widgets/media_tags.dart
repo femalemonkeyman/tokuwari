@@ -12,23 +12,17 @@ class MediaTags extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: List.generate(
-          data.tags.length.clamp(0, 15),
-          (index) {
-            return ActionChip(
-              padding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              label: Text(
-                data.tags[index],
-              ),
-              onPressed: () => context.go(
-                '/${data.type}?tag=${data.tags[index]}',
-              ),
-            );
-          },
-        ),
+        children: List.generate(data.tags.length.clamp(0, 15), (index) {
+          return ActionChip(
+            padding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            label: Text(data.tags[index]),
+            onPressed:
+                () => context.go('/${data.type}?tag=${data.tags[index]}'),
+          );
+        }),
       ),
     );
   }

@@ -35,7 +35,10 @@ class ReaderController {
   bool get reverse => direction != ReaderDirection.horizontal ? false : true;
   List get pages => chapter.pages;
   bool get isVertical => direction == ReaderDirection.vertical;
-  int get pageCount => !twoPage || isVertical ? chapter.pages.length : (chapter.pages.length / 2).ceil();
+  int get pageCount =>
+      !twoPage || isVertical
+          ? chapter.pages.length
+          : (chapter.pages.length / 2).ceil();
 
   Future<void> fetch() async {
     chapter = await chapters[current].call!();

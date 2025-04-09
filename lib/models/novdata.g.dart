@@ -20,29 +20,15 @@ const NovDataSchema = IsarGeneratedSchema(
     idName: 'path',
     embedded: false,
     properties: [
-      IsarPropertySchema(
-        name: 'type',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'title',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'image',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'path',
-        type: IsarType.string,
-      ),
+      IsarPropertySchema(name: 'type', type: IsarType.string),
+      IsarPropertySchema(name: 'title', type: IsarType.string),
+      IsarPropertySchema(name: 'image', type: IsarType.string),
+      IsarPropertySchema(name: 'path', type: IsarType.string),
     ],
     indexes: [
       IsarIndexSchema(
         name: 'type',
-        properties: [
-          "type",
-        ],
+        properties: ["type"],
         unique: false,
         hash: false,
       ),
@@ -101,12 +87,7 @@ dynamic deserializeNovDataProp(IsarReader reader, int property) {
 }
 
 sealed class _NovDataUpdate {
-  bool call({
-    required String path,
-    String? type,
-    String? title,
-    String? image,
-  });
+  bool call({required String path, String? type, String? title, String? image});
 }
 
 class _NovDataUpdateImpl implements _NovDataUpdate {
@@ -121,13 +102,14 @@ class _NovDataUpdateImpl implements _NovDataUpdate {
     Object? title = ignore,
     Object? image = ignore,
   }) {
-    return collection.updateProperties([
-          path
-        ], {
-          if (type != ignore) 1: type as String?,
-          if (title != ignore) 2: title as String?,
-          if (image != ignore) 3: image as String?,
-        }) >
+    return collection.updateProperties(
+          [path],
+          {
+            if (type != ignore) 1: type as String?,
+            if (title != ignore) 2: title as String?,
+            if (image != ignore) 3: image as String?,
+          },
+        ) >
         0;
   }
 }
@@ -168,11 +150,7 @@ extension NovDataUpdate on IsarCollection<String, NovData> {
 }
 
 sealed class _NovDataQueryUpdate {
-  int call({
-    String? type,
-    String? title,
-    String? image,
-  });
+  int call({String? type, String? title, String? image});
 }
 
 class _NovDataQueryUpdateImpl implements _NovDataQueryUpdate {
@@ -243,11 +221,7 @@ extension NovDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 1,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 1, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -268,10 +242,7 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition>
-      typeGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  typeGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -289,11 +260,7 @@ extension NovDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 1,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 1, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -361,8 +328,9 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition> typeContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -375,8 +343,9 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition> typeMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -391,10 +360,7 @@ extension NovDataQueryFilter
   QueryBuilder<NovData, NovData, QAfterFilterCondition> typeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 1,
-          value: '',
-        ),
+        const EqualCondition(property: 1, value: ''),
       );
     });
   }
@@ -402,10 +368,7 @@ extension NovDataQueryFilter
   QueryBuilder<NovData, NovData, QAfterFilterCondition> typeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 1,
-          value: '',
-        ),
+        const GreaterCondition(property: 1, value: ''),
       );
     });
   }
@@ -416,11 +379,7 @@ extension NovDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 2,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 2, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -441,10 +400,7 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition>
-      titleGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  titleGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -462,11 +418,7 @@ extension NovDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 2,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 2, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -534,8 +486,9 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition> titleContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -548,8 +501,9 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition> titleMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -564,10 +518,7 @@ extension NovDataQueryFilter
   QueryBuilder<NovData, NovData, QAfterFilterCondition> titleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 2,
-          value: '',
-        ),
+        const EqualCondition(property: 2, value: ''),
       );
     });
   }
@@ -575,10 +526,7 @@ extension NovDataQueryFilter
   QueryBuilder<NovData, NovData, QAfterFilterCondition> titleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 2,
-          value: '',
-        ),
+        const GreaterCondition(property: 2, value: ''),
       );
     });
   }
@@ -589,11 +537,7 @@ extension NovDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 3,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 3, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -614,10 +558,7 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition>
-      imageGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  imageGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -635,11 +576,7 @@ extension NovDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 3,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 3, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -707,8 +644,9 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition> imageContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -721,8 +659,9 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition> imageMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -737,10 +676,7 @@ extension NovDataQueryFilter
   QueryBuilder<NovData, NovData, QAfterFilterCondition> imageIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 3,
-          value: '',
-        ),
+        const EqualCondition(property: 3, value: ''),
       );
     });
   }
@@ -748,10 +684,7 @@ extension NovDataQueryFilter
   QueryBuilder<NovData, NovData, QAfterFilterCondition> imageIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 3,
-          value: '',
-        ),
+        const GreaterCondition(property: 3, value: ''),
       );
     });
   }
@@ -762,11 +695,7 @@ extension NovDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 4,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 4, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -787,10 +716,7 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition>
-      pathGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  pathGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -808,11 +734,7 @@ extension NovDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 4,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 4, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -880,8 +802,9 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition> pathContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -894,8 +817,9 @@ extension NovDataQueryFilter
   }
 
   QueryBuilder<NovData, NovData, QAfterFilterCondition> pathMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -910,10 +834,7 @@ extension NovDataQueryFilter
   QueryBuilder<NovData, NovData, QAfterFilterCondition> pathIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 4,
-          value: '',
-        ),
+        const EqualCondition(property: 4, value: ''),
       );
     });
   }
@@ -921,10 +842,7 @@ extension NovDataQueryFilter
   QueryBuilder<NovData, NovData, QAfterFilterCondition> pathIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 4,
-          value: '',
-        ),
+        const GreaterCondition(property: 4, value: ''),
       );
     });
   }
@@ -934,144 +852,132 @@ extension NovDataQueryObject
     on QueryBuilder<NovData, NovData, QFilterCondition> {}
 
 extension NovDataQuerySortBy on QueryBuilder<NovData, NovData, QSortBy> {
-  QueryBuilder<NovData, NovData, QAfterSortBy> sortByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> sortByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        1,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> sortByTypeDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> sortByTypeDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        1,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(1, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> sortByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> sortByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        2,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(2, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> sortByTitleDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> sortByTitleDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        2,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(2, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> sortByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> sortByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        3,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(3, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> sortByImageDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> sortByImageDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        3,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(3, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> sortByPath(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> sortByPath({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        4,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(4, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> sortByPathDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> sortByPathDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        4,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(4, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 }
 
 extension NovDataQuerySortThenBy
     on QueryBuilder<NovData, NovData, QSortThenBy> {
-  QueryBuilder<NovData, NovData, QAfterSortBy> thenByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> thenByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> thenByTypeDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> thenByTypeDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(1, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> thenByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> thenByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(2, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> thenByTitleDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> thenByTitleDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(2, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> thenByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> thenByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(3, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> thenByImageDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> thenByImageDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(3, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> thenByPath(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> thenByPath({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(4, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterSortBy> thenByPathDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterSortBy> thenByPathDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(4, sort: Sort.desc, caseSensitive: caseSensitive);
     });
@@ -1080,22 +986,25 @@ extension NovDataQuerySortThenBy
 
 extension NovDataQueryWhereDistinct
     on QueryBuilder<NovData, NovData, QDistinct> {
-  QueryBuilder<NovData, NovData, QAfterDistinct> distinctByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterDistinct> distinctByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterDistinct> distinctByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterDistinct> distinctByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(2, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<NovData, NovData, QAfterDistinct> distinctByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<NovData, NovData, QAfterDistinct> distinctByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(3, caseSensitive: caseSensitive);
     });

@@ -6,15 +6,10 @@ class Loading extends StatelessWidget {
 
   @override
   Widget build(context) => Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          TextButton(
-            onPressed: () => context.pop(),
-            child: const Text("Escape?"),
-          ),
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
-        ],
-      );
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [
+      TextButton(onPressed: () => context.pop(), child: const Text("Escape?")),
+      const Center(child: CircularProgressIndicator()),
+    ],
+  );
 }

@@ -19,12 +19,7 @@ const SettingsSchema = IsarGeneratedSchema(
     name: 'Settings',
     idName: 'id',
     embedded: false,
-    properties: [
-      IsarPropertySchema(
-        name: 'isNsfw',
-        type: IsarType.bool,
-      ),
-    ],
+    properties: [IsarPropertySchema(name: 'isNsfw', type: IsarType.bool)],
     indexes: [],
   ),
   converter: IsarObjectConverter<int, Settings>(
@@ -61,10 +56,7 @@ dynamic deserializeSettingsProp(IsarReader reader, int property) {
 }
 
 sealed class _SettingsUpdate {
-  bool call({
-    required int id,
-    bool? isNsfw,
-  });
+  bool call({required int id, bool? isNsfw});
 }
 
 class _SettingsUpdateImpl implements _SettingsUpdate {
@@ -73,24 +65,17 @@ class _SettingsUpdateImpl implements _SettingsUpdate {
   final IsarCollection<int, Settings> collection;
 
   @override
-  bool call({
-    required int id,
-    Object? isNsfw = ignore,
-  }) {
-    return collection.updateProperties([
-          id
-        ], {
-          if (isNsfw != ignore) 1: isNsfw as bool?,
-        }) >
+  bool call({required int id, Object? isNsfw = ignore}) {
+    return collection.updateProperties(
+          [id],
+          {if (isNsfw != ignore) 1: isNsfw as bool?},
+        ) >
         0;
   }
 }
 
 sealed class _SettingsUpdateAll {
-  int call({
-    required List<int> id,
-    bool? isNsfw,
-  });
+  int call({required List<int> id, bool? isNsfw});
 }
 
 class _SettingsUpdateAllImpl implements _SettingsUpdateAll {
@@ -99,10 +84,7 @@ class _SettingsUpdateAllImpl implements _SettingsUpdateAll {
   final IsarCollection<int, Settings> collection;
 
   @override
-  int call({
-    required List<int> id,
-    Object? isNsfw = ignore,
-  }) {
+  int call({required List<int> id, Object? isNsfw = ignore}) {
     return collection.updateProperties(id, {
       if (isNsfw != ignore) 1: isNsfw as bool?,
     });
@@ -116,9 +98,7 @@ extension SettingsUpdate on IsarCollection<int, Settings> {
 }
 
 sealed class _SettingsQueryUpdate {
-  int call({
-    bool? isNsfw,
-  });
+  int call({bool? isNsfw});
 }
 
 class _SettingsQueryUpdateImpl implements _SettingsQueryUpdate {
@@ -128,9 +108,7 @@ class _SettingsQueryUpdateImpl implements _SettingsQueryUpdate {
   final int? limit;
 
   @override
-  int call({
-    Object? isNsfw = ignore,
-  }) {
+  int call({Object? isNsfw = ignore}) {
     return query.updateProperties(limit: limit, {
       if (isNsfw != ignore) 1: isNsfw as bool?,
     });
@@ -151,9 +129,7 @@ class _SettingsQueryBuilderUpdateImpl implements _SettingsQueryUpdate {
   final int? limit;
 
   @override
-  int call({
-    Object? isNsfw = ignore,
-  }) {
+  int call({Object? isNsfw = ignore}) {
     final q = query.build();
     try {
       return q.updateProperties(limit: limit, {
@@ -175,15 +151,10 @@ extension SettingsQueryBuilderUpdate
 
 extension SettingsQueryFilter
     on QueryBuilder<Settings, Settings, QFilterCondition> {
-  QueryBuilder<Settings, Settings, QAfterFilterCondition> idEqualTo(
-    int value,
-  ) {
+  QueryBuilder<Settings, Settings, QAfterFilterCondition> idEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 0,
-          value: value,
-        ),
+        EqualCondition(property: 0, value: value),
       );
     });
   }
@@ -193,24 +164,16 @@ extension SettingsQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 0,
-          value: value,
-        ),
+        GreaterCondition(property: 0, value: value),
       );
     });
   }
 
   QueryBuilder<Settings, Settings, QAfterFilterCondition>
-      idGreaterThanOrEqualTo(
-    int value,
-  ) {
+  idGreaterThanOrEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 0,
-          value: value,
-        ),
+        GreaterOrEqualCondition(property: 0, value: value),
       );
     });
   }
@@ -219,12 +182,7 @@ extension SettingsQueryFilter
     int value,
   ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessCondition(
-          property: 0,
-          value: value,
-        ),
-      );
+      return query.addFilterCondition(LessCondition(property: 0, value: value));
     });
   }
 
@@ -233,10 +191,7 @@ extension SettingsQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 0,
-          value: value,
-        ),
+        LessOrEqualCondition(property: 0, value: value),
       );
     });
   }
@@ -247,11 +202,7 @@ extension SettingsQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 0,
-          lower: lower,
-          upper: upper,
-        ),
+        BetweenCondition(property: 0, lower: lower, upper: upper),
       );
     });
   }
@@ -261,10 +212,7 @@ extension SettingsQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 1,
-          value: value,
-        ),
+        EqualCondition(property: 1, value: value),
       );
     });
   }

@@ -8,7 +8,6 @@ class MediaProv {
   final String title;
   final String number;
   @ignore
-
   ///Call must be a function for the simple reason if it's not it will run when
   ///the widget is built
   final Call? call;

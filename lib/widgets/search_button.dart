@@ -23,7 +23,8 @@ class SearchButton extends StatelessWidget {
           elevation: const WidgetStatePropertyAll<double>(0),
           shape: const WidgetStatePropertyAll(BeveledRectangleBorder()),
           onSubmitted: (string) => search(),
-          onTapOutside: (event) => FocusManager.instance.primaryFocus!.unfocus(),
+          onTapOutside:
+              (event) => FocusManager.instance.primaryFocus!.unfocus(),
           leading: const Icon(Icons.search),
           hintText: text,
           trailing: [

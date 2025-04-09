@@ -17,15 +17,9 @@ class LaterPage extends StatelessWidget {
             //SearchButton(text: 'Favourites', controller: TextEditingController(), search: () {}),
             TabBar(
               tabs: [
-                Tab(
-                  text: 'Anime',
-                ),
-                Tab(
-                  text: 'Manga',
-                ),
-                Tab(
-                  text: 'Recent',
-                ),
+                Tab(text: 'Anime'),
+                Tab(text: 'Manga'),
+                Tab(text: 'Recent'),
               ],
             ),
             Expanded(
@@ -52,9 +46,13 @@ class LaterGrid extends StatefulWidget {
   State createState() => LaterGridState();
 }
 
-class LaterGridState extends State<LaterGrid> with AutomaticKeepAliveClientMixin {
+class LaterGridState extends State<LaterGrid>
+    with AutomaticKeepAliveClientMixin {
   final Isar isar = Isar.get(schemas: [AniDataSchema], name: 'tokudb');
-  late final stream = isar.aniDatas.where().typeEqualTo(widget.type).watch(fireImmediately: true);
+  late final stream = isar.aniDatas
+      .where()
+      .typeEqualTo(widget.type)
+      .watch(fireImmediately: true);
 
   @override
   Widget build(context) {
@@ -67,11 +65,7 @@ class LaterGridState extends State<LaterGrid> with AutomaticKeepAliveClientMixin
           builder: (context, snap) {
             if (snap.hasData && snap.data!.isNotEmpty) {
               final data = snap.data!.reversed.toList();
-              return Grid(
-                data: data,
-                keep: false,
-                length: snap.data!.length,
-              );
+              return Grid(data: data, keep: false, length: snap.data!.length);
             }
             return const SliverToBoxAdapter(child: SizedBox.shrink());
           },

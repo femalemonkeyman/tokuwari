@@ -37,18 +37,18 @@ class AniData {
   });
 
   AniData.fromJson(Map<String, dynamic> json, this.type, {this.id = 0})
-      : malid = json['idMal'],
-        mediaId = json['id'].toString(),
-        description = (json['description'] ?? "").replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
-        status = json['status'].toString(),
-        title = json['title']['romaji'].toString(),
-        image = json['coverImage']['extraLarge'],
-        count = (json['episodes'] ?? json['chapters'] ?? "n/a").toString(),
-        score = (json['averageScore'] ?? "n/a").toString(),
-        tags = List.generate(
-          json['tags'].length,
-          (tagIndex) {
-            return json['tags'][tagIndex]['name'];
-          },
-        );
+    : malid = json['idMal'],
+      mediaId = json['id'].toString(),
+      description = (json['description'] ?? "").replaceAll(
+        RegExp(r'<[^>]*>|&[^;]+;'),
+        ' ',
+      ),
+      status = json['status'].toString(),
+      title = json['title']['romaji'].toString(),
+      image = json['coverImage']['extraLarge'],
+      count = (json['episodes'] ?? json['chapters'] ?? "n/a").toString(),
+      score = (json['averageScore'] ?? "n/a").toString(),
+      tags = List.generate(json['tags'].length, (tagIndex) {
+        return json['tags'][tagIndex]['name'];
+      });
 }

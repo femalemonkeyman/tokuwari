@@ -5,18 +5,16 @@ import 'package:go_router/go_router.dart';
 class Block extends StatelessWidget {
   final dynamic data;
 
-  const Block({
-    super.key,
-    required this.data,
-  });
+  const Block({super.key, required this.data});
 
   @override
   Widget build(context) {
     return GestureDetector(
-      onTap: () => switch (data.type) {
-        'novel' => context.push('/novel/viewer', extra: data),
-        _ => context.push('/${data.type}/info', extra: data),
-      },
+      onTap:
+          () => switch (data.type) {
+            'novel' => context.push('/novel/viewer', extra: data),
+            _ => context.push('/${data.type}/info', extra: data),
+          },
       child: Stack(
         children: [
           Positioned.fill(
@@ -32,7 +30,7 @@ class Block extends StatelessWidget {
                     Color.fromARGB(0, 0, 0, 0),
                     Color.fromARGB(0, 0, 0, 0),
                     Color.fromARGB(120, 0, 0, 0),
-                    Color.fromARGB(255, 0, 0, 0)
+                    Color.fromARGB(255, 0, 0, 0),
                   ],
                 ),
               ),
@@ -60,7 +58,7 @@ class Block extends StatelessWidget {
                 children: [
                   CornerChip(data: "# ${data.count}", bright: true),
                   const Spacer(),
-                  CornerChip(data: "★ ${data.score}", bright: false)
+                  CornerChip(data: "★ ${data.score}", bright: false),
                 ],
               ),
             ),
@@ -83,9 +81,7 @@ class CornerChip extends StatelessWidget {
       padding: const EdgeInsets.only(left: 7, right: 7, top: 5, bottom: 5),
       decoration: BoxDecoration(
         color: bright ? white : black, // Ill swear in russian for real lol :D
-        borderRadius: const BorderRadius.all(
-          Radius.circular(30),
-        ),
+        borderRadius: const BorderRadius.all(Radius.circular(30)),
         boxShadow: const [
           BoxShadow(
             color: Color.fromARGB(94, 0, 0, 0),
@@ -95,12 +91,7 @@ class CornerChip extends StatelessWidget {
           ),
         ],
       ),
-      child: Text(
-        data,
-        style: TextStyle(
-          color: bright ? black : white,
-        ),
-      ),
+      child: Text(data, style: TextStyle(color: bright ? black : white)),
     );
   }
 }

@@ -17,5 +17,11 @@ class History {
   int? watched;
   int? page;
 
-  History({required this.title, required this.image, required this.id, required this.mediaId, required this.type});
+  History({
+    required this.title,
+    required this.image,
+    required this.id,
+    required this.mediaId,
+    required this.type,
+  });
 }

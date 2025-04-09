@@ -20,46 +20,16 @@ const AniDataSchema = IsarGeneratedSchema(
     idName: 'id',
     embedded: false,
     properties: [
-      IsarPropertySchema(
-        name: 'type',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'mediaId',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'malid',
-        type: IsarType.long,
-      ),
-      IsarPropertySchema(
-        name: 'title',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'description',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'status',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'image',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'score',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'count',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'tags',
-        type: IsarType.stringList,
-      ),
+      IsarPropertySchema(name: 'type', type: IsarType.string),
+      IsarPropertySchema(name: 'mediaId', type: IsarType.string),
+      IsarPropertySchema(name: 'malid', type: IsarType.long),
+      IsarPropertySchema(name: 'title', type: IsarType.string),
+      IsarPropertySchema(name: 'description', type: IsarType.string),
+      IsarPropertySchema(name: 'status', type: IsarType.string),
+      IsarPropertySchema(name: 'image', type: IsarType.string),
+      IsarPropertySchema(name: 'score', type: IsarType.string),
+      IsarPropertySchema(name: 'count', type: IsarType.string),
+      IsarPropertySchema(name: 'tags', type: IsarType.stringList),
     ],
     indexes: [],
   ),
@@ -240,19 +210,20 @@ class _AniDataUpdateImpl implements _AniDataUpdate {
     Object? score = ignore,
     Object? count = ignore,
   }) {
-    return collection.updateProperties([
-          id
-        ], {
-          if (type != ignore) 1: type as String?,
-          if (mediaId != ignore) 2: mediaId as String?,
-          if (malid != ignore) 3: malid as int?,
-          if (title != ignore) 4: title as String?,
-          if (description != ignore) 5: description as String?,
-          if (status != ignore) 6: status as String?,
-          if (image != ignore) 7: image as String?,
-          if (score != ignore) 8: score as String?,
-          if (count != ignore) 9: count as String?,
-        }) >
+    return collection.updateProperties(
+          [id],
+          {
+            if (type != ignore) 1: type as String?,
+            if (mediaId != ignore) 2: mediaId as String?,
+            if (malid != ignore) 3: malid as int?,
+            if (title != ignore) 4: title as String?,
+            if (description != ignore) 5: description as String?,
+            if (status != ignore) 6: status as String?,
+            if (image != ignore) 7: image as String?,
+            if (score != ignore) 8: score as String?,
+            if (count != ignore) 9: count as String?,
+          },
+        ) >
         0;
   }
 }
@@ -410,15 +381,10 @@ extension AniDataQueryBuilderUpdate
 
 extension AniDataQueryFilter
     on QueryBuilder<AniData, AniData, QFilterCondition> {
-  QueryBuilder<AniData, AniData, QAfterFilterCondition> idEqualTo(
-    int value,
-  ) {
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> idEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 0,
-          value: value,
-        ),
+        EqualCondition(property: 0, value: value),
       );
     });
   }
@@ -428,10 +394,7 @@ extension AniDataQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 0,
-          value: value,
-        ),
+        GreaterCondition(property: 0, value: value),
       );
     });
   }
@@ -441,24 +404,14 @@ extension AniDataQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 0,
-          value: value,
-        ),
+        GreaterOrEqualCondition(property: 0, value: value),
       );
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterFilterCondition> idLessThan(
-    int value,
-  ) {
+  QueryBuilder<AniData, AniData, QAfterFilterCondition> idLessThan(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessCondition(
-          property: 0,
-          value: value,
-        ),
-      );
+      return query.addFilterCondition(LessCondition(property: 0, value: value));
     });
   }
 
@@ -467,10 +420,7 @@ extension AniDataQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 0,
-          value: value,
-        ),
+        LessOrEqualCondition(property: 0, value: value),
       );
     });
   }
@@ -481,11 +431,7 @@ extension AniDataQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 0,
-          lower: lower,
-          upper: upper,
-        ),
+        BetweenCondition(property: 0, lower: lower, upper: upper),
       );
     });
   }
@@ -496,11 +442,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 1,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 1, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -521,10 +463,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      typeGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  typeGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -542,11 +481,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 1,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 1, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -614,8 +549,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> typeContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -628,8 +564,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> typeMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -644,10 +581,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> typeIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 1,
-          value: '',
-        ),
+        const EqualCondition(property: 1, value: ''),
       );
     });
   }
@@ -655,10 +589,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> typeIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 1,
-          value: '',
-        ),
+        const GreaterCondition(property: 1, value: ''),
       );
     });
   }
@@ -669,11 +600,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 2,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 2, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -694,10 +621,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      mediaIdGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  mediaIdGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -715,20 +639,13 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 2,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 2, value: value, caseSensitive: caseSensitive),
       );
     });
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      mediaIdLessThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  mediaIdLessThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         LessOrEqualCondition(
@@ -788,8 +705,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -802,8 +720,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -818,10 +737,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 2,
-          value: '',
-        ),
+        const EqualCondition(property: 2, value: ''),
       );
     });
   }
@@ -829,10 +745,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> mediaIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 2,
-          value: '',
-        ),
+        const GreaterCondition(property: 2, value: ''),
       );
     });
   }
@@ -854,10 +767,7 @@ extension AniDataQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 3,
-          value: value,
-        ),
+        EqualCondition(property: 3, value: value),
       );
     });
   }
@@ -867,24 +777,16 @@ extension AniDataQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 3,
-          value: value,
-        ),
+        GreaterCondition(property: 3, value: value),
       );
     });
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      malidGreaterThanOrEqualTo(
-    int? value,
-  ) {
+  malidGreaterThanOrEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 3,
-          value: value,
-        ),
+        GreaterOrEqualCondition(property: 3, value: value),
       );
     });
   }
@@ -893,12 +795,7 @@ extension AniDataQueryFilter
     int? value,
   ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessCondition(
-          property: 3,
-          value: value,
-        ),
-      );
+      return query.addFilterCondition(LessCondition(property: 3, value: value));
     });
   }
 
@@ -907,10 +804,7 @@ extension AniDataQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 3,
-          value: value,
-        ),
+        LessOrEqualCondition(property: 3, value: value),
       );
     });
   }
@@ -921,11 +815,7 @@ extension AniDataQueryFilter
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 3,
-          lower: lower,
-          upper: upper,
-        ),
+        BetweenCondition(property: 3, lower: lower, upper: upper),
       );
     });
   }
@@ -936,11 +826,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 4,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 4, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -961,10 +847,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      titleGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  titleGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -982,11 +865,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 4,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 4, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1054,8 +933,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> titleContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -1068,8 +948,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> titleMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -1084,10 +965,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> titleIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 4,
-          value: '',
-        ),
+        const EqualCondition(property: 4, value: ''),
       );
     });
   }
@@ -1095,10 +973,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> titleIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 4,
-          value: '',
-        ),
+        const GreaterCondition(property: 4, value: ''),
       );
     });
   }
@@ -1109,11 +984,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 5,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 5, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1134,10 +1005,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      descriptionGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  descriptionGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -1155,20 +1023,13 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 5,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 5, value: value, caseSensitive: caseSensitive),
       );
     });
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      descriptionLessThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  descriptionLessThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         LessOrEqualCondition(
@@ -1228,8 +1089,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -1242,8 +1104,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -1258,22 +1121,16 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> descriptionIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 5,
-          value: '',
-        ),
+        const EqualCondition(property: 5, value: ''),
       );
     });
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      descriptionIsNotEmpty() {
+  descriptionIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 5,
-          value: '',
-        ),
+        const GreaterCondition(property: 5, value: ''),
       );
     });
   }
@@ -1284,11 +1141,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 6,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 6, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1309,10 +1162,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      statusGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  statusGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -1330,11 +1180,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 6,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 6, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1402,8 +1248,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> statusContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -1416,8 +1263,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> statusMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -1432,10 +1280,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> statusIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 6,
-          value: '',
-        ),
+        const EqualCondition(property: 6, value: ''),
       );
     });
   }
@@ -1443,10 +1288,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> statusIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 6,
-          value: '',
-        ),
+        const GreaterCondition(property: 6, value: ''),
       );
     });
   }
@@ -1457,11 +1299,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 7,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 7, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1482,10 +1320,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      imageGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  imageGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -1503,11 +1338,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 7,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 7, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1575,8 +1406,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> imageContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -1589,8 +1421,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> imageMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -1605,10 +1438,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> imageIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 7,
-          value: '',
-        ),
+        const EqualCondition(property: 7, value: ''),
       );
     });
   }
@@ -1616,10 +1446,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> imageIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 7,
-          value: '',
-        ),
+        const GreaterCondition(property: 7, value: ''),
       );
     });
   }
@@ -1630,11 +1457,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 8,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 8, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1655,10 +1478,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      scoreGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  scoreGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -1676,11 +1496,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 8,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 8, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1748,8 +1564,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> scoreContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -1762,8 +1579,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> scoreMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -1778,10 +1596,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> scoreIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 8,
-          value: '',
-        ),
+        const EqualCondition(property: 8, value: ''),
       );
     });
   }
@@ -1789,10 +1604,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> scoreIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 8,
-          value: '',
-        ),
+        const GreaterCondition(property: 8, value: ''),
       );
     });
   }
@@ -1803,11 +1615,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 9,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        EqualCondition(property: 9, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1828,10 +1636,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      countGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  countGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -1849,11 +1654,7 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 9,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 9, value: value, caseSensitive: caseSensitive),
       );
     });
   }
@@ -1921,8 +1722,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> countContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -1935,8 +1737,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> countMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -1951,10 +1754,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> countIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 9,
-          value: '',
-        ),
+        const EqualCondition(property: 9, value: ''),
       );
     });
   }
@@ -1962,10 +1762,7 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> countIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 9,
-          value: '',
-        ),
+        const GreaterCondition(property: 9, value: ''),
       );
     });
   }
@@ -2001,10 +1798,7 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      tagsElementGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  tagsElementGreaterThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         GreaterOrEqualCondition(
@@ -2022,20 +1816,13 @@ extension AniDataQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 10,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        LessCondition(property: 10, value: value, caseSensitive: caseSensitive),
       );
     });
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      tagsElementLessThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  tagsElementLessThanOrEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         LessOrEqualCondition(
@@ -2095,8 +1882,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> tagsElementContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         ContainsCondition(
@@ -2109,8 +1897,9 @@ extension AniDataQueryFilter
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition> tagsElementMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         MatchesCondition(
@@ -2125,22 +1914,16 @@ extension AniDataQueryFilter
   QueryBuilder<AniData, AniData, QAfterFilterCondition> tagsElementIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 10,
-          value: '',
-        ),
+        const EqualCondition(property: 10, value: ''),
       );
     });
   }
 
   QueryBuilder<AniData, AniData, QAfterFilterCondition>
-      tagsElementIsNotEmpty() {
+  tagsElementIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 10,
-          value: '',
-        ),
+        const GreaterCondition(property: 10, value: ''),
       );
     });
   }
@@ -2174,45 +1957,35 @@ extension AniDataQuerySortBy on QueryBuilder<AniData, AniData, QSortBy> {
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        1,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByTypeDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByTypeDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        1,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(1, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByMediaId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByMediaId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        2,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(2, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByMediaIdDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByMediaIdDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        2,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(2, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
@@ -2228,129 +2001,99 @@ extension AniDataQuerySortBy on QueryBuilder<AniData, AniData, QSortBy> {
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        4,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(4, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByTitleDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByTitleDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        4,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(4, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByDescription(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByDescription({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        5,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(5, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByDescriptionDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByDescriptionDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        5,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(5, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByStatus(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByStatus({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        6,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(6, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByStatusDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByStatusDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        6,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(6, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        7,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(7, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByImageDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByImageDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        7,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(7, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByScore(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByScore({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        8,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(8, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByScoreDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByScoreDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        8,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(8, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByCount(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByCount({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        9,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(9, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> sortByCountDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> sortByCountDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        9,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(9, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 }
@@ -2369,29 +2112,33 @@ extension AniDataQuerySortThenBy
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByTypeDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByTypeDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(1, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByMediaId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByMediaId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(2, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByMediaIdDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByMediaIdDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(2, sort: Sort.desc, caseSensitive: caseSensitive);
     });
@@ -2409,85 +2156,97 @@ extension AniDataQuerySortThenBy
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(4, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByTitleDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByTitleDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(4, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByDescription(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByDescription({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(5, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByDescriptionDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByDescriptionDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(5, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByStatus(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByStatus({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(6, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByStatusDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByStatusDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(6, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(7, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByImageDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByImageDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(7, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByScore(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByScore({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(8, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByScoreDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByScoreDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(8, sort: Sort.desc, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByCount(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByCount({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(9, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterSortBy> thenByCountDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterSortBy> thenByCountDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(9, sort: Sort.desc, caseSensitive: caseSensitive);
     });
@@ -2496,15 +2255,17 @@ extension AniDataQuerySortThenBy
 
 extension AniDataQueryWhereDistinct
     on QueryBuilder<AniData, AniData, QDistinct> {
-  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByType(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByType({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(1, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByMediaId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByMediaId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(2, caseSensitive: caseSensitive);
     });
@@ -2516,43 +2277,49 @@ extension AniDataQueryWhereDistinct
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByTitle(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByTitle({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(4, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByDescription(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByDescription({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(5, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByStatus(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByStatus({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(6, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByImage({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(7, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByScore(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByScore({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(8, caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByCount(
-      {bool caseSensitive = true}) {
+  QueryBuilder<AniData, AniData, QAfterDistinct> distinctByCount({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(9, caseSensitive: caseSensitive);
     });

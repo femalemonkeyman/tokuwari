@@ -43,7 +43,9 @@ class AnimeController {
       vo: 'gpu',
     ),
   );
-  late final CancelableOperation<Source> load = CancelableOperation.fromFuture(play());
+  late final CancelableOperation<Source> load = CancelableOperation.fromFuture(
+    play(),
+  );
   final bool isPhone = !Platform.isAndroid && !Platform.isIOS;
   final AniData anime;
   int episode;
@@ -54,10 +56,7 @@ class AnimeController {
     final Source media = await anime.mediaProv[episode].call!();
     if (media.qualities.isNotEmpty) {
       await player.open(
-        Media(
-          media.qualities.values.first,
-          httpHeaders: media.headers ?? {},
-        ),
+        Media(media.qualities.values.first, httpHeaders: media.headers ?? {}),
         play: false,
       );
       await player.play();

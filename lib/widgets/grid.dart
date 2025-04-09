@@ -5,12 +5,7 @@ class Grid extends StatelessWidget {
   final List data;
   final bool keep;
   final int? length;
-  const Grid({
-    required this.data,
-    this.keep = true,
-    this.length,
-    super.key,
-  });
+  const Grid({required this.data, this.keep = true, this.length, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +20,7 @@ class Grid extends StatelessWidget {
         (context, index) {
           return Padding(
             padding: const EdgeInsets.all(10),
-            child: Block(
-              data: data[index],
-            ),
+            child: Block(data: data[index]),
           );
         },
       ),

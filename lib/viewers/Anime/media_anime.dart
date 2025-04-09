@@ -16,11 +16,7 @@ class AniViewer extends StatefulWidget {
   final AniData anime;
   final int episode;
 
-  const AniViewer({
-    super.key,
-    required this.episode,
-    required this.anime,
-  });
+  const AniViewer({super.key, required this.episode, required this.anime});
 
   @override
   State<StatefulWidget> createState() => AniViewerState();
@@ -40,29 +36,26 @@ class AniViewerState extends State<AniViewer> {
       androidAttachSurfaceAfterVideoParameters: false,
     ),
   );
-  late final CancelableOperation<Source> load = CancelableOperation.fromFuture(play());
+  late final CancelableOperation<Source> load = CancelableOperation.fromFuture(
+    play(),
+  );
   final bool isPhone = !Platform.isAndroid && !Platform.isIOS;
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    SystemChrome.setPreferredOrientations(
-      [
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ],
-    );
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
   }
 
   Future<Source> play() async {
     final Source media = await widget.anime.mediaProv[widget.episode].call!();
     if (media.qualities.isNotEmpty) {
       await player.open(
-        Media(
-          media.qualities.values.first,
-          httpHeaders: media.headers ?? {},
-        ),
+        Media(media.qualities.values.first, httpHeaders: media.headers ?? {}),
         play: false,
       );
       await controller.waitUntilFirstFrameRendered;
@@ -98,19 +91,24 @@ class AniViewerState extends State<AniViewer> {
           if (snap.hasData && snap.requireData.qualities.isNotEmpty) {
             return CallbackShortcuts(
               bindings: {
-                const SingleActivator(LogicalKeyboardKey.keyF): () async => windowManager.setFullScreen(
+                const SingleActivator(LogicalKeyboardKey.keyF):
+                    () async => windowManager.setFullScreen(
                       !await windowManager.isFullScreen(),
                     ),
-                const SingleActivator(LogicalKeyboardKey.escape): () async => windowManager.setFullScreen(
-                      false,
-                    ),
-                const SingleActivator(LogicalKeyboardKey.space): () => player.playOrPause(),
+                const SingleActivator(LogicalKeyboardKey.escape):
+                    () async => windowManager.setFullScreen(false),
+                const SingleActivator(LogicalKeyboardKey.space):
+                    () => player.playOrPause(),
                 const SingleActivator(LogicalKeyboardKey.arrowRight): () {
-                  player.seek(player.state.position + const Duration(seconds: 3));
+                  player.seek(
+                    player.state.position + const Duration(seconds: 3),
+                  );
                 },
                 const SingleActivator(LogicalKeyboardKey.arrowLeft): () {
-                  player.seek(player.state.position - const Duration(seconds: 3));
-                }
+                  player.seek(
+                    player.state.position - const Duration(seconds: 3),
+                  );
+                },
               },
               child: Focus(
                 autofocus: true,
@@ -210,102 +208,164 @@ class ControlsState extends State<Controls> {
                       ),
                     ),
                     const Spacer(),
-                    const Spacer(
-                      flex: 100,
-                    ),
+                    const Spacer(flex: 100),
                     PopupMenuButton(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      itemBuilder: (c) => [
-                        if (widget.media.subtitles.isNotEmpty)
-                          PopupMenuItem(
-                            child: const Text('Subtitles'),
-                            onTap: () => showModalBottomSheet(
-                              context: context,
-                              showDragHandle: true,
-                              builder: (context) => ListView(
-                                children: List.generate(
-                                  widget.media.subtitles.length,
-                                  (index) {
-                                    return ListTile(
-                                      title: Text(
-                                        widget.media.subtitles.keys.elementAt(index),
-                                      ),
-                                      onTap: () {
-                                        widget.player.setSubtitleTrack(
-                                          SubtitleTrack.uri(
-                                            widget.media.subtitles.values.elementAt(index),
-                                          ),
-                                        );
-                                        context.pop();
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        PopupMenuItem(
-                          child: const Text('Quality'),
-                          onTap: () => showModalBottomSheet(
-                            showDragHandle: true,
-                            context: context,
-                            builder: (context) => ListView(
-                              children: (widget.media.qualities.length == 1)
-                                  ? List.generate(
-                                      widget.player.state.tracks.video.length - 2,
-                                      (i) => ListTile(
-                                        title: Text(
-                                          widget.player.state.tracks.video[i + 2].h.toString(),
-                                        ),
-                                        onTap: () {
-                                          widget.player.setVideoTrack(
-                                            widget.player.state.tracks.video[i + 2],
-                                          );
-                                          context.pop();
-                                        },
-                                      ),
-                                    )
-                                  : List.generate(
-                                      widget.media.qualities.length,
-                                      (i) => ListTile(
-                                        title: Text(widget.media.qualities.keys.elementAt(i)),
-                                        onTap: () async {
-                                          final subs = widget.player.state.track.subtitle;
-                                          await widget.player.open(
-                                            Media(
-                                              widget.media.qualities.values.elementAt(i),
-                                              httpHeaders: widget.media.headers,
-                                              start: widget.player.state.position,
+                      itemBuilder:
+                          (c) => [
+                            if (widget.media.subtitles.isNotEmpty)
+                              PopupMenuItem(
+                                child: const Text('Subtitles'),
+                                onTap:
+                                    () => showModalBottomSheet(
+                                      context: context,
+                                      showDragHandle: true,
+                                      builder:
+                                          (context) => ListView(
+                                            children: List.generate(
+                                              widget.media.subtitles.length,
+                                              (index) {
+                                                return ListTile(
+                                                  title: Text(
+                                                    widget.media.subtitles.keys
+                                                        .elementAt(index),
+                                                  ),
+                                                  onTap: () {
+                                                    widget.player
+                                                        .setSubtitleTrack(
+                                                          SubtitleTrack.uri(
+                                                            widget
+                                                                .media
+                                                                .subtitles
+                                                                .values
+                                                                .elementAt(
+                                                                  index,
+                                                                ),
+                                                          ),
+                                                        );
+                                                    context.pop();
+                                                  },
+                                                );
+                                              },
                                             ),
-                                            play: false,
-                                          );
-                                          widget.player.setSubtitleTrack(subs);
-                                          await widget.player.play();
-                                          if (context.mounted) {
-                                            context.pop();
-                                          }
-                                        },
-                                      ),
+                                          ),
                                     ),
+                              ),
+                            PopupMenuItem(
+                              child: const Text('Quality'),
+                              onTap:
+                                  () => showModalBottomSheet(
+                                    showDragHandle: true,
+                                    context: context,
+                                    builder:
+                                        (context) => ListView(
+                                          children:
+                                              (widget.media.qualities.length ==
+                                                      1)
+                                                  ? List.generate(
+                                                    widget
+                                                            .player
+                                                            .state
+                                                            .tracks
+                                                            .video
+                                                            .length -
+                                                        2,
+                                                    (i) => ListTile(
+                                                      title: Text(
+                                                        widget
+                                                            .player
+                                                            .state
+                                                            .tracks
+                                                            .video[i + 2]
+                                                            .h
+                                                            .toString(),
+                                                      ),
+                                                      onTap: () {
+                                                        widget.player
+                                                            .setVideoTrack(
+                                                              widget
+                                                                  .player
+                                                                  .state
+                                                                  .tracks
+                                                                  .video[i + 2],
+                                                            );
+                                                        context.pop();
+                                                      },
+                                                    ),
+                                                  )
+                                                  : List.generate(
+                                                    widget
+                                                        .media
+                                                        .qualities
+                                                        .length,
+                                                    (i) => ListTile(
+                                                      title: Text(
+                                                        widget
+                                                            .media
+                                                            .qualities
+                                                            .keys
+                                                            .elementAt(i),
+                                                      ),
+                                                      onTap: () async {
+                                                        final subs =
+                                                            widget
+                                                                .player
+                                                                .state
+                                                                .track
+                                                                .subtitle;
+                                                        await widget.player.open(
+                                                          Media(
+                                                            widget
+                                                                .media
+                                                                .qualities
+                                                                .values
+                                                                .elementAt(i),
+                                                            httpHeaders:
+                                                                widget
+                                                                    .media
+                                                                    .headers,
+                                                            start:
+                                                                widget
+                                                                    .player
+                                                                    .state
+                                                                    .position,
+                                                          ),
+                                                          play: false,
+                                                        );
+                                                        widget.player
+                                                            .setSubtitleTrack(
+                                                              subs,
+                                                            );
+                                                        await widget.player
+                                                            .play();
+                                                        if (context.mounted) {
+                                                          context.pop();
+                                                        }
+                                                      },
+                                                    ),
+                                                  ),
+                                        ),
+                                  ),
                             ),
-                          ),
-                        ),
-                      ],
+                          ],
                     ),
                   ],
                 ),
               ),
               Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() {
-                    hide = !hide;
-                  }),
+                  onTap:
+                      () => setState(() {
+                        hide = !hide;
+                      }),
                   onDoubleTapDown: (event) {
                     final pos = widget.player.state.position;
-                    if (event.globalPosition.dx < width / 3) widget.player.seek(pos - const Duration(seconds: 3));
-                    if (event.globalPosition.dx > width / 1.5) widget.player.seek(pos + const Duration(seconds: 3));
+                    if (event.globalPosition.dx < width / 3)
+                      widget.player.seek(pos - const Duration(seconds: 3));
+                    if (event.globalPosition.dx > width / 1.5)
+                      widget.player.seek(pos + const Duration(seconds: 3));
                   },
                 ),
               ),
@@ -319,9 +379,10 @@ class ControlsState extends State<Controls> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      onPressed: (widget.episode == 0)
-                          ? null
-                          : () => context.pushReplacement(
+                      onPressed:
+                          (widget.episode == 0)
+                              ? null
+                              : () => context.pushReplacement(
                                 '/anime/info/viewer',
                                 extra: {
                                   'index': widget.episode - 1,
@@ -330,13 +391,12 @@ class ControlsState extends State<Controls> {
                               ),
                       icon: const Icon(Icons.skip_previous),
                     ),
-                    PlayButton(
-                      player: widget.player,
-                    ),
+                    PlayButton(player: widget.player),
                     IconButton(
-                      onPressed: (widget.episode == widget.anime.mediaProv.length - 1)
-                          ? null
-                          : () => context.pushReplacement(
+                      onPressed:
+                          (widget.episode == widget.anime.mediaProv.length - 1)
+                              ? null
+                              : () => context.pushReplacement(
                                 '/anime/info/viewer',
                                 extra: {
                                   'index': widget.episode + 1,
@@ -398,8 +458,12 @@ class ProgressBarState extends State<ProgressBar> {
           child: Slider(
             focusNode: FocusNode(canRequestFocus: false),
             max: widget.player.state.duration.inSeconds.toDouble(),
-            secondaryTrackValue: widget.player.state.buffer.inSeconds.toDouble(),
-            divisions: widget.player.state.duration.inSeconds < 1 ? 1 : widget.player.state.duration.inSeconds,
+            secondaryTrackValue:
+                widget.player.state.buffer.inSeconds.toDouble(),
+            divisions:
+                widget.player.state.duration.inSeconds < 1
+                    ? 1
+                    : widget.player.state.duration.inSeconds,
             label: Duration(seconds: _currentPosition.toInt()).label(),
             value: _currentPosition,
             onChanged: (value) {
@@ -427,15 +491,16 @@ class PlayButton extends StatelessWidget {
 
   @override
   Widget build(context) => StreamBuilder<bool>(
-        initialData: true,
-        stream: player.stream.playing,
-        builder: (context, snap) => IconButton(
+    initialData: true,
+    stream: player.stream.playing,
+    builder:
+        (context, snap) => IconButton(
           onPressed: () => player.playOrPause(),
           icon: Icon(
             (snap.requireData) ? Icons.pause : Icons.play_arrow_rounded,
           ),
         ),
-      );
+  );
 }
 
 class VolumeSlider extends StatefulWidget {
@@ -457,18 +522,18 @@ class VolumeSliderState extends State<VolumeSlider> {
 
   @override
   Widget build(context) => Slider(
-        min: 0,
-        max: 100,
-        divisions: 100,
-        label: volume.round().toString(),
-        value: volume,
-        onChanged: (value) {
-          setState(() {
-            volume = value;
-          });
-          widget.player.setVolume(value);
-        },
-      );
+    min: 0,
+    max: 100,
+    divisions: 100,
+    label: volume.round().toString(),
+    value: volume,
+    onChanged: (value) {
+      setState(() {
+        volume = value;
+      });
+      widget.player.setVolume(value);
+    },
+  );
 }
 
 class FullScreenButton extends StatelessWidget {
@@ -480,9 +545,7 @@ class FullScreenButton extends StatelessWidget {
       onPressed: () async {
         await windowManager.setFullScreen(!await windowManager.isFullScreen());
       },
-      icon: Icon(
-        Icons.fullscreen,
-      ),
+      icon: Icon(Icons.fullscreen),
     );
   }
 }

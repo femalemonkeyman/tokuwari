@@ -28,7 +28,9 @@ class NovelPageState extends State<NovelPage> {
 
   @override
   void initState() {
-    novels.addAll(isar.novDatas.where().typeEqualTo('novel').sortByTitle().findAll());
+    novels.addAll(
+      isar.novDatas.where().typeEqualTo('novel').sortByTitle().findAll(),
+    );
     super.initState();
   }
 
@@ -36,42 +38,45 @@ class NovelPageState extends State<NovelPage> {
   Widget build(context) {
     return novels.isEmpty
         ? ImportNovels(
-            state: () => setState(() {
-              novels.addAll(isar.novDatas.where().typeEqualTo('novel').sortByTitle().findAll());
-            }),
-          )
+          state:
+              () => setState(() {
+                novels.addAll(
+                  isar.novDatas
+                      .where()
+                      .typeEqualTo('novel')
+                      .sortByTitle()
+                      .findAll(),
+                );
+              }),
+        )
         : SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SearchButton(
-                  text: 'Novels',
-                  controller: SearchController(),
-                  search: () {},
+          child: CustomScrollView(
+            slivers: [
+              SearchButton(
+                text: 'Novels',
+                controller: SearchController(),
+                search: () {},
+              ),
+              SliverToBoxAdapter(
+                child: Wrap(
+                  alignment: WrapAlignment.spaceAround,
+                  children: [
+                    TextButton(onPressed: () {}, child: const Text('Add More')),
+                    TextButton(
+                      onPressed:
+                          () => setState(() {
+                            isar.write((isar) => isar.novDatas.clear());
+                            novels.clear();
+                          }),
+                      child: const Text('Clear'),
+                    ),
+                  ],
                 ),
-                SliverToBoxAdapter(
-                  child: Wrap(
-                    alignment: WrapAlignment.spaceAround,
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text('Add More'),
-                      ),
-                      TextButton(
-                        onPressed: () => setState(() {
-                          isar.write(
-                            (isar) => isar.novDatas.clear(),
-                          );
-                          novels.clear();
-                        }),
-                        child: const Text('Clear'),
-                      ),
-                    ],
-                  ),
-                ),
-                Grid(data: novels),
-              ],
-            ),
-          );
+              ),
+              Grid(data: novels),
+            ],
+          ),
+        );
   }
 }
 
@@ -98,7 +103,11 @@ class ImportNovels extends StatelessWidget {
           if (entity is File && entity.path.endsWith('.epub')) entity,
       ];
       if (epubs.isNotEmpty) {
-        final covers = path.join((await getApplicationDocumentsDirectory()).path, '.tokuwari', 'covers/');
+        final covers = path.join(
+          (await getApplicationDocumentsDirectory()).path,
+          '.tokuwari',
+          'covers/',
+        );
         final novels = <NovData>[];
         for (File epub in epubs) {
           final bookref = await compute((epub) async {
@@ -110,19 +119,33 @@ class ImportNovels extends StatelessWidget {
                 bookref
                     .Content
                     .Images[(bookref.manifest.Items
-                        .firstWhereOrNull((item) =>
-                            (item.Href.toLowerCase().contains('cover') || item.Id.toLowerCase().contains('cover')) &&
-                            item.MediaType.contains('image/'))
+                        .firstWhereOrNull(
+                          (item) =>
+                              (item.Href.toLowerCase().contains('cover') ||
+                                  item.Id.toLowerCase().contains('cover')) &&
+                              item.MediaType.contains('image/'),
+                        )
                         ?.Href)]
                     ?.getContentStream() ??
                 [],
           );
           final codec = await instantiateImageCodec(imgbits, targetWidth: 306);
           final resizedImage = (await codec.getNextFrame()).image;
-          final img = await resizedImage.toByteData(format: ImageByteFormat.png);
-          final cover = (Directory(covers)..createSync()).path + path.setExtension(path.basename(epub.path), '.png');
+          final img = await resizedImage.toByteData(
+            format: ImageByteFormat.png,
+          );
+          final cover =
+              (Directory(covers)..createSync()).path +
+              path.setExtension(path.basename(epub.path), '.png');
           File(cover).writeAsBytes(img!.buffer.asUint8List());
-          novels.add(NovData(type: 'novel', title: bookref.Title.Title.trim(), image: cover, path: epub.path));
+          novels.add(
+            NovData(
+              type: 'novel',
+              title: bookref.Title.Title.trim(),
+              image: cover,
+              path: epub.path,
+            ),
+          );
         }
         isar.write((isar) => isar.novDatas.putAll(novels));
       }
@@ -140,47 +163,53 @@ class ImportNovels extends StatelessWidget {
           await showAdaptiveDialog(
             context: context,
             barrierDismissible: false,
-            builder: (dcontext) => StreamBuilder<String>(
-              initialData: '...',
-              stream: importBooks(dcontext),
-              builder: (context, snap) {
-                final height = MediaQuery.of(context).size.height / 4;
-                return Dialog(
-                  child: SizedBox.square(
-                    dimension: height,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const Text('Importing:'),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 5, right: 5),
-                          child: Text(
-                            snap.data ?? '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
+            builder:
+                (dcontext) => StreamBuilder<String>(
+                  initialData: '...',
+                  stream: importBooks(dcontext),
+                  builder: (context, snap) {
+                    final height = MediaQuery.of(context).size.height / 4;
+                    return Dialog(
+                      child: SizedBox.square(
+                        dimension: height,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Text('Importing:'),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5, right: 5),
+                              child: Text(
+                                snap.data ?? '',
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                final dir = Directory(
+                                  path.join(
+                                    (await getApplicationDocumentsDirectory())
+                                        .path,
+                                    '.tokuwari',
+                                    'covers/',
+                                  ),
+                                );
+                                if (dir.existsSync()) {
+                                  dir.delete();
+                                }
+                                if (dcontext.mounted) {
+                                  dcontext.pop();
+                                }
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                          ],
                         ),
-                        TextButton(
-                          onPressed: () async {
-                            final dir = Directory(
-                              path.join((await getApplicationDocumentsDirectory()).path, '.tokuwari', 'covers/'),
-                            );
-                            if (dir.existsSync()) {
-                              dir.delete();
-                            }
-                            if (dcontext.mounted) {
-                              dcontext.pop();
-                            }
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+                      ),
+                    );
+                  },
+                ),
           );
           state.call();
         },

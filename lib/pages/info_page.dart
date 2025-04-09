@@ -37,18 +37,12 @@ class InfoPage extends StatelessWidget {
               floating: true,
               title: Text(data.title),
               actions: [
-                LaterButton(
-                  data: data,
-                ),
+                LaterButton(data: data),
                 PopupMenuButton(
                   itemBuilder: (context) {
-                    return [
-                      PopupMenuItem(
-                        child: Text('Placeholder'),
-                      ),
-                    ];
+                    return [PopupMenuItem(child: Text('Placeholder'))];
                   },
-                )
+                ),
               ],
             ),
             SliverPadding(
@@ -66,20 +60,13 @@ class InfoPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Flexible(
-                            child: InfoView(data),
-                          ),
-                          Flexible(
-                            child: Selector(data: data),
-                          ),
+                          Flexible(child: InfoView(data)),
+                          Flexible(child: Selector(data: data)),
                         ],
                       );
                     } else {
                       return Column(
-                        children: [
-                          InfoView(data),
-                          Selector(data: data),
-                        ],
+                        children: [InfoView(data), Selector(data: data)],
                       );
                     }
                   },
@@ -109,23 +96,18 @@ class InfoView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 100,
-              ),
-              child: AniImage(
-                image: data.image,
-              ),
+              constraints: const BoxConstraints(maxWidth: 100),
+              child: AniImage(image: data.image),
             ),
-            const SizedBox(
-              width: 15,
-            ),
+            const SizedBox(width: 15),
             Flexible(
               child: Text.rich(
                 TextSpan(
                   text: data.title,
                   children: [
                     TextSpan(
-                      text: '\n${data.status}\nScore: ${data.score}\nCount: ${data.count}',
+                      text:
+                          '\n${data.status}\nScore: ${data.score}\nCount: ${data.count}',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ],
@@ -136,15 +118,14 @@ class InfoView extends StatelessWidget {
           ],
         ).padBottom(),
         Flexible(
-          child: ExpandText(
-            data.description,
-            textAlign: TextAlign.start,
-            maxLines: 3,
-          ).padBottom(),
+          child:
+              ExpandText(
+                data.description,
+                textAlign: TextAlign.start,
+                maxLines: 3,
+              ).padBottom(),
         ),
-        Flexible(
-          child: MediaTags(data).padBottom(),
-        ),
+        Flexible(child: MediaTags(data).padBottom()),
       ],
     );
   }
@@ -161,26 +142,28 @@ class LaterButton extends StatefulWidget {
 }
 
 class LaterButtonState extends State<LaterButton> {
-  late final media = widget.isar.aniDatas.where().mediaIdEqualTo(widget.data.mediaId);
+  late final media = widget.isar.aniDatas.where().mediaIdEqualTo(
+    widget.data.mediaId,
+  );
 
   @override
   Widget build(context) {
     return IconButton(
-      onPressed: () => setState(
-        () {
-          if (media.isEmpty()) {
-            widget.data.id = widget.isar.aniDatas.autoIncrement();
-            widget.isar.write(
-              (isar) => widget.isar.aniDatas.put(widget.data),
-            );
-          } else {
-            widget.isar.write(
-              (isar) => media.deleteAll(),
-            );
-          }
-        },
-      ),
-      icon: (media.isEmpty()) ? const Icon(Icons.bookmark_add_outlined) : const Icon(Icons.bookmark_added_rounded),
+      onPressed:
+          () => setState(() {
+            if (media.isEmpty()) {
+              widget.data.id = widget.isar.aniDatas.autoIncrement();
+              widget.isar.write(
+                (isar) => widget.isar.aniDatas.put(widget.data),
+              );
+            } else {
+              widget.isar.write((isar) => media.deleteAll());
+            }
+          }),
+      icon:
+          (media.isEmpty())
+              ? const Icon(Icons.bookmark_add_outlined)
+              : const Icon(Icons.bookmark_added_rounded),
     );
   }
 }
@@ -188,10 +171,7 @@ class LaterButtonState extends State<LaterButton> {
 class Selector extends StatefulWidget {
   final AniData data;
 
-  const Selector({
-    super.key,
-    required this.data,
-  });
+  const Selector({super.key, required this.data});
 
   @override
   State<Selector> createState() => SelectorState();
@@ -201,7 +181,8 @@ class SelectorState extends State<Selector> {
   late Map<String, dynamic> provider;
   late CancelableOperation<List<MediaProv>> load;
   final con = PageController();
-  late final String episodeLabel = widget.data.type == 'anime' ? 'Episode:' : 'Chapter:';
+  late final String episodeLabel =
+      widget.data.type == 'anime' ? 'Episode:' : 'Chapter:';
 
   @override
   void initState() {
@@ -236,8 +217,10 @@ class SelectorState extends State<Selector> {
           initialSelection: provider,
           requestFocusOnTap: false,
           expandedInsets: EdgeInsets.zero,
-          inputDecorationTheme:
-              InputDecorationTheme(border: InputBorder.none, contentPadding: EdgeInsets.only(left: 15)),
+          inputDecorationTheme: InputDecorationTheme(
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.only(left: 15),
+          ),
           dropdownMenuEntries: List.generate(
             providers[widget.data.type]!.length,
             (index) => DropdownMenuEntry(
@@ -252,15 +235,15 @@ class SelectorState extends State<Selector> {
             }
           },
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         FutureBuilder<List<MediaProv>>(
           future: load.value,
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
-            } else if (snap.connectionState == ConnectionState.done && snap.hasData && snap.data!.isNotEmpty) {
+            } else if (snap.connectionState == ConnectionState.done &&
+                snap.hasData &&
+                snap.data!.isNotEmpty) {
               if (widget.data.mediaProv.isEmpty) {
                 widget.data.mediaProv.addAll(snap.data!);
               }
@@ -296,13 +279,14 @@ class SelectorState extends State<Selector> {
                           return ListTile(
                             title: Text(episode.title),
                             subtitle: Text('$episodeLabel ${episode.number}'),
-                            onTap: () => context.push(
-                              '/${widget.data.type}/info/viewer',
-                              extra: {
-                                'index': (pindex * 12) + gindex,
-                                'data': widget.data,
-                              },
-                            ),
+                            onTap:
+                                () => context.push(
+                                  '/${widget.data.type}/info/viewer',
+                                  extra: {
+                                    'index': (pindex * 12) + gindex,
+                                    'data': widget.data,
+                                  },
+                                ),
                             trailing: Icon(Icons.play_arrow_rounded),
                           );
                         },

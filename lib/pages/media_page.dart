@@ -65,12 +65,16 @@ class AniPage extends StatefulWidget {
 class AniPageState extends State<AniPage> {
   static final client = GraphQLClient(
     cache: GraphQLCache(),
-    link: HttpLink("https://graphql.anilist.co/", defaultHeaders: {
-      'referer': 'https://anilist.co/',
-      'origin': 'https://anilist.co',
-      'user-agent':
-          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
-    }),
+    link: HttpLink(
+      "https://graphql.anilist.co/",
+      defaultHeaders: {
+        'referer': 'https://anilist.co/',
+        'origin': 'https://anilist.co',
+        'user-agent':
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+      },
+    ),
+    queryRequestTimeout: Duration(seconds: 10),
   );
   final isar = Isar.get(name: "tokudb", schemas: [SettingsSchema]);
   final TextEditingController textController = TextEditingController();
@@ -121,19 +125,14 @@ class AniPageState extends State<AniPage> {
       setState(() {
         pageInfo
           ..clear()
-          ..addAll(
-            query.data!['Page']['pageInfo'],
-          );
+          ..addAll(query.data!['Page']['pageInfo']);
         animeData.addAll(
-          List.generate(
-            query.data!['Page']['media'].length,
-            (index) {
-              return AniData.fromJson(
-                query.data!['Page']['media'][index],
-                widget.type,
-              );
-            },
-          ),
+          List.generate(query.data!['Page']['media'].length, (index) {
+            return AniData.fromJson(
+              query.data!['Page']['media'][index],
+              widget.type,
+            );
+          }),
         );
         loading = false;
       });
@@ -157,77 +156,72 @@ class AniPageState extends State<AniPage> {
 
   Future updateGenre() async {
     await showModalBottomSheet(
-      constraints: BoxConstraints.tightFor(width: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
+      constraints: BoxConstraints.tightFor(
+        width: clampDouble(MediaQuery.of(context).size.width, 0, 384),
+      ),
       context: context,
       builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(15),
           child: StatefulBuilder(
-            builder: (context, setState) => Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 10,
-              runSpacing: 10,
-              children: List.generate(
-                AniFilter.genresList.length,
-                (index) {
-                  return FilterChip(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                    labelPadding: const EdgeInsets.all(0),
-                    selected: selectedGenres.contains(
-                      AniFilter.genresList[index],
-                    ),
-                    label: Text(
-                      AniFilter.genresList[index],
-                    ),
-                    onSelected: (value) => setState(
-                      () {
-                        if (value) {
-                          selectedGenres.add(AniFilter.genresList[index]);
-                        } else {
-                          selectedGenres.remove(AniFilter.genresList[index]);
-                        }
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
+            builder:
+                (context, setState) => Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: List.generate(AniFilter.genresList.length, (index) {
+                    return FilterChip(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      labelPadding: const EdgeInsets.all(0),
+                      selected: selectedGenres.contains(
+                        AniFilter.genresList[index],
+                      ),
+                      label: Text(AniFilter.genresList[index]),
+                      onSelected:
+                          (value) => setState(() {
+                            if (value) {
+                              selectedGenres.add(AniFilter.genresList[index]);
+                            } else {
+                              selectedGenres.remove(
+                                AniFilter.genresList[index],
+                              );
+                            }
+                          }),
+                    );
+                  }),
+                ),
           ),
         );
       },
-    ).then(
-      (value) async {
-        pageInfo.clear();
-        animeData.clear();
-        await queryData();
-      },
-    );
+    ).then((value) async {
+      pageInfo.clear();
+      animeData.clear();
+      await queryData();
+    });
   }
 
   @override
   Widget build(context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification.metrics.pixels == notification.metrics.maxScrollExtent &&
+        if (notification.metrics.pixels ==
+                notification.metrics.maxScrollExtent &&
             pageInfo['lastPage'] != pageInfo['currentPage'] &&
             !loading) {
           loading = true;
-          Future.microtask(
-            () async {
-              await queryData();
-            },
-          );
+          Future.microtask(() async {
+            await queryData();
+          });
         }
         return false;
       },
       child: RefreshIndicator(
         edgeOffset: 100,
-        onRefresh: () => Future.microtask(
-          () async {
-            await queryData();
-          },
-        ),
+        onRefresh:
+            () => Future.microtask(() async {
+              await queryData();
+            }),
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
@@ -244,22 +238,16 @@ class AniPageState extends State<AniPage> {
                   children: [
                     TextButton(
                       onPressed: () => updateGenre(),
-                      child: const Text(
-                        "Filter by genre",
-                      ),
+                      child: const Text("Filter by genre"),
                     ),
                   ],
                 ),
               ),
               (animeData.isNotEmpty)
-                  ? Grid(
-                      data: animeData,
-                    )
+                  ? Grid(data: animeData)
                   : const SliverToBoxAdapter(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
             ],
           ),
         ),

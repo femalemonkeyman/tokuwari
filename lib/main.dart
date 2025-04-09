@@ -5,7 +5,6 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
@@ -25,7 +24,9 @@ import 'pages/info_page.dart';
 import 'pages/later_page.dart';
 import 'pages/media_page.dart';
 
-final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(
+  debugLabel: 'root',
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,13 +37,13 @@ void main() async {
   Isar.open(
     schemas: [AniDataSchema, HistorySchema, NovDataSchema, SettingsSchema],
     name: "tokudb",
-    directory: (await Directory('${(await getApplicationDocumentsDirectory()).path}/.tokuwari').create()).path,
+    directory:
+        (await Directory(
+              '${(await getApplicationDocumentsDirectory()).path}/.tokuwari',
+            ).create())
+            .path,
   );
-  runApp(
-    ProviderScope(
-      child: Navigation(),
-    ),
-  );
+  runApp(Navigation());
 }
 
 class Navigation extends StatelessWidget {
@@ -54,62 +55,72 @@ class Navigation extends StatelessWidget {
     routes: [
       StatefulShellRoute.indexedStack(
         parentNavigatorKey: _rootKey,
-        builder: (context, state, shell) => Scaffold(
-          body: shell,
-          bottomNavigationBar: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384),
-                ),
-                child: NavigationBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  onDestinationSelected: (value) => shell.goBranch(value),
-                  selectedIndex: shell.currentIndex,
-                  labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-                  destinations: const [
-                    NavigationDestination(
-                      icon: Icon(Icons.ondemand_video_rounded),
-                      label: 'Anime',
+        builder:
+            (context, state, shell) => Scaffold(
+              body: shell,
+              bottomNavigationBar: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: clampDouble(
+                        MediaQuery.of(context).size.width,
+                        0,
+                        384,
+                      ),
                     ),
-                    NavigationDestination(
-                      icon: Icon(Icons.menu_book_rounded),
-                      label: 'Manga',
+                    child: NavigationBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      onDestinationSelected: (value) => shell.goBranch(value),
+                      selectedIndex: shell.currentIndex,
+                      labelBehavior:
+                          NavigationDestinationLabelBehavior.onlyShowSelected,
+                      destinations: const [
+                        NavigationDestination(
+                          icon: Icon(Icons.ondemand_video_rounded),
+                          label: 'Anime',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(Icons.menu_book_rounded),
+                          label: 'Manga',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(Icons.book_rounded),
+                          label: 'Novels',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(Icons.bookmark),
+                          label: 'Later',
+                        ),
+                      ],
                     ),
-                    NavigationDestination(
-                      icon: Icon(Icons.book_rounded),
-                      label: 'Novels',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.bookmark),
-                      label: 'Later',
-                    )
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
         branches: [
           StatefulShellBranch(
             routes: [
               GoRoute(
                 name: 'anime',
                 path: '/anime',
-                builder: (context, state) => AniPage(
-                  key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
-                  type: 'anime',
-                  tag: state.uri.queryParameters['tag'],
-                ),
+                builder:
+                    (context, state) => AniPage(
+                      key:
+                          (state.uri.queryParameters.isEmpty)
+                              ? null
+                              : Key(state.uri.queryParameters['tag']!),
+                      type: 'anime',
+                      tag: state.uri.queryParameters['tag'],
+                    ),
                 routes: [
                   GoRoute(
                     parentNavigatorKey: _rootKey,
                     path: 'info',
-                    builder: (context, state) => InfoPage(
-                      data: state.extra as AniData,
-                    ),
+                    builder:
+                        (context, state) =>
+                            InfoPage(data: state.extra as AniData),
                     routes: [
                       GoRoute(
                         parentNavigatorKey: _rootKey,
@@ -119,15 +130,14 @@ class Navigation extends StatelessWidget {
                             SystemUiMode.manual,
                             overlays: SystemUiOverlay.values,
                           );
-                          SystemChrome.setPreferredOrientations(
-                            [],
-                          );
+                          SystemChrome.setPreferredOrientations([]);
                           return true;
                         },
-                        builder: (context, state) => AniViewer(
-                          episode: (state.extra as Map)['index'],
-                          anime: (state.extra as Map)['data'],
-                        ),
+                        builder:
+                            (context, state) => AniViewer(
+                              episode: (state.extra as Map)['index'],
+                              anime: (state.extra as Map)['data'],
+                            ),
                       ),
                     ],
                   ),
@@ -140,26 +150,31 @@ class Navigation extends StatelessWidget {
               GoRoute(
                 name: 'manga',
                 path: '/manga',
-                builder: (context, state) => AniPage(
-                  key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
-                  type: 'manga',
-                  tag: state.uri.queryParameters['tag'],
-                ),
+                builder:
+                    (context, state) => AniPage(
+                      key:
+                          (state.uri.queryParameters.isEmpty)
+                              ? null
+                              : Key(state.uri.queryParameters['tag']!),
+                      type: 'manga',
+                      tag: state.uri.queryParameters['tag'],
+                    ),
                 routes: [
                   GoRoute(
                     parentNavigatorKey: _rootKey,
                     path: 'info',
-                    builder: (context, state) => InfoPage(
-                      data: state.extra as AniData,
-                    ),
+                    builder:
+                        (context, state) =>
+                            InfoPage(data: state.extra as AniData),
                     routes: [
                       GoRoute(
                         parentNavigatorKey: _rootKey,
                         path: 'viewer',
-                        builder: (context, state) => MangaReader(
-                          chapter: (state.extra as Map)['index'],
-                          manga: (state.extra as Map)['data'],
-                        ),
+                        builder:
+                            (context, state) => MangaReader(
+                              chapter: (state.extra as Map)['index'],
+                              manga: (state.extra as Map)['data'],
+                            ),
                       ),
                     ],
                   ),
@@ -177,9 +192,9 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     parentNavigatorKey: _rootKey,
                     path: 'viewer',
-                    builder: (context, state) => NovelViewer(
-                      data: state.extra as NovData,
-                    ),
+                    builder:
+                        (context, state) =>
+                            NovelViewer(data: state.extra as NovData),
                   ),
                 ],
               ),
@@ -212,9 +227,7 @@ class Navigation extends StatelessWidget {
         useMaterial3: true,
         scheme: FlexScheme.purpleM3,
         pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.linux: OpenUpwardsPageTransitionsBuilder(),
-          },
+          builders: {TargetPlatform.linux: OpenUpwardsPageTransitionsBuilder()},
         ),
       ),
       scrollBehavior: const Allow(),
@@ -228,9 +241,9 @@ class Allow extends MaterialScrollBehavior {
   const Allow();
   @override
   Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-        PointerDeviceKind.trackpad,
-        PointerDeviceKind.unknown,
-      };
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.trackpad,
+    PointerDeviceKind.unknown,
+  };
 }

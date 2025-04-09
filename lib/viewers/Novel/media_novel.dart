@@ -13,7 +13,8 @@ class NovelViewer extends StatefulWidget {
   State createState() => NovelViewerState();
 }
 
-class NovelViewerState extends State<NovelViewer> with AutomaticKeepAliveClientMixin {
+class NovelViewerState extends State<NovelViewer>
+    with AutomaticKeepAliveClientMixin {
   late NovelController controller;
   late final novel = getNovel();
   //late final height = MediaQuery.sizeOf(context).height;
@@ -50,10 +51,11 @@ class NovelViewerState extends State<NovelViewer> with AutomaticKeepAliveClientM
                 ),
                 GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: () => setState(() {
-                    print('yes');
-                    controller.setFontScale(16);
-                  }),
+                  onTap:
+                      () => setState(() {
+                        print('yes');
+                        controller.setFontScale(16);
+                      }),
                 ),
                 const BackButton(),
               ],
