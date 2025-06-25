@@ -30,13 +30,13 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.universal.anime.tokuwari"
-    compileSdkVersion 34
+    compileSdkVersion 35
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.universal.anime.tokuwari"
         minSdkVersion 23
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }

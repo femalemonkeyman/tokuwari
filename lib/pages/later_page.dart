@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
 import 'package:tokuwari/models/anidata.dart';
+import 'package:tokuwari/models/repo.dart';
 import '/widgets/grid.dart';
 
 class LaterPage extends StatelessWidget {
@@ -15,22 +15,8 @@ class LaterPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             //SearchButton(text: 'Favourites', controller: TextEditingController(), search: () {}),
-            TabBar(
-              tabs: [
-                Tab(text: 'Anime'),
-                Tab(text: 'Manga'),
-                Tab(text: 'Recent'),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  LaterGrid('anime'),
-                  LaterGrid('manga'),
-                  Placeholder(),
-                ],
-              ),
-            ),
+            TabBar(tabs: [Tab(text: 'Anime'), Tab(text: 'Manga'), Tab(text: 'Recent')]),
+            Expanded(child: TabBarView(children: [LaterGrid('anime'), LaterGrid('manga'), Placeholder()])),
           ],
         ),
       ),
@@ -46,26 +32,28 @@ class LaterGrid extends StatefulWidget {
   State createState() => LaterGridState();
 }
 
-class LaterGridState extends State<LaterGrid>
-    with AutomaticKeepAliveClientMixin {
-  final Isar isar = Isar.get(schemas: [AniDataSchema], name: 'tokudb');
-  late final stream = isar.aniDatas
-      .where()
-      .typeEqualTo(widget.type)
-      .watch(fireImmediately: true);
+class LaterGridState extends State<LaterGrid> with AutomaticKeepAliveClientMixin {
+  final box = Repo.i.anidata;
+  late final Stream<List<AniData>> _queryStream;
 
   @override
-  Widget build(context) {
+  void initState() {
+    super.initState();
+    _queryStream = box.query(AniData_.type.equals(widget.type)).order(AniData_.id).assign();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     super.build(context);
+
     return CustomScrollView(
       slivers: [
         StreamBuilder<List<AniData>>(
-          initialData: isar.aniDatas.where().typeEqualTo(widget.type).findAll(),
-          stream: stream,
-          builder: (context, snap) {
-            if (snap.hasData && snap.data!.isNotEmpty) {
-              final data = snap.data!.reversed.toList();
-              return Grid(data: data, keep: false, length: snap.data!.length);
+          stream: _queryStream,
+          builder: (context, snapshot) {
+            final data = (snapshot.data ?? []).reversed.toList();
+            if (data.isNotEmpty) {
+              return Grid(data: data, keep: false, length: data.length);
             }
             return const SliverToBoxAdapter(child: SizedBox.shrink());
           },

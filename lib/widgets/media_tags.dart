@@ -15,12 +15,9 @@ class MediaTags extends StatelessWidget {
         children: List.generate(data.tags.length.clamp(0, 15), (index) {
           return ActionChip(
             padding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             label: Text(data.tags[index]),
-            onPressed:
-                () => context.go('/${data.type}?tag=${data.tags[index]}'),
+            onPressed: () => context.go('/${data.type}?tag=${data.tags[index]}'),
           );
         }),
       ),

@@ -13,7 +13,7 @@ Provider dexReader(final AniData data) async {
         .then(
           (malsync) async => await Dio()
               .get(
-                "$mangadex/${malsync.data['Sites']['Mangadex'].keys.first}/feed?limit=500&translatedLanguage[]=en&order[chapter]=asc&includeEmptyPages=0",
+                "$mangadex/${malsync.data['Sites']['Mangadex'].keys.first}/feed?limit=500&translatedLanguage[]=en&order[chapter]=asc&includeEmptyPages=0&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic",
               )
               .then((value) => value.data),
         );
@@ -32,9 +32,7 @@ Provider dexReader(final AniData data) async {
 }
 
 Manga dexPages(final String id) async {
-  final Response json = await Dio().get(
-    "https://api.mangadex.org/at-home/server/$id",
-  );
+  final Response json = await Dio().get("https://api.mangadex.org/at-home/server/$id");
   return Chapter(
     pages: [
       for (final page in json.data['chapter']['data'])

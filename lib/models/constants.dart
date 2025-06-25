@@ -1,4 +1,4 @@
-class AniFilter {
+class AniConstants {
   static const genresList = [
     "Action",
     "Adventure",

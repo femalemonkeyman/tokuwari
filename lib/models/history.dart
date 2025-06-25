@@ -1,27 +1,22 @@
-import 'package:isar/isar.dart';
+import 'package:objectbox/objectbox.dart';
 
-part 'history.g.dart';
-
-@collection
+@Entity()
 class History {
   @Id()
-  final int id;
+  int id;
 
   /// mediaId should be the mediaId from an [AniData] object which is the id from anilist
   final String mediaId;
   final String title;
   final String image;
   final String type;
+  bool finished = false;
 
-  /// Should be a [Duration] for keeping the position of a video or the page
-  int? watched;
+  /// Should be for keeping the position of a video
+  int? secondsWatched;
+
+  /// If manga we only need to track the last page the user was on
   int? page;
 
-  History({
-    required this.title,
-    required this.image,
-    required this.id,
-    required this.mediaId,
-    required this.type,
-  });
+  History({this.id = 0, required this.title, required this.image, required this.mediaId, required this.type});
 }

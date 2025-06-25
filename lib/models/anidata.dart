@@ -1,12 +1,10 @@
-import 'package:isar/isar.dart';
+import 'package:objectbox/objectbox.dart';
 import 'package:tokuwari/models/media_prov.dart';
 
-part 'anidata.g.dart';
-
-@collection
+@Entity()
 class AniData {
   @Id()
-  int id;
+  int id = 0;
   final String type;
   final String mediaId;
   final int? malid;
@@ -19,7 +17,7 @@ class AniData {
   final List<String> tags;
 
   /// The list of Episodes or chapters found for this media
-  @ignore
+  @Transient()
   final List<MediaProv> mediaProv = [];
 
   AniData({
@@ -36,13 +34,10 @@ class AniData {
     required this.tags,
   });
 
-  AniData.fromJson(Map<String, dynamic> json, this.type, {this.id = 0})
+  AniData.fromJson(Map<String, dynamic> json, this.type)
     : malid = json['idMal'],
       mediaId = json['id'].toString(),
-      description = (json['description'] ?? "").replaceAll(
-        RegExp(r'<[^>]*>|&[^;]+;'),
-        ' ',
-      ),
+      description = (json['description'] ?? "").replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' '),
       status = json['status'].toString(),
       title = json['title']['romaji'].toString(),
       image = json['coverImage']['extraLarge'],

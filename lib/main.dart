@@ -6,13 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:isar/isar.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:tokuwari/models/anidata.dart';
-import 'package:tokuwari/models/history.dart';
 import 'package:tokuwari/models/novdata.dart';
-import 'package:tokuwari/models/settings.dart';
+import 'package:tokuwari/models/repo.dart';
 import 'package:tokuwari/pages/settings_page.dart';
 import 'package:tokuwari/viewers/Novel/media_novel.dart';
 import 'package:window_manager/window_manager.dart';
@@ -24,9 +21,7 @@ import 'pages/info_page.dart';
 import 'pages/later_page.dart';
 import 'pages/media_page.dart';
 
-final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(
-  debugLabel: 'root',
-);
+final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,15 +29,7 @@ void main() async {
     await windowManager.ensureInitialized();
   }
   MediaKit.ensureInitialized();
-  Isar.open(
-    schemas: [AniDataSchema, HistorySchema, NovDataSchema, SettingsSchema],
-    name: "tokudb",
-    directory:
-        (await Directory(
-              '${(await getApplicationDocumentsDirectory()).path}/.tokuwari',
-            ).create())
-            .path,
-  );
+  Repo.init();
   runApp(Navigation());
 }
 
@@ -62,37 +49,18 @@ class Navigation extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: clampDouble(
-                        MediaQuery.of(context).size.width,
-                        0,
-                        384,
-                      ),
-                    ),
+                    constraints: BoxConstraints(maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
                     child: NavigationBar(
                       backgroundColor: Colors.transparent,
                       elevation: 0,
                       onDestinationSelected: (value) => shell.goBranch(value),
                       selectedIndex: shell.currentIndex,
-                      labelBehavior:
-                          NavigationDestinationLabelBehavior.onlyShowSelected,
+                      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
                       destinations: const [
-                        NavigationDestination(
-                          icon: Icon(Icons.ondemand_video_rounded),
-                          label: 'Anime',
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.menu_book_rounded),
-                          label: 'Manga',
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.book_rounded),
-                          label: 'Novels',
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.bookmark),
-                          label: 'Later',
-                        ),
+                        NavigationDestination(icon: Icon(Icons.ondemand_video_rounded), label: 'Anime'),
+                        NavigationDestination(icon: Icon(Icons.menu_book_rounded), label: 'Manga'),
+                        NavigationDestination(icon: Icon(Icons.book_rounded), label: 'Novels'),
+                        NavigationDestination(icon: Icon(Icons.bookmark), label: 'Later'),
                       ],
                     ),
                   ),
@@ -107,10 +75,7 @@ class Navigation extends StatelessWidget {
                 path: '/anime',
                 builder:
                     (context, state) => AniPage(
-                      key:
-                          (state.uri.queryParameters.isEmpty)
-                              ? null
-                              : Key(state.uri.queryParameters['tag']!),
+                      key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
                       type: 'anime',
                       tag: state.uri.queryParameters['tag'],
                     ),
@@ -118,26 +83,19 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     parentNavigatorKey: _rootKey,
                     path: 'info',
-                    builder:
-                        (context, state) =>
-                            InfoPage(data: state.extra as AniData),
+                    builder: (context, state) => InfoPage(data: state.extra as AniData),
                     routes: [
                       GoRoute(
                         parentNavigatorKey: _rootKey,
                         path: 'viewer',
                         onExit: (context, state) {
-                          SystemChrome.setEnabledSystemUIMode(
-                            SystemUiMode.manual,
-                            overlays: SystemUiOverlay.values,
-                          );
+                          SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
                           SystemChrome.setPreferredOrientations([]);
                           return true;
                         },
                         builder:
-                            (context, state) => AniViewer(
-                              episode: (state.extra as Map)['index'],
-                              anime: (state.extra as Map)['data'],
-                            ),
+                            (context, state) =>
+                                AniViewer(episode: (state.extra as Map)['index'], anime: (state.extra as Map)['data']),
                       ),
                     ],
                   ),
@@ -152,10 +110,7 @@ class Navigation extends StatelessWidget {
                 path: '/manga',
                 builder:
                     (context, state) => AniPage(
-                      key:
-                          (state.uri.queryParameters.isEmpty)
-                              ? null
-                              : Key(state.uri.queryParameters['tag']!),
+                      key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
                       type: 'manga',
                       tag: state.uri.queryParameters['tag'],
                     ),
@@ -163,9 +118,7 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     parentNavigatorKey: _rootKey,
                     path: 'info',
-                    builder:
-                        (context, state) =>
-                            InfoPage(data: state.extra as AniData),
+                    builder: (context, state) => InfoPage(data: state.extra as AniData),
                     routes: [
                       GoRoute(
                         parentNavigatorKey: _rootKey,
@@ -192,30 +145,18 @@ class Navigation extends StatelessWidget {
                   GoRoute(
                     parentNavigatorKey: _rootKey,
                     path: 'viewer',
-                    builder:
-                        (context, state) =>
-                            NovelViewer(data: state.extra as NovData),
+                    builder: (context, state) => NovelViewer(data: state.extra as NovData),
                   ),
                 ],
               ),
             ],
           ),
           StatefulShellBranch(
-            routes: [
-              GoRoute(
-                name: 'later',
-                path: '/later',
-                builder: (context, state) => const LaterPage(),
-              ),
-            ],
+            routes: [GoRoute(name: 'later', path: '/later', builder: (context, state) => const LaterPage())],
           ),
         ],
       ),
-      GoRoute(
-        name: 'settings',
-        path: '/settings',
-        builder: (context, state) => const SettingsPage(),
-      ),
+      GoRoute(name: 'settings', path: '/settings', builder: (context, state) => const SettingsPage()),
     ],
   );
 

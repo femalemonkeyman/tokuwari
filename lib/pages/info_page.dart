@@ -3,12 +3,12 @@ import 'package:expand_widget/expand_widget.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:tokuwari/models/anidata.dart';
 import 'package:tokuwari/models/media_prov.dart';
+import 'package:tokuwari/models/repo.dart';
 import 'package:tokuwari/widgets/media_tags.dart';
 import '../media/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:go_router/go_router.dart';
-import 'package:isar/isar.dart';
 import '../widgets/image.dart';
 
 extension on Widget {
@@ -46,12 +46,7 @@ class InfoPage extends StatelessWidget {
               ],
             ),
             SliverPadding(
-              padding: const EdgeInsets.only(
-                left: 15,
-                right: 15,
-                top: 10,
-                bottom: 10,
-              ),
+              padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
               sliver: SliverToBoxAdapter(
                 child: LayoutBuilder(
                   builder: (context, con) {
@@ -59,15 +54,10 @@ class InfoPage extends StatelessWidget {
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(child: InfoView(data)),
-                          Flexible(child: Selector(data: data)),
-                        ],
+                        children: [Flexible(child: InfoView(data)), Flexible(child: Selector(data: data))],
                       );
                     } else {
-                      return Column(
-                        children: [InfoView(data), Selector(data: data)],
-                      );
+                      return Column(children: [InfoView(data), Selector(data: data)]);
                     }
                   },
                 ),
@@ -95,10 +85,7 @@ class InfoView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 100),
-              child: AniImage(image: data.image),
-            ),
+            ConstrainedBox(constraints: const BoxConstraints(maxWidth: 100), child: AniImage(image: data.image)),
             const SizedBox(width: 15),
             Flexible(
               child: Text.rich(
@@ -106,8 +93,7 @@ class InfoView extends StatelessWidget {
                   text: data.title,
                   children: [
                     TextSpan(
-                      text:
-                          '\n${data.status}\nScore: ${data.score}\nCount: ${data.count}',
+                      text: '\n${data.status}\nScore: ${data.score}\nCount: ${data.count}',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ],
@@ -117,14 +103,7 @@ class InfoView extends StatelessWidget {
             ),
           ],
         ).padBottom(),
-        Flexible(
-          child:
-              ExpandText(
-                data.description,
-                textAlign: TextAlign.start,
-                maxLines: 3,
-              ).padBottom(),
-        ),
+        Flexible(child: ExpandText(data.description, textAlign: TextAlign.start, maxLines: 3).padBottom()),
         Flexible(child: MediaTags(data).padBottom()),
       ],
     );
@@ -132,38 +111,38 @@ class InfoView extends StatelessWidget {
 }
 
 class LaterButton extends StatefulWidget {
-  final Isar isar = Isar.get(schemas: [AniDataSchema], name: 'tokudb');
   final AniData data;
 
-  LaterButton({super.key, required this.data});
+  const LaterButton({super.key, required this.data});
 
   @override
   State createState() => LaterButtonState();
 }
 
 class LaterButtonState extends State<LaterButton> {
-  late final media = widget.isar.aniDatas.where().mediaIdEqualTo(
-    widget.data.mediaId,
-  );
+  final box = Repo.i.anidata;
+  late final stream = box
+      .query(AniData_.mediaId.equals(widget.data.mediaId))
+      .watch(triggerImmediately: true)
+      .map((q) => q.findFirst());
 
   @override
-  Widget build(context) {
-    return IconButton(
-      onPressed:
-          () => setState(() {
-            if (media.isEmpty()) {
-              widget.data.id = widget.isar.aniDatas.autoIncrement();
-              widget.isar.write(
-                (isar) => widget.isar.aniDatas.put(widget.data),
-              );
+  Widget build(BuildContext context) {
+    return StreamBuilder<AniData?>(
+      stream: stream,
+      builder: (context, snapshot) {
+        final isSaved = snapshot.data != null;
+        return IconButton(
+          onPressed: () {
+            if (isSaved) {
+              box.remove(snapshot.data!.id);
             } else {
-              widget.isar.write((isar) => media.deleteAll());
+              box.put(widget.data);
             }
-          }),
-      icon:
-          (media.isEmpty())
-              ? const Icon(Icons.bookmark_add_outlined)
-              : const Icon(Icons.bookmark_added_rounded),
+          },
+          icon: isSaved ? const Icon(Icons.bookmark_added_rounded) : const Icon(Icons.bookmark_add_outlined),
+        );
+      },
     );
   }
 }
@@ -181,8 +160,7 @@ class SelectorState extends State<Selector> {
   late Map<String, dynamic> provider;
   late CancelableOperation<List<MediaProv>> load;
   final con = PageController();
-  late final String episodeLabel =
-      widget.data.type == 'anime' ? 'Episode:' : 'Chapter:';
+  late final String episodeLabel = widget.data.type == 'anime' ? 'Episode:' : 'Chapter:';
 
   @override
   void initState() {
@@ -241,9 +219,7 @@ class SelectorState extends State<Selector> {
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
-            } else if (snap.connectionState == ConnectionState.done &&
-                snap.hasData &&
-                snap.data!.isNotEmpty) {
+            } else if (snap.connectionState == ConnectionState.done && snap.hasData && snap.data!.isNotEmpty) {
               if (widget.data.mediaProv.isEmpty) {
                 widget.data.mediaProv.addAll(snap.data!);
               }
@@ -256,10 +232,7 @@ class SelectorState extends State<Selector> {
                       child: Row(
                         children: List.generate(
                           split.length,
-                          (i) => TextButton(
-                            onPressed: () => con.jumpToPage(i),
-                            child: Text('${i + 1}'),
-                          ),
+                          (i) => TextButton(onPressed: () => con.jumpToPage(i), child: Text('${i + 1}')),
                         ),
                       ),
                     ).padBottom(),
@@ -282,10 +255,7 @@ class SelectorState extends State<Selector> {
                             onTap:
                                 () => context.push(
                                   '/${widget.data.type}/info/viewer',
-                                  extra: {
-                                    'index': (pindex * 12) + gindex,
-                                    'data': widget.data,
-                                  },
+                                  extra: {'index': (pindex * 12) + gindex, 'data': widget.data},
                                 ),
                             trailing: Icon(Icons.play_arrow_rounded),
                           );

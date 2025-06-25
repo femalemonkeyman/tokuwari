@@ -14,3 +14,47 @@ class GQL {
     ),
   );
 }
+
+const qString = """
+query (\$page: Int!, \$type: MediaType, \$tag: String, \$search: String, \$genre: [String], \$adult: Boolean)
+  {
+  Page(perPage: 50, page: \$page) {
+    pageInfo {
+      hasNextPage
+      lastPage
+      total
+      currentPage
+    },
+    media(sort: [TRENDING_DESC], type: \$type, search: \$search, genre_in: \$genre, tag: \$tag, isAdult: \$adult) {
+      id
+      title {
+        romaji
+        english
+        native
+      }
+      status
+      chapters
+      idMal
+      genres
+      status
+      averageScore
+      description(asHtml: false)
+      episodes
+      relations {
+        edges {
+          id
+          node {
+            id
+          }
+        }
+      }
+      coverImage {
+        extraLarge
+      }
+      tags {
+        name
+      }
+    }
+  }
+}
+""";

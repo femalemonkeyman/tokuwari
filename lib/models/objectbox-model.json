@@ -1,0 +1,188 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:3824746973318169470",
+      "lastPropertyId": "11:2424263418954628835",
+      "name": "AniData",
+      "properties": [
+        {
+          "id": "1:7695004054083110337",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3787650872702017361",
+          "name": "type",
+          "type": 9
+        },
+        {
+          "id": "3:699449505973782205",
+          "name": "mediaId",
+          "type": 9
+        },
+        {
+          "id": "4:8946466613827245229",
+          "name": "malid",
+          "type": 6
+        },
+        {
+          "id": "5:1432553413840534413",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "6:2397784164114111351",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "7:6194394773536637145",
+          "name": "status",
+          "type": 9
+        },
+        {
+          "id": "8:7129637701037927533",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "9:9056121655314356221",
+          "name": "score",
+          "type": 9
+        },
+        {
+          "id": "10:1990334717247884277",
+          "name": "count",
+          "type": 9
+        },
+        {
+          "id": "11:2424263418954628835",
+          "name": "tags",
+          "type": 30
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:336629747604404084",
+      "lastPropertyId": "9:3564184143879571110",
+      "name": "History",
+      "properties": [
+        {
+          "id": "1:9219552451727643619",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6009510290794773865",
+          "name": "mediaId",
+          "type": 9
+        },
+        {
+          "id": "3:6389232419279684368",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "4:7862706393971524056",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "5:3591471415383838013",
+          "name": "type",
+          "type": 9
+        },
+        {
+          "id": "7:7978421358566525252",
+          "name": "page",
+          "type": 6
+        },
+        {
+          "id": "8:2281619959759566480",
+          "name": "finished",
+          "type": 1
+        },
+        {
+          "id": "9:3564184143879571110",
+          "name": "secondsWatched",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:601638449760033638",
+      "lastPropertyId": "5:307715569903329613",
+      "name": "NovData",
+      "properties": [
+        {
+          "id": "1:8662292209108889234",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6231408299824343808",
+          "name": "type",
+          "type": 9,
+          "flags": 2048,
+          "indexId": "1:4923865717540146930"
+        },
+        {
+          "id": "3:2986873148818349018",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "4:2354273748596673451",
+          "name": "image",
+          "type": 9
+        },
+        {
+          "id": "5:307715569903329613",
+          "name": "path",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:571731186310018118",
+      "lastPropertyId": "2:2218407693133762791",
+      "name": "Settings",
+      "properties": [
+        {
+          "id": "1:8631544855696992705",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2218407693133762791",
+          "name": "isNsfw",
+          "type": 1
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "4:571731186310018118",
+  "lastIndexId": "1:4923865717540146930",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [
+    650314608731885431
+  ],
+  "retiredRelationUids": [],
+  "version": 1
+}

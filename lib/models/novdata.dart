@@ -1,19 +1,13 @@
-import 'package:isar/isar.dart';
+import 'package:objectbox/objectbox.dart';
 
-part 'novdata.g.dart';
-
-@collection
+@Entity()
 class NovData {
-  @index
+  @Id()
+  int? id;
+  @Index()
   final String type;
   final String title;
   final String image;
-  @id
   final String path;
-  const NovData({
-    required this.type,
-    required this.title,
-    required this.image,
-    required this.path,
-  });
+  NovData({required this.type, required this.title, required this.image, required this.path});
 }

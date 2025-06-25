@@ -1,8 +1,7 @@
 //TODO settings
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:isar/isar.dart';
+import 'package:tokuwari/models/repo.dart';
 import 'package:tokuwari/models/settings.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -13,11 +12,17 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
-  final isar = Isar.get(name: "tokudb", schemas: [SettingsSchema]);
-  late var settings = isar.settings.get(1) ?? Settings();
+  final box = Repo.i.settings;
+  late Settings settings;
 
   @override
-  Widget build(context) {
+  void initState() {
+    super.initState();
+    settings = box.get(1) ?? Settings();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
@@ -27,10 +32,8 @@ class SettingsPageState extends State<SettingsPage> {
             value: settings.isNsfw,
             onChanged: (v) {
               setState(() {
-                isar.write((isar) {
-                  settings.isNsfw = v;
-                  isar.settings.put(settings);
-                });
+                settings.isNsfw = v;
+                box.put(settings);
               });
             },
           ),

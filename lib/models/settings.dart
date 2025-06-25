@@ -1,9 +1,7 @@
-import 'package:isar/isar.dart';
+import 'package:objectbox/objectbox.dart';
 
-part "settings.g.dart";
-
-@collection
+@Entity()
 class Settings {
-  final id = 1;
+  int id = 0;
   bool isNsfw = false;
 }

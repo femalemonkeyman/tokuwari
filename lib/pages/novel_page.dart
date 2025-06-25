@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:epubx/epubx.dart';
-import 'package:isar/isar.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:tokuwari/models/novdata.dart';
+import 'package:tokuwari/models/repo.dart';
 import 'package:tokuwari/widgets/grid.dart';
 import 'package:tokuwari/widgets/search_button.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -23,15 +23,21 @@ class NovelPage extends StatefulWidget {
 }
 
 class NovelPageState extends State<NovelPage> {
-  final Isar isar = Isar.get(schemas: [NovDataSchema], name: 'tokudb');
+  final box = Repo.i.novdata;
   final List<NovData> novels = [];
+  late final Query<NovData> _query;
 
   @override
   void initState() {
-    novels.addAll(
-      isar.novDatas.where().typeEqualTo('novel').sortByTitle().findAll(),
-    );
     super.initState();
+    _query = box.query(NovData_.type.equals('novel')).order(NovData_.title).build();
+    novels.addAll(_query.find());
+  }
+
+  @override
+  void dispose() {
+    _query.close();
+    super.dispose();
   }
 
   @override
@@ -40,23 +46,13 @@ class NovelPageState extends State<NovelPage> {
         ? ImportNovels(
           state:
               () => setState(() {
-                novels.addAll(
-                  isar.novDatas
-                      .where()
-                      .typeEqualTo('novel')
-                      .sortByTitle()
-                      .findAll(),
-                );
+                novels.addAll(_query.find());
               }),
         )
         : SafeArea(
           child: CustomScrollView(
             slivers: [
-              SearchButton(
-                text: 'Novels',
-                controller: SearchController(),
-                search: () {},
-              ),
+              SearchButton(text: 'Novels', controller: SearchController(), search: () {}),
               SliverToBoxAdapter(
                 child: Wrap(
                   alignment: WrapAlignment.spaceAround,
@@ -65,7 +61,7 @@ class NovelPageState extends State<NovelPage> {
                     TextButton(
                       onPressed:
                           () => setState(() {
-                            isar.write((isar) => isar.novDatas.clear());
+                            box.removeAll();
                             novels.clear();
                           }),
                       child: const Text('Clear'),
@@ -81,82 +77,58 @@ class NovelPageState extends State<NovelPage> {
 }
 
 class ImportNovels extends StatelessWidget {
-  final Isar isar = Isar.get(schemas: [NovDataSchema], name: 'tokudb');
+  final box = Repo.i.novdata;
   final VoidCallback state;
 
   ImportNovels({super.key, required this.state});
 
-  Stream<String> importBooks(final BuildContext context) async* {
-    if (Platform.isAndroid) {
-      await Permission.manageExternalStorage.request();
-    }
-    final directory = Directory(
-      await FilePicker.platform.getDirectoryPath(
-            lockParentWindow: true,
-            dialogTitle: 'Please select a folder containing epubs',
-          ) ??
-          '',
+  Stream<String> importBooks(BuildContext context) async* {
+    if (Platform.isAndroid) await Permission.manageExternalStorage.request();
+
+    final dirPath = await FilePicker.platform.getDirectoryPath(
+      lockParentWindow: true,
+      dialogTitle: 'Please select a folder containing epubs',
     );
-    if (directory.existsSync()) {
-      final List<File> epubs = [
-        for (final entity in directory.listSync(recursive: true))
-          if (entity is File && entity.path.endsWith('.epub')) entity,
-      ];
-      if (epubs.isNotEmpty) {
-        final covers = path.join(
-          (await getApplicationDocumentsDirectory()).path,
-          '.tokuwari',
-          'covers/',
+    if (dirPath == null) return;
+    final directory = Directory(dirPath);
+    if (!directory.existsSync()) return;
+    final List<File> epubs = [
+      for (final entity in directory.listSync(recursive: true))
+        if (entity is File && entity.path.endsWith('.epub')) entity,
+    ];
+    if (epubs.isEmpty) return;
+    final coversDir = Directory(path.join((await getApplicationDocumentsDirectory()).path, '.tokuwari', 'covers'))
+      ..createSync(recursive: true);
+    final novels = <NovData>[];
+    for (final epub in epubs) {
+      final book = await compute((file) => EpubReader.openBook(File(file).readAsBytesSync()), epub.path);
+      yield book.Title.Title;
+      Uint8List getCoverBytes() {
+        if (book.cover != null) return Uint8List.fromList(book.cover!.getContentStream());
+        final coverItem = book.manifest.Items.firstWhereOrNull(
+          (item) =>
+              (item.Href.toLowerCase().contains('cover') || item.Id.toLowerCase().contains('cover')) &&
+              item.MediaType.contains('image/'),
         );
-        final novels = <NovData>[];
-        for (File epub in epubs) {
-          final bookref = await compute((epub) async {
-            return await EpubReader.openBook(epub.readAsBytesSync());
-          }, epub);
-          yield bookref.Title.Title;
-          final imgbits = Uint8List.fromList(
-            bookref.cover?.getContentStream() ??
-                bookref
-                    .Content
-                    .Images[(bookref.manifest.Items
-                        .firstWhereOrNull(
-                          (item) =>
-                              (item.Href.toLowerCase().contains('cover') ||
-                                  item.Id.toLowerCase().contains('cover')) &&
-                              item.MediaType.contains('image/'),
-                        )
-                        ?.Href)]
-                    ?.getContentStream() ??
-                [],
-          );
-          final codec = await instantiateImageCodec(imgbits, targetWidth: 306);
-          final resizedImage = (await codec.getNextFrame()).image;
-          final img = await resizedImage.toByteData(
-            format: ImageByteFormat.png,
-          );
-          final cover =
-              (Directory(covers)..createSync()).path +
-              path.setExtension(path.basename(epub.path), '.png');
-          File(cover).writeAsBytes(img!.buffer.asUint8List());
-          novels.add(
-            NovData(
-              type: 'novel',
-              title: bookref.Title.Title.trim(),
-              image: cover,
-              path: epub.path,
-            ),
-          );
-        }
-        isar.write((isar) => isar.novDatas.putAll(novels));
+        if (coverItem == null) return Uint8List(0);
+        return Uint8List.fromList(book.Content.Images[coverItem.Href]?.getContentStream() ?? []);
       }
+
+      final imgbits = getCoverBytes();
+      if (imgbits.isEmpty) continue;
+      final codec = await instantiateImageCodec(imgbits, targetWidth: 306);
+      final frame = await codec.getNextFrame();
+      final imgBytes = (await frame.image.toByteData(format: ImageByteFormat.png))!;
+      final coverPath = path.join(coversDir.path, path.setExtension(path.basename(epub.path), '.png'));
+      await File(coverPath).writeAsBytes(imgBytes.buffer.asUint8List());
+      novels.add(NovData(type: 'novel', title: book.Title.Title.trim(), image: coverPath, path: epub.path));
     }
-    if (context.mounted && context.canPop()) {
-      context.pop();
-    }
+    await box.putManyAsync(novels);
+    if (context.mounted && context.canPop()) context.pop();
   }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return Center(
       child: ActionChip(
         onPressed: () async {
@@ -167,7 +139,7 @@ class ImportNovels extends StatelessWidget {
                 (dcontext) => StreamBuilder<String>(
                   initialData: '...',
                   stream: importBooks(dcontext),
-                  builder: (context, snap) {
+                  builder: (context, snapshot) {
                     final height = MediaQuery.of(context).size.height / 4;
                     return Dialog(
                       child: SizedBox.square(
@@ -178,29 +150,16 @@ class ImportNovels extends StatelessWidget {
                           children: [
                             const Text('Importing:'),
                             Padding(
-                              padding: const EdgeInsets.only(left: 5, right: 5),
-                              child: Text(
-                                snap.data ?? '',
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 5),
+                              child: Text(snapshot.data ?? '', overflow: TextOverflow.ellipsis, maxLines: 1),
                             ),
                             TextButton(
                               onPressed: () async {
-                                final dir = Directory(
-                                  path.join(
-                                    (await getApplicationDocumentsDirectory())
-                                        .path,
-                                    '.tokuwari',
-                                    'covers/',
-                                  ),
+                                final coverDir = Directory(
+                                  path.join((await getApplicationDocumentsDirectory()).path, '.tokuwari', 'covers'),
                                 );
-                                if (dir.existsSync()) {
-                                  dir.delete();
-                                }
-                                if (dcontext.mounted) {
-                                  dcontext.pop();
-                                }
+                                if (coverDir.existsSync()) await coverDir.delete(recursive: true);
+                                if (dcontext.mounted) dcontext.pop();
                               },
                               child: const Text('Cancel'),
                             ),
@@ -211,7 +170,7 @@ class ImportNovels extends StatelessWidget {
                   },
                 ),
           );
-          state.call();
+          state();
         },
         label: const Text("Press me to add novels <3"),
       ),

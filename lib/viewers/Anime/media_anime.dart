@@ -4,13 +4,24 @@ import 'package:async/async.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tokuwari/models/anidata.dart';
-import 'package:tokuwari/models/source.dart';
-import 'package:tokuwari/viewers/Anime/anime_controller.dart';
+import 'package:tokuwari/models/types.dart';
+import 'package:tokuwari/viewers/Anime/anime_extensions.dart';
 import 'package:tokuwari/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:window_manager/window_manager.dart';
+
+class PlayProv extends InheritedWidget {
+  final Player player;
+
+  const PlayProv({required this.player, required super.child, super.key});
+
+  static PlayProv of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<PlayProv>()!;
+
+  @override
+  bool updateShouldNotify(PlayProv oldWidget) => player != oldWidget.player;
+}
 
 class AniViewer extends StatefulWidget {
   final AniData anime;
@@ -36,38 +47,26 @@ class AniViewerState extends State<AniViewer> {
       androidAttachSurfaceAfterVideoParameters: false,
     ),
   );
-  late final CancelableOperation<Source> load = CancelableOperation.fromFuture(
-    play(),
-  );
+  late final CancelableOperation<Source> load = CancelableOperation.fromFuture(play());
   final bool isPhone = !Platform.isAndroid && !Platform.isIOS;
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
   }
 
   Future<Source> play() async {
     final Source media = await widget.anime.mediaProv[widget.episode].call!();
     if (media.qualities.isNotEmpty) {
-      await player.open(
-        Media(media.qualities.values.first, httpHeaders: media.headers ?? {}),
-        play: false,
-      );
+      await player.open(Media(media.qualities.values.first, httpHeaders: media.headers ?? {}), play: false);
       await controller.waitUntilFirstFrameRendered;
       await player.play();
       if (media.subtitles.isNotEmpty) {
         await player.setSubtitleTrack(
           SubtitleTrack.uri(
-            media.subtitles.entries
-                .firstWhere(
-                  (element) => element.key.toLowerCase().contains('eng'),
-                )
-                .value,
+            media.subtitles.entries.firstWhere((element) => element.key.toLowerCase().contains('eng')).value,
           ),
         );
       }
@@ -84,54 +83,40 @@ class AniViewerState extends State<AniViewer> {
 
   @override
   Widget build(context) {
-    return Scaffold(
-      body: FutureBuilder<Source>(
-        future: load.value,
-        builder: (context, snap) {
-          if (snap.hasData && snap.requireData.qualities.isNotEmpty) {
-            return CallbackShortcuts(
-              bindings: {
-                const SingleActivator(LogicalKeyboardKey.keyF):
-                    () async => windowManager.setFullScreen(
-                      !await windowManager.isFullScreen(),
-                    ),
-                const SingleActivator(LogicalKeyboardKey.escape):
-                    () async => windowManager.setFullScreen(false),
-                const SingleActivator(LogicalKeyboardKey.space):
-                    () => player.playOrPause(),
-                const SingleActivator(LogicalKeyboardKey.arrowRight): () {
-                  player.seek(
-                    player.state.position + const Duration(seconds: 3),
-                  );
+    return PlayProv(
+      player: player,
+      child: Scaffold(
+        body: FutureBuilder<Source>(
+          future: load.value,
+          builder: (context, snap) {
+            if (snap.hasData && snap.requireData.qualities.isNotEmpty) {
+              return CallbackShortcuts(
+                bindings: {
+                  const SingleActivator(LogicalKeyboardKey.keyF):
+                      () async => windowManager.setFullScreen(!await windowManager.isFullScreen()),
+                  const SingleActivator(LogicalKeyboardKey.escape): () async => windowManager.setFullScreen(false),
+                  const SingleActivator(LogicalKeyboardKey.space): () => player.playOrPause(),
+                  const SingleActivator(LogicalKeyboardKey.arrowRight): () {
+                    player.seek(player.state.position + const Duration(seconds: 3));
+                  },
+                  const SingleActivator(LogicalKeyboardKey.arrowLeft): () {
+                    player.seek(player.state.position - const Duration(seconds: 3));
+                  },
                 },
-                const SingleActivator(LogicalKeyboardKey.arrowLeft): () {
-                  player.seek(
-                    player.state.position - const Duration(seconds: 3),
-                  );
-                },
-              },
-              child: Focus(
-                autofocus: true,
-                child: Stack(
-                  children: [
-                    Video(
-                      controller: controller,
-                      controls: NoVideoControls,
-                      pauseUponEnteringBackgroundMode: false,
-                    ),
-                    Controls(
-                      player: player,
-                      media: snap.requireData,
-                      episode: widget.episode,
-                      anime: widget.anime,
-                    ),
-                  ],
+                child: Focus(
+                  autofocus: true,
+                  child: Stack(
+                    children: [
+                      Video(controller: controller, controls: NoVideoControls, pauseUponEnteringBackgroundMode: false),
+                      Controls(media: snap.requireData, episode: widget.episode, anime: widget.anime),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }
-          return const Loading();
-        },
+              );
+            }
+            return const Loading();
+          },
+        ),
       ),
     );
   }
@@ -139,17 +124,10 @@ class AniViewerState extends State<AniViewer> {
 
 class Controls extends StatefulWidget {
   final Source media;
-  final Player player;
   final int episode;
   final AniData anime;
 
-  const Controls({
-    super.key,
-    required this.media,
-    required this.player,
-    required this.episode,
-    required this.anime,
-  });
+  const Controls({super.key, required this.media, required this.episode, required this.anime});
 
   @override
   State createState() => ControlsState();
@@ -160,15 +138,15 @@ class ControlsState extends State<Controls> {
   bool hide = true;
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final media = widget.media;
+    final player = PlayProv.of(context).player;
+    final episode = widget.episode;
+    final anime = widget.anime;
+
     return AnimatedOpacity(
-      opacity: (hide) ? 0 : 1,
+      opacity: hide ? 0 : 1,
       duration: const Duration(milliseconds: 500),
       child: DecoratedBox(
         decoration: const BoxDecoration(
@@ -200,22 +178,17 @@ class ControlsState extends State<Controls> {
                         context.pop();
                       },
                     ),
-                    const Spacer(),
-                    Text(
-                      "Episode ${widget.episode + 1} ${widget.anime.mediaProv[widget.episode].title}",
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
+                    Expanded(
+                      child: Text(
+                        "Episode ${episode + 1} ${anime.mediaProv[episode].title}",
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
-                    const Spacer(),
-                    const Spacer(flex: 100),
                     PopupMenuButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       itemBuilder:
                           (c) => [
-                            if (widget.media.subtitles.isNotEmpty)
+                            if (media.subtitles.isNotEmpty)
                               PopupMenuItem(
                                 child: const Text('Subtitles'),
                                 onTap:
@@ -223,33 +196,17 @@ class ControlsState extends State<Controls> {
                                       context: context,
                                       showDragHandle: true,
                                       builder:
-                                          (context) => ListView(
-                                            children: List.generate(
-                                              widget.media.subtitles.length,
-                                              (index) {
-                                                return ListTile(
-                                                  title: Text(
-                                                    widget.media.subtitles.keys
-                                                        .elementAt(index),
-                                                  ),
+                                          (_) => ListView(
+                                            children: [
+                                              for (final entry in media.subtitles.entries)
+                                                ListTile(
+                                                  title: Text(entry.key),
                                                   onTap: () {
-                                                    widget.player
-                                                        .setSubtitleTrack(
-                                                          SubtitleTrack.uri(
-                                                            widget
-                                                                .media
-                                                                .subtitles
-                                                                .values
-                                                                .elementAt(
-                                                                  index,
-                                                                ),
-                                                          ),
-                                                        );
+                                                    player.setSubtitleTrack(SubtitleTrack.uri(entry.value));
                                                     context.pop();
                                                   },
-                                                );
-                                              },
-                                            ),
+                                                ),
+                                            ],
                                           ),
                                     ),
                               ),
@@ -259,94 +216,41 @@ class ControlsState extends State<Controls> {
                                   () => showModalBottomSheet(
                                     showDragHandle: true,
                                     context: context,
-                                    builder:
-                                        (context) => ListView(
-                                          children:
-                                              (widget.media.qualities.length ==
-                                                      1)
-                                                  ? List.generate(
-                                                    widget
-                                                            .player
-                                                            .state
-                                                            .tracks
-                                                            .video
-                                                            .length -
-                                                        2,
-                                                    (i) => ListTile(
-                                                      title: Text(
-                                                        widget
-                                                            .player
-                                                            .state
-                                                            .tracks
-                                                            .video[i + 2]
-                                                            .h
-                                                            .toString(),
+                                    builder: (_) {
+                                      final items =
+                                          media.qualities.length == 1
+                                              ? List.generate(
+                                                player.state.tracks.video.length - 2,
+                                                (i) => ListTile(
+                                                  title: Text(player.state.tracks.video[i + 2].h.toString()),
+                                                  onTap: () {
+                                                    player.setVideoTrack(player.state.tracks.video[i + 2]);
+                                                    context.pop();
+                                                  },
+                                                ),
+                                              )
+                                              : List.generate(
+                                                media.qualities.length,
+                                                (i) => ListTile(
+                                                  title: Text(media.qualities.keys.elementAt(i)),
+                                                  onTap: () async {
+                                                    final subs = player.state.track.subtitle;
+                                                    await player.open(
+                                                      Media(
+                                                        media.qualities.values.elementAt(i),
+                                                        httpHeaders: media.headers,
+                                                        start: player.state.position,
                                                       ),
-                                                      onTap: () {
-                                                        widget.player
-                                                            .setVideoTrack(
-                                                              widget
-                                                                  .player
-                                                                  .state
-                                                                  .tracks
-                                                                  .video[i + 2],
-                                                            );
-                                                        context.pop();
-                                                      },
-                                                    ),
-                                                  )
-                                                  : List.generate(
-                                                    widget
-                                                        .media
-                                                        .qualities
-                                                        .length,
-                                                    (i) => ListTile(
-                                                      title: Text(
-                                                        widget
-                                                            .media
-                                                            .qualities
-                                                            .keys
-                                                            .elementAt(i),
-                                                      ),
-                                                      onTap: () async {
-                                                        final subs =
-                                                            widget
-                                                                .player
-                                                                .state
-                                                                .track
-                                                                .subtitle;
-                                                        await widget.player.open(
-                                                          Media(
-                                                            widget
-                                                                .media
-                                                                .qualities
-                                                                .values
-                                                                .elementAt(i),
-                                                            httpHeaders:
-                                                                widget
-                                                                    .media
-                                                                    .headers,
-                                                            start:
-                                                                widget
-                                                                    .player
-                                                                    .state
-                                                                    .position,
-                                                          ),
-                                                          play: false,
-                                                        );
-                                                        widget.player
-                                                            .setSubtitleTrack(
-                                                              subs,
-                                                            );
-                                                        await widget.player
-                                                            .play();
-                                                        if (context.mounted) {
-                                                          context.pop();
-                                                        }
-                                                      },
-                                                    ),
-                                                  ),
-                                        ),
+                                                      play: false,
+                                                    );
+                                                    player.setSubtitleTrack(subs);
+                                                    await player.play();
+                                                    if (context.mounted) context.pop();
+                                                  },
+                                                ),
+                                              );
+                                      return ListView(children: items);
+                                    },
                                   ),
                             ),
                           ],
@@ -356,23 +260,16 @@ class ControlsState extends State<Controls> {
               ),
               Expanded(
                 child: GestureDetector(
-                  onTap:
-                      () => setState(() {
-                        hide = !hide;
-                      }),
+                  onTap: () => setState(() => hide = !hide),
                   onDoubleTapDown: (event) {
-                    final pos = widget.player.state.position;
-                    if (event.globalPosition.dx < width / 3)
-                      widget.player.seek(pos - const Duration(seconds: 3));
-                    if (event.globalPosition.dx > width / 1.5)
-                      widget.player.seek(pos + const Duration(seconds: 3));
+                    final pos = player.state.position;
+                    final dx = event.globalPosition.dx;
+                    if (dx < width / 3) player.seek(pos - const Duration(seconds: 3));
+                    if (dx > width / 1.5) player.seek(pos + const Duration(seconds: 3));
                   },
                 ),
               ),
-              AbsorbPointer(
-                absorbing: hide,
-                child: ProgressBar(player: widget.player),
-              ),
+              AbsorbPointer(absorbing: hide, child: ProgressBar()),
               AbsorbPointer(
                 absorbing: hide,
                 child: Row(
@@ -380,32 +277,26 @@ class ControlsState extends State<Controls> {
                   children: [
                     IconButton(
                       onPressed:
-                          (widget.episode == 0)
+                          episode == 0
                               ? null
                               : () => context.pushReplacement(
                                 '/anime/info/viewer',
-                                extra: {
-                                  'index': widget.episode - 1,
-                                  'data': widget.anime,
-                                },
+                                extra: {'index': episode - 1, 'data': anime},
                               ),
                       icon: const Icon(Icons.skip_previous),
                     ),
-                    PlayButton(player: widget.player),
+                    PlayButton(),
                     IconButton(
                       onPressed:
-                          (widget.episode == widget.anime.mediaProv.length - 1)
+                          episode == anime.mediaProv.length - 1
                               ? null
                               : () => context.pushReplacement(
                                 '/anime/info/viewer',
-                                extra: {
-                                  'index': widget.episode + 1,
-                                  'data': widget.anime,
-                                },
+                                extra: {'index': episode + 1, 'data': anime},
                               ),
                       icon: const Icon(Icons.skip_next),
                     ),
-                    VolumeSlider(player: widget.player),
+                    VolumeSlider(),
                     const Spacer(),
                     if (isPhone) const FullScreenButton(),
                   ],
@@ -420,108 +311,113 @@ class ControlsState extends State<Controls> {
 }
 
 class ProgressBar extends StatefulWidget {
-  final Player player;
-
-  const ProgressBar({super.key, required this.player});
+  const ProgressBar({super.key});
 
   @override
   ProgressBarState createState() => ProgressBarState();
 }
 
 class ProgressBarState extends State<ProgressBar> {
-  late final StreamSubscription<Duration> _positionSubscription;
+  late final Player player;
+  StreamSubscription<Duration>? _positionSubscription;
   double _currentPosition = 0;
+  bool _hovering = false;
 
   @override
-  void initState() {
-    super.initState();
-
-    _positionSubscription = widget.player.stream.position.listen((position) {
-      setState(() {
-        _currentPosition = position.inSeconds.toDouble();
-      });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    player = PlayProv.of(context).player;
+    _positionSubscription?.cancel();
+    _positionSubscription = player.stream.position.listen((position) {
+      if (!_hovering) setState(() => _currentPosition = position.inSeconds.toDouble());
     });
   }
 
   @override
   void dispose() {
-    _positionSubscription.cancel();
+    _positionSubscription!.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final duration = player.state.duration.inSeconds.toDouble();
+    final buffer = player.state.buffer.inSeconds.toDouble();
+
     return Row(
       children: [
         Text(Duration(seconds: _currentPosition.round()).label()),
         Expanded(
           child: Slider(
             focusNode: FocusNode(canRequestFocus: false),
-            max: widget.player.state.duration.inSeconds.toDouble(),
-            secondaryTrackValue:
-                widget.player.state.buffer.inSeconds.toDouble(),
-            divisions:
-                widget.player.state.duration.inSeconds < 1
-                    ? 1
-                    : widget.player.state.duration.inSeconds,
+            max: duration,
+            secondaryTrackValue: buffer,
+            divisions: duration < 1 ? 1 : duration.toInt(),
             label: Duration(seconds: _currentPosition.toInt()).label(),
-            value: _currentPosition,
+            value: _currentPosition.clamp(0, duration),
             onChanged: (value) {
               setState(() {
                 _currentPosition = value;
               });
             },
-            onChangeStart: (_) => widget.player.pause(),
+            onChangeStart: (_) {
+              _hovering = true;
+              player.pause();
+            },
             onChangeEnd: (value) async {
-              await widget.player.seek(Duration(seconds: value.toInt()));
-              widget.player.play();
+              _hovering = false;
+              await player.seek(Duration(seconds: value.toInt()));
+              player.play();
             },
           ),
         ),
-        Text(widget.player.state.duration.label()),
+        Text(player.state.duration.label()),
       ],
     );
   }
 }
 
 class PlayButton extends StatelessWidget {
-  final Player player;
-
-  const PlayButton({super.key, required this.player});
+  const PlayButton({super.key});
 
   @override
-  Widget build(context) => StreamBuilder<bool>(
-    initialData: true,
-    stream: player.stream.playing,
-    builder:
-        (context, snap) => IconButton(
-          onPressed: () => player.playOrPause(),
-          icon: Icon(
-            (snap.requireData) ? Icons.pause : Icons.play_arrow_rounded,
-          ),
-        ),
-  );
+  Widget build(BuildContext context) {
+    final player = PlayProv.of(context).player;
+
+    return StreamBuilder<bool>(
+      initialData: true,
+      stream: player.stream.playing,
+      builder: (context, snap) {
+        final isPlaying = snap.data ?? true;
+        return IconButton(
+          onPressed: player.playOrPause,
+          icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow_rounded),
+        );
+      },
+    );
+  }
 }
 
 class VolumeSlider extends StatefulWidget {
-  final Player player;
-  const VolumeSlider({super.key, required this.player});
+  const VolumeSlider({super.key});
 
   @override
   State createState() => VolumeSliderState();
 }
 
 class VolumeSliderState extends State<VolumeSlider> {
+  late Player player;
   late double volume;
 
   @override
-  void initState() {
-    super.initState();
-    volume = widget.player.state.volume;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    player = PlayProv.of(context).player;
+    volume = player.state.volume;
   }
 
   @override
-  Widget build(context) => Slider(
+  Widget build(BuildContext context) => Slider(
     min: 0,
     max: 100,
     divisions: 100,
@@ -531,7 +427,7 @@ class VolumeSliderState extends State<VolumeSlider> {
       setState(() {
         volume = value;
       });
-      widget.player.setVolume(value);
+      player.setVolume(value);
     },
   );
 }
@@ -545,7 +441,7 @@ class FullScreenButton extends StatelessWidget {
       onPressed: () async {
         await windowManager.setFullScreen(!await windowManager.isFullScreen());
       },
-      icon: Icon(Icons.fullscreen),
+      icon: const Icon(Icons.fullscreen),
     );
   }
 }
