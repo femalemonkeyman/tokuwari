@@ -9,12 +9,11 @@ Provider paheList(final AniData data) async {
   const mmcookie = {'Cookie': '__ddg1=;__ddg2_=;'};
   try {
     final Map response = (await Dio().get('$anisync/${data.malid}')).data;
-    final String syncId =
-        (await Dio().get(
-          'https://animepahe.ru/a/${response['Sites']?['animepahe'].keys.first}',
-          options: Options(headers: mmcookie, followRedirects: false, validateStatus: (status) => true),
-        )).headers['location']!.first.split('/').last;
-    final String link = 'https://animepahe.ru/api?m=release&id=$syncId&sort=episode_asc';
+    final String syncId = (await Dio().get(
+      'https://animepahe.si/a/${response['Sites']?['animepahe'].keys.first}',
+      options: Options(headers: mmcookie, followRedirects: false, validateStatus: (status) => true),
+    )).headers['location']!.first.split('/').last;
+    final String link = 'https://animepahe.si/api?m=release&id=$syncId&sort=episode_asc';
     final Map anime = (await Dio().get(link, options: Options(headers: mmcookie))).data;
     if (anime['last_page'] > 1) {
       for (Response i in await Future.wait([
@@ -42,8 +41,8 @@ Anime paheInfo(final String id) async {
   final List<Element> data =
       parse(
             (await Dio().get(
-              'https://animepahe.ru/play/$id',
-              options: Options(headers: {'referer': 'https://animepahe.ru', 'Cookie': '__ddg1=;__ddg2_=;'}),
+              'https://animepahe.si/play/$id',
+              options: Options(headers: {'referer': 'https://animepahe.si', 'Cookie': '__ddg1=;__ddg2_=;'}),
             )).data,
           )
           .getElementsByTagName('button')
@@ -53,11 +52,15 @@ Anime paheInfo(final String id) async {
                 (element.attributes['data-src']?.contains('kwik') ?? false),
           )
           .toList();
-  final keys = [for (Element i in data) '${i.attributes['data-fansub']}-${i.attributes['data-resolution']}'];
+
+  final keys = [
+    for (Element i in data)
+      '${i.attributes['data-fansub']}-${i.attributes['data-resolution']}-${i.attributes['data-audio']}',
+  ];
   final values = [
     for (Response i in await Future.wait([
       for (Element i in data)
-        Dio().get(i.attributes['data-src']!, options: Options(headers: {'referer': 'https://animepahe.ru'})),
+        Dio().get(i.attributes['data-src']!, options: Options(headers: {'referer': 'https://animepahe.si'})),
     ]))
       JsUnpack(
         parse(i.data).getElementsByTagName('script').where((element) => element.text.contains('eval')).first.text,

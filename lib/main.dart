@@ -42,43 +42,41 @@ class Navigation extends StatelessWidget {
     routes: [
       StatefulShellRoute.indexedStack(
         parentNavigatorKey: _rootKey,
-        builder:
-            (context, state, shell) => Scaffold(
-              body: shell,
-              bottomNavigationBar: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
-                    child: NavigationBar(
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      onDestinationSelected: (value) => shell.goBranch(value),
-                      selectedIndex: shell.currentIndex,
-                      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-                      destinations: const [
-                        NavigationDestination(icon: Icon(Icons.ondemand_video_rounded), label: 'Anime'),
-                        NavigationDestination(icon: Icon(Icons.menu_book_rounded), label: 'Manga'),
-                        NavigationDestination(icon: Icon(Icons.book_rounded), label: 'Novels'),
-                        NavigationDestination(icon: Icon(Icons.bookmark), label: 'Later'),
-                      ],
-                    ),
-                  ),
-                ],
+        builder: (context, state, shell) => Scaffold(
+          body: shell,
+          bottomNavigationBar: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: clampDouble(MediaQuery.of(context).size.width, 0, 384)),
+                child: NavigationBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  onDestinationSelected: (value) => shell.goBranch(value),
+                  selectedIndex: shell.currentIndex,
+                  labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+                  destinations: const [
+                    NavigationDestination(icon: Icon(Icons.ondemand_video_rounded), label: 'Anime'),
+                    NavigationDestination(icon: Icon(Icons.menu_book_rounded), label: 'Manga'),
+                    NavigationDestination(icon: Icon(Icons.book_rounded), label: 'Novels'),
+                    NavigationDestination(icon: Icon(Icons.bookmark), label: 'Later'),
+                  ],
+                ),
               ),
-            ),
+            ],
+          ),
+        ),
         branches: [
           StatefulShellBranch(
             routes: [
               GoRoute(
                 name: 'anime',
                 path: '/anime',
-                builder:
-                    (context, state) => AniPage(
-                      key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
-                      type: 'anime',
-                      tag: state.uri.queryParameters['tag'],
-                    ),
+                builder: (context, state) => AniPage(
+                  key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
+                  type: 'anime',
+                  tag: state.uri.queryParameters['tag'],
+                ),
                 routes: [
                   GoRoute(
                     parentNavigatorKey: _rootKey,
@@ -93,9 +91,8 @@ class Navigation extends StatelessWidget {
                           SystemChrome.setPreferredOrientations([]);
                           return true;
                         },
-                        builder:
-                            (context, state) =>
-                                AniViewer(episode: (state.extra as Map)['index'], anime: (state.extra as Map)['data']),
+                        builder: (context, state) =>
+                            AniViewer(episode: (state.extra as Map)['index'], anime: (state.extra as Map)['data']),
                       ),
                     ],
                   ),
@@ -108,12 +105,11 @@ class Navigation extends StatelessWidget {
               GoRoute(
                 name: 'manga',
                 path: '/manga',
-                builder:
-                    (context, state) => AniPage(
-                      key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
-                      type: 'manga',
-                      tag: state.uri.queryParameters['tag'],
-                    ),
+                builder: (context, state) => AniPage(
+                  key: (state.uri.queryParameters.isEmpty) ? null : Key(state.uri.queryParameters['tag']!),
+                  type: 'manga',
+                  tag: state.uri.queryParameters['tag'],
+                ),
                 routes: [
                   GoRoute(
                     parentNavigatorKey: _rootKey,
@@ -123,11 +119,8 @@ class Navigation extends StatelessWidget {
                       GoRoute(
                         parentNavigatorKey: _rootKey,
                         path: 'viewer',
-                        builder:
-                            (context, state) => MangaReader(
-                              chapter: (state.extra as Map)['index'],
-                              manga: (state.extra as Map)['data'],
-                            ),
+                        builder: (context, state) =>
+                            MangaReader(chapter: (state.extra as Map)['index'], manga: (state.extra as Map)['data']),
                       ),
                     ],
                   ),

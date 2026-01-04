@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/rendering.dart';
-import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:tokuwari/media/providers/anime/aes_decrypt.dart';
 import 'package:tokuwari/models/anidata.dart';
@@ -9,7 +8,7 @@ import 'package:tokuwari/models/media_prov.dart';
 import 'package:tokuwari/models/types.dart';
 
 const String zoro = "https://hianime.to/";
-const String mega = 'https://megacloud.blog/embed-2/v2/e-1/getSources?id=';
+const String mega = 'https://megacloud.blog/embed-2/v3/e-1/getSources?id=';
 
 Provider zoroList(final AniData data) async {
   try {
@@ -29,8 +28,8 @@ Provider zoroList(final AniData data) async {
           provId: i.attributes['data-id']!,
           title: i.attributes['title']!,
           number: i.attributes['data-number']!,
-          call: () => zoroInfo(i.attributes['data-id']!),
-          //call: () => zoroInfo(i.attributes['href']!.split('watch/')[1]),
+          // call: () => zoroInfo(i.attributes['data-id']!),
+          call: () => zoroInfo(i.attributes['href']!.split('watch/')[1].replaceFirst('?ep=', '-episode-')),
         ),
     ];
   } catch (e) {
@@ -39,71 +38,64 @@ Provider zoroList(final AniData data) async {
   }
 }
 
-// Future<Source> zoroInfo(final id) async {
-//   final Options options = Options(responseType: ResponseType.plain);
-//   String cat = 'sub';
-//   print(id);
-//   for (int attempt = 0; attempt < 2; attempt++) {
-//     try {
-//       final response = await Dio().get(
-//         "https://aniwatch-ashen-six.vercel.app/aniwatch/episode-srcs?id=$id&server=vidstreaming&category=$cat",
-//         options: options,
-//       );
-//       print(response.data);
-//       final sources = jsonDecode(response.data);
-//       sources['tracks'].removeWhere((element) => element['kind'] == 'thumbnails');
-//       return Source(
-//         qualities: {'default': sources['sources'][0]['url']},
-//         subtitles: {for (Map i in sources['tracks']) i['label']: i['file']},
-//         headers: {'origin': 'https://megacloud.club', 'referer': 'https://megacloud.club/'},
-//       );
-//     } on DioException catch (e) {
-//       if (attempt == 0 && e.response?.statusCode == 504) {
-//         cat = 'raw';
-//         continue;
-//       }
-//       break;
-//     } catch (err, stack) {
-//       print(err);
-//       print(stack);
-//       break;
-//     }
-//   }
-
-//   return const Source(qualities: {}, subtitles: {});
-// }
-
-Anime zoroInfo(final String id) async {
+Anime zoroInfo(final id) async {
   final Options options = Options(responseType: ResponseType.plain);
-  final dio = Dio();
+  String cat = 'sub';
   try {
-    final serversResponse = await Dio().get('${zoro}ajax/v2/episode/servers?episodeId=$id', options: options);
-    final String sId =
-        parse(
-          jsonDecode(serversResponse.data)['html'],
-        ).getElementsByClassName("item server-item").first.attributes['data-id']!;
-    final linkResponse = await dio.get('${zoro}ajax/v2/episode/sources?id=$sId', options: options);
-    final String link = jsonDecode(linkResponse.data)['link'];
-    final String segment = link.split('e-1/')[1].split('?')[0];
-    final sourcesResponse = await dio.get('$mega$segment', options: options);
-    final Map<String, dynamic> sources = jsonDecode(sourcesResponse.data);
-    if (sources['encrypted']) {
-      sources['sources'] = jsonDecode(await getSource(sources['sources']));
-    }
-    sources['tracks'].removeWhere((element) => element['kind'] == 'thumbnails');
+    final response = await Dio().get(
+      "https://hakai-api.vercel.app/api/hianime/watch/$id?server=hd-2&category=$cat",
+      options: options,
+    );
+    final sources = jsonDecode(response.data);
+    print(sources);
+    sources['data']['subtitles'].removeWhere((element) => element['lang'] == 'thumbnails');
     return Source(
-      qualities: {'default': sources['sources'][0]['file']},
-      subtitles: {for (Map i in sources['tracks']) i['label']: i['file']},
+      qualities: {'default': sources['data']['sources'][0]['url']},
+      subtitles: {for (Map i in sources['data']['subtitles']) i['lang']: i['url']},
       headers: {'origin': 'https://megacloud.blog', 'referer': 'https://megacloud.blog/'},
     );
-  } catch (err) {
-    debugPrint(err.toString());
-    return const Source(qualities: {}, subtitles: {});
+  } on DioException catch (e) {
+    debugPrint(e.toString());
+  } catch (err, stack) {
+    print(err);
+    print(stack);
   }
+
+  return const Source(qualities: {}, subtitles: {});
 }
 
-Future<String> getSource(String source) async {
-  final key =
-      (await Dio().get('https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/key.txt')).data;
-  return decrypt(source, key);
-}
+// Anime zoroInfo(final String id) async {
+//   final Options options = Options(responseType: ResponseType.plain);
+//   final dio = Dio();
+//   try {
+//     final serversResponse = await Dio().get('${zoro}ajax/v2/episode/servers?episodeId=$id', options: options);
+//     final String sId = parse(
+//       jsonDecode(serversResponse.data)['html'],
+//     ).getElementsByClassName("item server-item").first.attributes['data-id']!;
+//     final linkResponse = await dio.get('${zoro}ajax/v2/episode/sources?id=$sId', options: options);
+//     final String link = jsonDecode(linkResponse.data)['link'];
+//     final String segment = link.split('e-1/')[1].split('?')[0];
+//     final sourcesResponse = await dio.get('$mega$segment', options: options);
+//     final Map<String, dynamic> sources = jsonDecode(sourcesResponse.data);
+//     print(sources);
+//     if (sources['encrypted']) {
+//       sources['sources'] = jsonDecode(await getSource(sources['sources']));
+//     }
+//     sources['tracks'].removeWhere((element) => element['kind'] == 'thumbnails');
+//     return Source(
+//       qualities: {'default': sources['sources'][0]['file']},
+//       subtitles: {for (Map i in sources['tracks']) i['label']: i['file']},
+//       headers: {'origin': 'https://megacloud.blog', 'referer': 'https://megacloud.blog/'},
+//     );
+//   } catch (err) {
+//     debugPrint(err.toString());
+//     return const Source(qualities: {}, subtitles: {});
+//   }
+// }
+
+// Future<String> getSource(String source) async {
+//   final key = (await Dio().get(
+//     'https://raw.githubusercontent.com/itzzzme/megacloud-keys/refs/heads/main/key.txt',
+//   )).data;
+//   return decrypt(source, key);
+// }
